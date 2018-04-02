@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.raceBoostItem.BoostItemManager;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
@@ -37,6 +38,9 @@ public class RaceGame extends AbstractGame {
     
     @Getter
     private final CheckpointManager checkpointManager = new CheckpointManager(getName());
+    
+    @Getter
+    private final BoostItemManager boostItemManager = new BoostItemManager();
     
     @Getter
     private boolean started = false;
@@ -160,13 +164,10 @@ public class RaceGame extends AbstractGame {
             public void run() {
                 if(timer>1) {
                     timer--;
-                    //TitleUtil.setSubtitleAll(getOnlinePlayers(), null, timer+"");
                     TitleUtil.showTitleAll(getOnlinePlayers(), null, null, timer+"",0,300,0);
                 }
                 else {
                     cancel();
-                    //TitleUtil.setTitleAll(getOnlinePlayers(), null, ChatColor.GREEN+"GO");
-                    //TitleUtil.setSubtitleAll(getOnlinePlayers(), null, "");
                     TitleUtil.showTitleAll(getOnlinePlayers(), null, ChatColor.GREEN+"GO","",0,30,60);
                     go();
                 }
@@ -175,7 +176,6 @@ public class RaceGame extends AbstractGame {
             @Override
             public void cancel() {
                 super.cancel();
-                //TitleUtil.setTimesAll(getOnlinePlayers(), null, 0,50,20);
             }};
         goTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);
     }
@@ -184,6 +184,7 @@ public class RaceGame extends AbstractGame {
         steady = false;
         cagePlayer(false);
         ((RaceGameScoreboard)getBoard()).startRace();
+        placeBoostItems();
     }
     
     public void stop() {
@@ -195,6 +196,21 @@ public class RaceGame extends AbstractGame {
         steady = false;
         finished = 0;
         ((RaceGameScoreboard)getBoard()).stopRace();
+        removeBoostItems();
+    }
+    
+    /** 
+     * Places 1-4 boost items between every two race checkpoints
+     */
+    private void placeBoostItems() {
+        //TODO
+    }
+    
+    /**
+     * Removes all boost items of this game
+     */
+    private void removeBoostItems() {
+        //TODO
     }
     
     private void cagePlayer(boolean cage) {
@@ -327,4 +343,5 @@ public class RaceGame extends AbstractGame {
     public boolean hasFinish() {
         return checkpointManager.getFinish()!=null;
     }
+
 }
