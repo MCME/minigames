@@ -101,7 +101,7 @@ public class Checkpoint {
     
     private void refreshLabel() {
         for(BlockState state: marker) {
-            if(isWallSign(state.getType()) || isSign(state.getType())) {
+            if(isWallSign(state.getBlockData()) || isSign(state.getBlockData())) {
                 Sign sign = (Sign) state.getBlock().getState();
                 sign.setLine(1, label1);
                 sign.setLine(2, label2);
@@ -174,14 +174,14 @@ public class Checkpoint {
             entity.remove();
         }
         for(BlockState blockState : marker) {
-            if (!isSign(blockState.getType()) && !isWallSign(blockState.getType())
+            if (!isSign(blockState.getBlockData()) && !isWallSign(blockState.getBlockData())
                     && !blockState.getType().equals(Material.WALL_TORCH)) {
                 blockState.update(true, false);
             }
         }
         for(BlockState blockState : marker) {
-            if(isSign(blockState.getType())
-                    || isWallSign(blockState.getType())
+            if(isSign(blockState.getBlockData())
+                    || isWallSign(blockState.getBlockData())
                     || blockState.getType().equals(Material.WALL_TORCH)) {
                 blockState.update(true, false);
             }
@@ -196,8 +196,8 @@ public class Checkpoint {
             return;
         }
         for(BlockState state : marker) {
-            if(isSign(state.getType())
-                    || isWallSign(state.getType())
+            if(isSign(state.getBlockData())
+                    || isWallSign(state.getBlockData())
                     || state.getType().equals(Material.TORCH)) {
                 state.setType(Material.AIR);
                 state.update(true, false);
@@ -331,7 +331,7 @@ public class Checkpoint {
                                     break;
                             }
 
-                            if (isWallSign(type)
+                            if (isWallSign(block.getBlockData())
                                     || type.equals(Material.LEGACY_WALL_SIGN)) {
                                 blockData = adaptData(((WallSign) blockData).getFacing(), null, blockData, rotation, new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST});
                             } else if (type.equals(Material.WALL_TORCH)) {
@@ -556,16 +556,12 @@ public class Checkpoint {
         list.add(loc);
     }
 
-    private Boolean isWallSign(Material material) {
-        return material.equals(Material.SPRUCE_WALL_SIGN) || material.equals(Material.ACACIA_WALL_SIGN)
-                || material.equals(Material.BIRCH_WALL_SIGN) || material.equals(Material.DARK_OAK_WALL_SIGN)
-                || material.equals(Material.JUNGLE_WALL_SIGN) || material.equals(Material.OAK_WALL_SIGN);
+    private Boolean isWallSign(BlockData blockData) {
+        return blockData instanceof org.bukkit.block.data.type.WallSign;
     }
 
-    private Boolean isSign(Material material) {
-        return material.equals(Material.SPRUCE_SIGN) || material.equals(Material.ACACIA_SIGN)
-                || material.equals(Material.BIRCH_SIGN) || material.equals(Material.DARK_OAK_SIGN)
-                || material.equals(Material.JUNGLE_SIGN) || material.equals(Material.OAK_SIGN);
+    private Boolean isSign(BlockData blockData) {
+        return blockData instanceof org.bukkit.block.data.type.Sign;
     }
 
     public Location getLocation() {
