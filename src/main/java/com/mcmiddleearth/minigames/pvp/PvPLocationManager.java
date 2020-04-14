@@ -2,9 +2,7 @@ package com.mcmiddleearth.minigames.pvp;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.game.PvPGame;
-import com.mcmiddleearth.minigames.utils.WorldGuardUtil;
 import com.mcmiddleearth.pluginutil.JSONUtil;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,7 +22,7 @@ public class PvPLocationManager {
 
     private PvPGame game;
 
-    @Getter private PvpLocation redSpawn, blueSpawn, arenaMax, arenaMin;
+    private PvpLocation redSpawn, blueSpawn, arenaMax, arenaMin;
 
     public PvPLocationManager(PvPGame game) {
         this.game = game;
@@ -142,5 +140,21 @@ public class PvPLocationManager {
         else {
             return null;
         }
+    }
+
+    public PvpLocation getRedSpawn() {
+        return redSpawn;
+    }
+
+    public PvpLocation getBlueSpawn() {
+        return blueSpawn;
+    }
+
+    public PvpLocation getArenaMax() {
+        return arenaMax;
+    }
+
+    public PvpLocation getArenaMin() {
+        return arenaMin;
     }
 }

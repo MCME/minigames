@@ -3,8 +3,8 @@ main: ${groupId}.minigames.MiniGamesPlugin
 version: ${version}
 description: MiniGames plugin
 load: POSTWORLD
-api-version: 1.13
-softdepend: [Multiverse-Core]
+api-version: 1.15
+softdepend: [Multiverse-Core, worldguard-bukkit, guava]
 depend: [PluginUtils]
 
 commands:

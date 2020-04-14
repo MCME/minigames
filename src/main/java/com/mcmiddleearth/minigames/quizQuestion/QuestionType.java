@@ -16,8 +16,6 @@
  */
 package com.mcmiddleearth.minigames.quizQuestion;
 
-import lombok.Getter;
-
 /**
  *
  * @author Eriol_Eandur
@@ -28,7 +26,6 @@ public enum QuestionType {
     MULTI   ("Multi"),
     SINGLE  ("Single");
     
-    @Getter
     private final String name;
 
     private QuestionType(String name) {
@@ -43,5 +40,8 @@ public enum QuestionType {
         }
         return null;
     }
-    
+
+    public String getName() {
+        return name;
+    }
 }

@@ -2,7 +2,6 @@ package com.mcmiddleearth.minigames.pvp;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.game.PvPGame;
-import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,10 +25,10 @@ public class PvPLoadoutManager {
 
     private PvPGame game;
 
-    @Getter private LinkedList<String> armorContents, hotbarContents;
-    @Getter private String shieldContent;
-    @Getter private LinkedList<ItemStack> armor, hotbar;
-    @Getter private Object shield;
+    private LinkedList<String> armorContents, hotbarContents;
+    private String shieldContent;
+    private LinkedList<ItemStack> armor, hotbar;
+    private Object shield;
 
     public PvPLoadoutManager(PvPGame game) {
         this.game = game;
@@ -111,5 +110,29 @@ public class PvPLoadoutManager {
             MiniGamesPlugin.getPluginInstance().getLogger().log(Level.SEVERE, null, ex);
             throw ex;
         }
+    }
+
+    public LinkedList<String> getArmorContents() {
+        return armorContents;
+    }
+
+    public LinkedList<String> getHotbarContents() {
+        return hotbarContents;
+    }
+
+    public String getShieldContent() {
+        return shieldContent;
+    }
+
+    public LinkedList<ItemStack> getArmor() {
+        return armor;
+    }
+
+    public LinkedList<ItemStack> getHotbar() {
+        return hotbar;
+    }
+
+    public Object getShield() {
+        return shield;
     }
 }

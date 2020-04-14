@@ -8,32 +8,19 @@ package com.mcmiddleearth.minigames.game;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
-import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Logger;
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import java.util.*;
 
 /**
  *
@@ -45,61 +32,31 @@ public abstract class AbstractGame {
    
     protected final static TeleportCause TeleportCause_FORCE = TeleportCause.END_PORTAL;
     
-    @Getter
     private final String name;
     
-    @Getter
     private boolean announced = false;
     
-    @Getter
     private OfflinePlayer manager;
 
-    @Getter
     private final GameType type;
     
-    @Getter
     private final List<UUID> players = new ArrayList<>();
-    
     private final List<UUID> bannedPlayers = new ArrayList<>();
-
     private final List<UUID> spectators = new ArrayList<>();
-    
     private final List<UUID> invitedPlayers = new ArrayList<>();
-    
     private final List<UUID> leaveMessaged = new ArrayList<>();
     
     public final Map<UUID,GameMode> playerPreviousMode = new HashMap<>();
     
-    @Getter
     private Location warp = null;
-    
-    @Getter
-    @Setter
     private boolean warpAllowed = true;
-    
-    @Getter
     private boolean spectateAllowed = true;
-    
-    @Getter
-    @Setter
     private boolean privat = false;
-    
-    @Getter
     private boolean flightAllowed = true;
-    
-    @Getter
-    @Setter
     private boolean teleportAllowed = true;
-    
-    @Getter
-    @Setter
     private boolean gm3Allowed = false;
-    
-    @Getter
-    @Setter
     private boolean gm2Forced = false;
     
-    @Getter
     private final GameScoreboard board;
     
     private boolean managerOnlineLastTime = true; //for cleanup task
@@ -256,19 +213,11 @@ public abstract class AbstractGame {
         if(!flightAllowed) {
             event.getPlayer().setFlying(false);
         }
-        /*if(gm2Forced) {
-            playerPreviousMode.put(event.getPlayer().getUniqueId(),event.getPlayer().getGameMode());
-            event.getPlayer().setGameMode(GameMode.ADVENTURE);
-        }*/
     }
     
     public void playerLeaveServer(PlayerQuitEvent event) {
         event.getPlayer().setScoreboard(Bukkit.getServer().getScoreboardManager().getMainScoreboard());
         getBoard().decrementPlayer();
-        /*if(gm2Forced) {
-            event.getPlayer().setGameMode(playerPreviousMode.get(event.getPlayer().getUniqueId()));
-            playerPreviousMode.remove(event.getPlayer().getUniqueId());
-        }*/
     }
     
     public int allowedRadius(Player player) {
@@ -340,7 +289,6 @@ public abstract class AbstractGame {
     }
     
     public void playerTeleport(PlayerTeleportEvent event) {
-//Logger.getGlobal().info("in game teleport reason: "+event.getCause());
         if((!teleportAllowed && !event.getCause().equals(TeleportCause_FORCE))
                              && !event.getCause().equals(PlayerTeleportEvent.TeleportCause.UNKNOWN)) {
             event.setCancelled(true);
@@ -372,9 +320,7 @@ public abstract class AbstractGame {
     }
     
     public void forceTeleport(Player player, Location loc) {
-        //boolean teleport = teleportAllowed;
         player.teleport(loc, TeleportCause_FORCE);
-        //teleportAllowed = teleport;
     }
     
     public void warp(Player player, Location loc) {
@@ -467,5 +413,81 @@ public abstract class AbstractGame {
     private void sendNoMoreSpectatingMessage(Player player) {
         PluginData.getMessageUtil().sendInfoMessage(player, "Spectating in game '"+PluginData.getMessageUtil().STRESSED+getName()
                                            +PluginData.getMessageUtil().INFO+"' is no longer allowed.");
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isAnnounced() {
+        return announced;
+    }
+
+    public OfflinePlayer getManager() {
+        return manager;
+    }
+
+    public GameType getType() {
+        return type;
+    }
+
+    public List<UUID> getPlayers() {
+        return players;
+    }
+
+    public Location getWarp() {
+        return warp;
+    }
+
+    public boolean isWarpAllowed() {
+        return warpAllowed;
+    }
+
+    public void setWarpAllowed(boolean warpAllowed) {
+        this.warpAllowed = warpAllowed;
+    }
+
+    public boolean isSpectateAllowed() {
+        return spectateAllowed;
+    }
+
+    public boolean isPrivat() {
+        return privat;
+    }
+
+    public void setPrivat(boolean privat) {
+        this.privat = privat;
+    }
+
+    public boolean isFlightAllowed() {
+        return flightAllowed;
+    }
+
+    public boolean isTeleportAllowed() {
+        return teleportAllowed;
+    }
+
+    public void setTeleportAllowed(boolean teleportAllowed) {
+        this.teleportAllowed = teleportAllowed;
+    }
+
+    public boolean isGm3Allowed() {
+        return gm3Allowed;
+    }
+
+    public void setGm3Allowed(boolean gm3Allowed) {
+        this.gm3Allowed = gm3Allowed;
+    }
+
+    public boolean isGm2Forced() {
+        return gm2Forced;
+    }
+
+    public void setGm2Forced(boolean gm2Forced) {
+        this.gm2Forced = gm2Forced;
+    }
+
+    public GameScoreboard getBoard() {
+        return board;
     }
 }

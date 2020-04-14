@@ -5,7 +5,6 @@
  */
 package com.mcmiddleearth.minigames.scoreboard;
 
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -19,7 +18,6 @@ import org.bukkit.scoreboard.Scoreboard;
  */
 public class GameScoreboard {
   
-    @Getter
     protected final Scoreboard scoreboard;
     
     private final Objective playerCountObjective;
@@ -50,6 +48,8 @@ public class GameScoreboard {
     protected Objective getPlayerCountObjective() {
         return playerCountObjective;
     }
-    
 
+    public Scoreboard getScoreboard() {
+        return scoreboard;
+    }
 }

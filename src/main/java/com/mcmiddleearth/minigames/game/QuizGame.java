@@ -8,37 +8,12 @@ package com.mcmiddleearth.minigames.game;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.conversation.quiz.AskQuestionConversationFactory;
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.quizQuestion.AbstractQuestion;
-import com.mcmiddleearth.minigames.quizQuestion.ChoiceQuestion;
-import com.mcmiddleearth.minigames.quizQuestion.FreeQuestion;
-import com.mcmiddleearth.minigames.quizQuestion.NumberQuestion;
-import com.mcmiddleearth.minigames.quizQuestion.QuestionType;
-import com.mcmiddleearth.minigames.quizQuestion.SingleChoiceQuestion;
+import com.mcmiddleearth.minigames.quizQuestion.*;
 import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
-import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.NumericUtil;
+import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.StringUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -51,6 +26,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
@@ -58,19 +39,15 @@ import org.json.simple.parser.ParseException;
  */
 public class QuizGame extends AbstractGame {
 
-    @Getter
     private final List<AbstractQuestion> questions = new ArrayList<>();
     
     private boolean randomQuestions = true;
-
-    @Getter
     private boolean randomChoices = true;
     
     private int nextQuestion = 0;
 
     private int answerTime = 30; //seconds
     
-    @Getter
     private final Map<Player,Conversation> playersInQuestion = new HashMap<>();
 
     public QuizGame(Player manager, String name) {
@@ -722,4 +699,15 @@ public class QuizGame extends AbstractGame {
 
     }
 
+    public List<AbstractQuestion> getQuestions() {
+        return questions;
+    }
+
+    public boolean isRandomChoices() {
+        return randomChoices;
+    }
+
+    public Map<Player, Conversation> getPlayersInQuestion() {
+        return playersInQuestion;
+    }
 }

@@ -16,31 +16,18 @@
  */
 package com.mcmiddleearth.minigames.quizQuestion;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  *
  * @author Eriol_Eandur
  */
 public abstract class AbstractQuestion {
     
-    @Getter
-    @Setter
     private String question;
-    
-    @Getter
     private final QuestionType type;
     
-    @Getter
     private String categories = "";
     
-    @Getter
-    @Setter
     private boolean answered = false;
-    
-    @Getter
-    @Setter
     private int id = 0;
     
     public AbstractQuestion(String question, QuestionType type, String categories) {
@@ -62,4 +49,36 @@ public abstract class AbstractQuestion {
     }
     
     public abstract String[] getDetails();
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public QuestionType getType() {
+        return type;
+    }
+
+    public String getCategories() {
+        return categories;
+    }
+
+    public boolean isAnswered() {
+        return answered;
+    }
+
+    public void setAnswered(boolean answered) {
+        this.answered = answered;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

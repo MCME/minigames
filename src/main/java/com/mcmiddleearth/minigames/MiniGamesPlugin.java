@@ -10,7 +10,6 @@ import com.mcmiddleearth.minigames.command.GameCommandExecutor;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.listener.PlayerListener;
 import com.mcmiddleearth.pluginutil.EntityUtil;
-import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -19,7 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class MiniGamesPlugin extends JavaPlugin{
  
-    @Getter
     private static MiniGamesPlugin pluginInstance;
 
     @Override
@@ -34,5 +32,9 @@ public class MiniGamesPlugin extends JavaPlugin{
         getCommand("gc").setExecutor(new GCCommandExecutor());
         PluginData.createConversationFactories();
         getLogger().info("Enabled!");
+    }
+
+    public static MiniGamesPlugin getPluginInstance() {
+        return pluginInstance;
     }
 }
