@@ -8,7 +8,6 @@ import com.mcmiddleearth.minigames.golf.GolfPlayer;
 import com.mcmiddleearth.minigames.golf.GolfTeeLocation;
 import com.mcmiddleearth.minigames.scoreboard.GolfGameScoreboard;
 import com.mcmiddleearth.pluginutil.TitleUtil;
-import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -28,20 +27,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Planetology
  */
 public class GolfGame extends AbstractGame implements Listener {
 
-    @Getter private final GolfLocationManager locationManager;
-    @Getter private final List<GolfPlayer> golfers;
-    @Getter private final List<Player> notFinished;
+    private final GolfLocationManager locationManager;
+    private final List<GolfPlayer> golfers;
+    private final List<Player> notFinished;
 
-    @Getter private boolean ready, started;
-    @Getter private int readySeconds, hole, round, shots;
-    @Getter private GolfPlayer golfer;
+    private boolean ready, started;
+    private int readySeconds, hole, round, shots;
+    private GolfPlayer golfer;
 
     public GolfGame(Player manager, String name) {
         super(manager, name, GameType.GOLF, new GolfGameScoreboard());
@@ -593,5 +594,45 @@ public class GolfGame extends AbstractGame implements Listener {
         int holeCount = locationManager.getHoleCount();
 
         return holeCount == 9 || holeCount ==  18|| holeCount == 27 || holeCount == 14 || holeCount == 20;
+    }
+
+    public GolfLocationManager getLocationManager() {
+        return locationManager;
+    }
+
+    public List<GolfPlayer> getGolfers() {
+        return golfers;
+    }
+
+    public List<Player> getNotFinished() {
+        return notFinished;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public int getReadySeconds() {
+        return readySeconds;
+    }
+
+    public int getHole() {
+        return hole;
+    }
+
+    public int getRound() {
+        return round;
+    }
+
+    public int getShots() {
+        return shots;
+    }
+
+    public GolfPlayer getGolfer() {
+        return golfer;
     }
 }

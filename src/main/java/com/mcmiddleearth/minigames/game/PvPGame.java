@@ -15,8 +15,6 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -24,7 +22,8 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -40,20 +39,20 @@ import java.util.*;
  */
 public class PvPGame extends AbstractGame implements Listener {
 
-    @Getter private final PvPLocationManager locationManager;
-    @Getter private final PvPLoadoutManager loadoutManager;
-    @Getter private List<String> pvpers;
-    @Getter private List<String> redTeam, blueTeam;
-    @Getter private ProtectedRegion region;
+    private final PvPLocationManager locationManager;
+    private final PvPLoadoutManager loadoutManager;
+    private List<String> pvpers;
+    private List<String> redTeam, blueTeam;
+    private ProtectedRegion region;
 
-    @Getter private boolean ready, started, finished;
-    @Getter @Setter boolean loadout;
-    @Getter private int readySeconds, gameSeconds;
-    @Getter public int redKills, blueKills;
+    private boolean ready, started, finished;
+    boolean loadout;
+    private int readySeconds, gameSeconds;
+    public int redKills, blueKills;
 
-    @Getter Map<String, ItemStack[]> inventories;
+    Map<String, ItemStack[]> inventories;
 
-    @Getter private PvPGameScoreboard scoreboard;
+    private PvPGameScoreboard scoreboard;
 
     public PvPGame(Player manager, String name) {
         super(manager, name, GameType.PVP, new PvPGameScoreboard());
@@ -568,4 +567,72 @@ public class PvPGame extends AbstractGame implements Listener {
     public boolean hasArenaMax() { return locationManager.getArenaMax() != null; }
 
     public boolean hasArenaMin() { return locationManager.getArenaMin() != null; }
+
+    public PvPLocationManager getLocationManager() {
+        return locationManager;
+    }
+
+    public PvPLoadoutManager getLoadoutManager() {
+        return loadoutManager;
+    }
+
+    public List<String> getPvpers() {
+        return pvpers;
+    }
+
+    public List<String> getRedTeam() {
+        return redTeam;
+    }
+
+    public List<String> getBlueTeam() {
+        return blueTeam;
+    }
+
+    public ProtectedRegion getRegion() {
+        return region;
+    }
+
+    public boolean isReady() {
+        return ready;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public boolean isLoadout() {
+        return loadout;
+    }
+
+    public void setLoadout(boolean loadout) {
+        this.loadout = loadout;
+    }
+
+    public int getReadySeconds() {
+        return readySeconds;
+    }
+
+    public int getGameSeconds() {
+        return gameSeconds;
+    }
+
+    public int getRedKills() {
+        return redKills;
+    }
+
+    public int getBlueKills() {
+        return blueKills;
+    }
+
+    public Map<String, ItemStack[]> getInventories() {
+        return inventories;
+    }
+
+    public PvPGameScoreboard getScoreboard() {
+        return scoreboard;
+    }
 }

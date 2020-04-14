@@ -20,19 +20,6 @@ import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.pluginutil.BlockUtil;
 import com.mcmiddleearth.pluginutil.FileUtil;
 import com.mcmiddleearth.pluginutil.NumericUtil;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -51,24 +38,24 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 
+import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Eriol_Eandur
  */
 public class Checkpoint {
     
-    @Getter
     private Location location;
     
     private static final File restoreDir = new File(PluginData.getRaceDir(),"restoreData");
-    
-    @Getter
     private static final File markerDir = new File(PluginData.getRaceDir(),"markerData");
     
     private static final String restoreExt = "res";
     private static final String restoreEntityExt = "ent";
-    
-    @Getter
     private static final String markerExt = "mkr";
     
     private String name;
@@ -78,12 +65,9 @@ public class Checkpoint {
     
     private List<BlockState> marker = new ArrayList<>();
     
-    @Getter
     private List<Location> checkLocList = new ArrayList<>();
     
-    @Getter
     private String markerName = defaultMarker;
-    
     private static final String defaultMarker = "default";
     
     public Checkpoint(Location loc, String name, String markerName) {
@@ -102,7 +86,7 @@ public class Checkpoint {
 
     public boolean isCheckLocation(Location loc) {
         for(Location search : checkLocList) {
-            if(loc.getWorld().equals(search.getWorld()) && loc.distance(search)<2) {
+            if(Objects.equals(loc.getWorld(), search.getWorld()) && loc.distance(search)<2) {
                 return true;
             }
         }
@@ -117,8 +101,7 @@ public class Checkpoint {
     
     private void refreshLabel() {
         for(BlockState state: marker) {
-            if(state.getType().equals(Material.WALL_SIGN) 
-                    || state.getType().equals(Material.SIGN)) {
+            if(isWallSign(state.getType()) || isSign(state.getType())) {
                 Sign sign = (Sign) state.getBlock().getState();
                 sign.setLine(1, label1);
                 sign.setLine(2, label2);
@@ -191,16 +174,14 @@ public class Checkpoint {
             entity.remove();
         }
         for(BlockState blockState : marker) {
-            if(!blockState.getType().equals(Material.SIGN) 
-                    && !blockState.getType().equals(Material.SIGN)
-                    && !blockState.getType().equals(Material.WALL_SIGN)
+            if (!isSign(blockState.getType()) && !isWallSign(blockState.getType())
                     && !blockState.getType().equals(Material.WALL_TORCH)) {
                 blockState.update(true, false);
             }
         }
         for(BlockState blockState : marker) {
-            if(blockState.getType().equals(Material.SIGN)
-                    || blockState.getType().equals(Material.WALL_SIGN)
+            if(isSign(blockState.getType())
+                    || isWallSign(blockState.getType())
                     || blockState.getType().equals(Material.WALL_TORCH)) {
                 blockState.update(true, false);
             }
@@ -215,15 +196,15 @@ public class Checkpoint {
             return;
         }
         for(BlockState state : marker) {
-            if(state.getType().equals(Material.SIGN)
-                    || state.getType().equals(Material.WALL_SIGN)
+            if(isSign(state.getType())
+                    || isWallSign(state.getType())
                     || state.getType().equals(Material.TORCH)) {
                 state.setType(Material.AIR);
                 state.update(true, false);
             }
         }
         try {
-            BlockUtil.restore(restoreFile, new ArrayList<Entity>(), new ArrayList<BlockState>(),true);
+            BlockUtil.restore(restoreFile, new ArrayList<>(), new ArrayList<>(),true);
             restoreFile.delete();
         } catch (IOException | InvalidConfigurationException ex) {
             Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "Error at removing marker", ex);
@@ -302,18 +283,13 @@ public class Checkpoint {
                             state.setType(Material.valueOf("LEGACY_"+data));
                         }
                         if(data.equals("WOOD_DOUBLE_STEP")) {
-//Logger.getGlobal().info("wood double slab");
                             state.setType(Material.OAK_PLANKS);
                         }
-//Logger.getGlobal().info("state: "+state.getType().name());
                         state.setRawData((byte)NumericUtil.getInt(dv));
                         blockData = state.getBlockData();
-//Logger.getGlobal().info("data: "+blockData.getMaterial().name());
-                        
                     }
                     BlockData originalData = blockData.clone();
                     Material type = blockData.getMaterial();
-//Logger.getGlobal().info("type: "+type.name());
                     if (type != null) {
                         if(type.equals(Material.NETHERRACK)) {
                             Block block;
@@ -355,7 +331,7 @@ public class Checkpoint {
                                     break;
                             }
 
-                            if (type.equals(Material.WALL_SIGN)
+                            if (isWallSign(type)
                                     || type.equals(Material.LEGACY_WALL_SIGN)) {
                                 blockData = adaptData(((WallSign) blockData).getFacing(), null, blockData, rotation, new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST});
                             } else if (type.equals(Material.WALL_TORCH)) {
@@ -399,8 +375,6 @@ public class Checkpoint {
                     } else {
                         originalRotation = rotation;
                     }
-                    //float originalYaw = location.getYaw() - originalRotation.getYaw();
-//Logger.getGlobal().info("original Yaw: "+originalYaw+" location yaw: "+location.getYaw()+" orgRot yaw: "+originalRotation.getYaw());
                     try(PrintWriter printer = new PrintWriter(new FileWriter(file))) {
                         printer.println("YAW "+originalYaw);
                         writeBlockStates(marker, originalRotation, printer);
@@ -421,22 +395,18 @@ public class Checkpoint {
                 case RIGHT:
                     x = state.getZ() - location.getBlockZ();
                     z = - state.getX() + location.getBlockX();
-                    //block = location.getBlock().getRelative(-z, y, x);
                     break;
                 case TURN_AROUND:
                     x = - state.getX() + location.getBlockX();
                     z = - state.getZ() + location.getBlockZ();
-                    //block = location.getBlock().getRelative(-x, y, -z);
                     break;
                 case LEFT:
                     x = - state.getZ() + location.getBlockZ();
                     z =   state.getX() - location.getBlockX();
-                    //block = location.getBlock().getRelative(z, y, -x);
                     break;
                 default:
                     x = state.getX() - location.getBlockX();
                     z = state.getZ() - location.getBlockZ();
-                    //block = location.getBlock().getRelative(x, y, z);
                     break;
             }
             printer.println(x+" "+y+" "+z
@@ -534,7 +504,6 @@ public class Checkpoint {
                                 k< CheckpointManager.NEAR_DISTANCE; k++) {
                             Block block = loc.getBlock().getRelative(i,j,k);
                             if(!block.isEmpty()) {
-                                //blocks.add(block);
                                 writer.println(i+" "+j+" "+k+" " + block.getBlockData().getAsString());
                             }
                         }
@@ -550,7 +519,6 @@ public class Checkpoint {
             File[] files = restoreDir.listFiles(FileUtil.getFileExtFilter(restoreExt));
             for(File file: files) {
                 try {
-                    //restoreBlocks(file);
                     if(!BlockUtil.restore(file, new ArrayList<Entity>(), new ArrayList<BlockState>(),true)) {
                         throw new IOException();
                     }
@@ -586,6 +554,38 @@ public class Checkpoint {
             }
         }
         list.add(loc);
+    }
+
+    private Boolean isWallSign(Material material) {
+        return material.equals(Material.SPRUCE_WALL_SIGN) || material.equals(Material.ACACIA_WALL_SIGN)
+                || material.equals(Material.BIRCH_WALL_SIGN) || material.equals(Material.DARK_OAK_WALL_SIGN)
+                || material.equals(Material.JUNGLE_WALL_SIGN) || material.equals(Material.OAK_WALL_SIGN);
+    }
+
+    private Boolean isSign(Material material) {
+        return material.equals(Material.SPRUCE_SIGN) || material.equals(Material.ACACIA_SIGN)
+                || material.equals(Material.BIRCH_SIGN) || material.equals(Material.DARK_OAK_SIGN)
+                || material.equals(Material.JUNGLE_SIGN) || material.equals(Material.OAK_SIGN);
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public static File getMarkerDir() {
+        return markerDir;
+    }
+
+    public static String getMarkerExt() {
+        return markerExt;
+    }
+
+    public List<Location> getCheckLocList() {
+        return checkLocList;
+    }
+
+    public String getMarkerName() {
+        return markerName;
     }
 }
 

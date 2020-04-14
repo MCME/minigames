@@ -1,6 +1,5 @@
 package com.mcmiddleearth.minigames.command;
 
-//import com.boydti.fawe.FaweAPI;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;

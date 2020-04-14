@@ -6,9 +6,6 @@
 package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.pluginutil.message.MessageUtil;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,16 +17,12 @@ public abstract class AbstractCommand {
     
     private final String[] permissionNodes;
     
-    @Getter
     private final int minArgs;
     
     private boolean playerOnly = true;
     
-    @Getter
-    @Setter
     private String usageDescription, shortDescription;
     
-    @Getter
     protected CmdGroup cmdGroup = CmdGroup.GENERAL;
     
     public AbstractCommand(int minArgs, boolean playerOnly, String... permissionNodes) {
@@ -86,5 +79,28 @@ public abstract class AbstractCommand {
         }
         return true;
     }
-    
+
+    public int getMinArgs() {
+        return minArgs;
+    }
+
+    public String getUsageDescription() {
+        return usageDescription;
+    }
+
+    public void setUsageDescription(String usageDescription) {
+        this.usageDescription = usageDescription;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public CmdGroup getCmdGroup() {
+        return cmdGroup;
+    }
 }

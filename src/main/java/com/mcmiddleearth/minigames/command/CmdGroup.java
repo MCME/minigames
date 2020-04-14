@@ -16,8 +16,6 @@
  */
 package com.mcmiddleearth.minigames.command;
 
-import lombok.Getter;
-
 /**
  *
  * @author Eriol_Eandur
@@ -32,7 +30,6 @@ public enum CmdGroup {
     GOLF            ("Golf"),
     PVP             ("PvP");
 
-    @Getter
     private final String name;
 
     CmdGroup(String name) {
@@ -52,5 +49,7 @@ public enum CmdGroup {
         return (this.equals(command.getCmdGroup()) || this.equals(CmdGroup.ALL));
     }
 
-    
+    public String getName() {
+        return name;
+    }
 }

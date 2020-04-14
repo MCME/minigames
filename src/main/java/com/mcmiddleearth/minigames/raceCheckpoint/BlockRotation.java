@@ -16,8 +16,6 @@
  */
 package com.mcmiddleearth.minigames.raceCheckpoint;
 
-import lombok.Getter;
-
 /**
  *
  * @author Eriol_Eandur
@@ -32,7 +30,6 @@ public enum BlockRotation {
     SHARP_RIGHT (135),
     TURN_AROUND (180);
     
-    @Getter
     private final int yaw;
 
     private BlockRotation(int yaw) {
@@ -90,5 +87,9 @@ public enum BlockRotation {
     @Override
     public String toString() {
         return ""+yaw;
+    }
+
+    public int getYaw() {
+        return yaw;
     }
 }

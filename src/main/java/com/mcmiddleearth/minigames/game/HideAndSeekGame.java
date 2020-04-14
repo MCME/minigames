@@ -8,18 +8,13 @@ package com.mcmiddleearth.minigames.game;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.HideAndSeekGameScoreboard;
-import com.mcmiddleearth.pluginutil.PlayerUtil;
-import com.mcmiddleearth.pluginutil.DynmapUtil;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.pluginutil.DynmapUtil;
+import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,12 +22,17 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -41,32 +41,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class HideAndSeekGame extends AbstractGame implements Listener {
 
     private final int seekerCageRadius = 5; 
-    
     private final int defaultRadius = 10;
-    
     private final int defaultHideTimeSeconds = 60;
-    
     private final int defaultSeekTimeSeconds = 300;
-    
     private final int revealDistance = 1;
     
-    @Setter
     private int seekTime = defaultSeekTimeSeconds;
-    
-    @Setter
     private int hideTime = defaultHideTimeSeconds;
-    
     private int radius;
     
-    @Getter
     private boolean seeking = false;
-    
-    @Getter
     private boolean hiding = false;
     
-    @Getter public OfflinePlayer seeker;
-    
-    @Getter public final List<Player> hiddenPlayers = new ArrayList<>();
+    public OfflinePlayer seeker;
+    public final List<Player> hiddenPlayers = new ArrayList<>();
     
     private BukkitRunnable seekTask, stopTask;
     
@@ -413,5 +401,29 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     private void sendPlayerFoundMessage(Player hidden) {
         PluginData.getMessageUtil().sendInfoMessage(hidden, seeker.getName() +" found you.");
         PluginData.getMessageUtil().sendInfoMessage((Player) seeker, "You found "+ hidden.getName() + ".");
+    }
+
+    public void setSeekTime(int seekTime) {
+        this.seekTime = seekTime;
+    }
+
+    public void setHideTime(int hideTime) {
+        this.hideTime = hideTime;
+    }
+
+    public boolean isSeeking() {
+        return seeking;
+    }
+
+    public boolean isHiding() {
+        return hiding;
+    }
+
+    public OfflinePlayer getSeeker() {
+        return seeker;
+    }
+
+    public List<Player> getHiddenPlayers() {
+        return hiddenPlayers;
     }
 }

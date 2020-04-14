@@ -17,9 +17,6 @@
 package com.mcmiddleearth.minigames.quizQuestion;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.ChatColor;
 
 /**
  *
@@ -27,8 +24,6 @@ import org.bukkit.ChatColor;
  */
 public class FreeQuestion extends AbstractQuestion{
     
-    @Getter
-    @Setter
     private String answer;
     
     private static char[][] charReplacement =  new char[][]{{'a','\u00E0','\u00E1','\u00E2','\u00E3','\u00E4','\u00E5'},
@@ -70,5 +65,13 @@ public class FreeQuestion extends AbstractQuestion{
         return new String[]{PluginData.getMessageUtil().HIGHLIGHT+"[Type]"+PluginData.getMessageUtil().HIGHLIGHT_STRESSED+" FREE answer question",
                             PluginData.getMessageUtil().HIGHLIGHT+"[Question] "+PluginData.getMessageUtil().HIGHLIGHT_STRESSED+getQuestion(),
                             PluginData.getMessageUtil().STRESSED+"[Answer] "+answer};
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }
