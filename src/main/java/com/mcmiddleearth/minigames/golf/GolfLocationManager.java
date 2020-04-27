@@ -3,8 +3,6 @@ package com.mcmiddleearth.minigames.golf;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.game.GolfGame;
 import com.mcmiddleearth.pluginutil.JSONUtil;
-import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -28,14 +26,14 @@ public class GolfLocationManager {
 
     private GolfGame game;
 
-    @Getter private final LinkedList<GolfHoleLocation> holes = new LinkedList<>();
-    @Getter private final LinkedList<GolfTeeLocation> tees = new LinkedList<>();
-    @Getter private final LinkedList<GolfHoleLocation> gameHoles = new LinkedList<>();
-    @Getter private final LinkedList<GolfTeeLocation> gameTees = new LinkedList<>();
+    private final LinkedList<GolfHoleLocation> holes = new LinkedList<>();
+    private final LinkedList<GolfTeeLocation> tees = new LinkedList<>();
+    private final LinkedList<GolfHoleLocation> gameHoles = new LinkedList<>();
+    private final LinkedList<GolfTeeLocation> gameTees = new LinkedList<>();
 
-    @Getter private GolfTeeLocation teeStart, teeEnd;
-    @Getter private GolfHoleLocation holeStart, holeEnd;
-    @Getter public int holeCount, teeCount;
+    private GolfTeeLocation teeStart, teeEnd;
+    private GolfHoleLocation holeStart, holeEnd;
+    public int holeCount, teeCount;
 
     public GolfLocationManager(GolfGame game){
             this.game = game;
@@ -233,5 +231,45 @@ public class GolfLocationManager {
 
     private String nextHoleName() {
         return "hole" + holeCount;
+    }
+
+    public LinkedList<GolfHoleLocation> getHoles() {
+        return holes;
+    }
+
+    public LinkedList<GolfTeeLocation> getTees() {
+        return tees;
+    }
+
+    public LinkedList<GolfHoleLocation> getGameHoles() {
+        return gameHoles;
+    }
+
+    public LinkedList<GolfTeeLocation> getGameTees() {
+        return gameTees;
+    }
+
+    public GolfTeeLocation getTeeStart() {
+        return teeStart;
+    }
+
+    public GolfTeeLocation getTeeEnd() {
+        return teeEnd;
+    }
+
+    public GolfHoleLocation getHoleStart() {
+        return holeStart;
+    }
+
+    public GolfHoleLocation getHoleEnd() {
+        return holeEnd;
+    }
+
+    public int getHoleCount() {
+        return holeCount;
+    }
+
+    public int getTeeCount() {
+        return teeCount;
     }
 }

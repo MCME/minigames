@@ -1,7 +1,5 @@
 package com.mcmiddleearth.minigames.golf;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Location;
 
 import java.io.FileNotFoundException;
@@ -13,9 +11,9 @@ import java.util.logging.Logger;
  */
 public class GolfHoleLocation {
 
-    @Getter @Setter private Location location;
-    @Getter private String name, pointName;
-    @Getter private int par;
+    private Location location;
+    private String name, pointName;
+    private int par;
 
     public GolfHoleLocation(Location loc, String name, int par) {
         this.location = loc;
@@ -41,5 +39,25 @@ public class GolfHoleLocation {
         if(name != null) {
             pointName = name;
         }
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPointName() {
+        return pointName;
+    }
+
+    public int getPar() {
+        return par;
     }
 }

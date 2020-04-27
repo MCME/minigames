@@ -11,9 +11,13 @@ import com.mcmiddleearth.minigames.conversation.quiz.CreateQuestionConversationF
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
-import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.MessageUtil;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -23,68 +27,36 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.json.simple.parser.ParseException;
-
 /**
  *
  * @author Eriol_Eandur
  */
 public class PluginData {
     
-    @Getter
     private final static MessageUtil messageUtil = new MessageUtil();
-    
-    @Getter
     private static CreateQuestionConversationFactory createQuestionFactory;
-    
-    @Getter
     private static ConfirmationFactory confirmationFactory;
     
     private static final List<OfflinePlayer> noGameChat = new ArrayList<>();
-    
-    @Getter
     private static final List<AbstractGame> games = new ArrayList<>();
     
-    @Getter
     private static final File questionDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
                                                     + File.separator + "QuizQuestions");
-    
-    @Getter
     private static final File questionDataTable = new File(questionDir,"questionTable.dat");
-    
-    @Getter
     private static final File submittedQuestionsFile = new File(questionDir,"submitted.json");
-    
-    @Getter 
     static final QuizGame questionSubmitGame = new QuizGame(null, "submitQuestions");
-    
-    @Getter
     private static final File questionCategoriesFile = new File(questionDir,"questionCategories.dat");
-    
-    @Getter
     private static final List<String> questionCategories = new ArrayList<>();
-    
-    @Getter
     private static final File raceDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
                                                     + File.separator + "Races");
-
-    @Getter
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
-
-    @Getter
     private static final File pvpDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Arenas");
-
-    @Getter
     private static final File loadoutDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Loadouts");
 
-    @Setter public static boolean pvpRunning = false;
+    public static boolean pvpRunning = false;
     
     static {
         if(!MiniGamesPlugin.getPluginInstance().getDataFolder().exists()) {
@@ -248,5 +220,65 @@ public class PluginData {
             }
         }
         return true;
+    }
+
+    public static MessageUtil getMessageUtil() {
+        return messageUtil;
+    }
+
+    public static CreateQuestionConversationFactory getCreateQuestionFactory() {
+        return createQuestionFactory;
+    }
+
+    public static ConfirmationFactory getConfirmationFactory() {
+        return confirmationFactory;
+    }
+
+    public static List<AbstractGame> getGames() {
+        return games;
+    }
+
+    public static File getQuestionDir() {
+        return questionDir;
+    }
+
+    public static File getQuestionDataTable() {
+        return questionDataTable;
+    }
+
+    public static File getSubmittedQuestionsFile() {
+        return submittedQuestionsFile;
+    }
+
+    public static QuizGame getQuestionSubmitGame() {
+        return questionSubmitGame;
+    }
+
+    public static File getQuestionCategoriesFile() {
+        return questionCategoriesFile;
+    }
+
+    public static List<String> getQuestionCategories() {
+        return questionCategories;
+    }
+
+    public static File getRaceDir() {
+        return raceDir;
+    }
+
+    public static File getGolfDir() {
+        return golfDir;
+    }
+
+    public static File getPvpDirectory() {
+        return pvpDirectory;
+    }
+
+    public static File getLoadoutDirectory() {
+        return loadoutDirectory;
+    }
+
+    public static void setPvpRunning(boolean pvpRunning) {
+        PluginData.pvpRunning = pvpRunning;
     }
 }

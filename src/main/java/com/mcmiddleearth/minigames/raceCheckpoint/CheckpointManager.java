@@ -18,6 +18,12 @@ package com.mcmiddleearth.minigames.raceCheckpoint;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.pluginutil.JSONUtil;
+import org.bukkit.Location;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -25,12 +31,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.logging.Level;
-import lombok.Getter;
-import org.bukkit.Location;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -44,13 +44,8 @@ public class CheckpointManager {
     
     public static final int NEAR_DISTANCE = 10;
  
-    @Getter
     private Checkpoint start;
-    
-    @Getter
     private Checkpoint finish;
-    
-    @Getter
     private final LinkedList<Checkpoint> checkpoints = new LinkedList<>();
     
     private String checkpointMarker, startMarker, finishMarker;
@@ -313,5 +308,16 @@ public class CheckpointManager {
             return null;
         }
     }
-    
+
+    public Checkpoint getStart() {
+        return start;
+    }
+
+    public Checkpoint getFinish() {
+        return finish;
+    }
+
+    public LinkedList<Checkpoint> getCheckpoints() {
+        return checkpoints;
+    }
 }

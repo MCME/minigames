@@ -17,11 +17,9 @@
 package com.mcmiddleearth.minigames.quizQuestion;
 
 import com.mcmiddleearth.minigames.data.PluginData;
+
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.bukkit.ChatColor;
 
 /**
  *
@@ -30,12 +28,8 @@ import org.bukkit.ChatColor;
 
 public class ChoiceQuestion extends AbstractQuestion {
 
-    @Getter
-    @Setter
     protected String[] answers;
-    
     protected final boolean[] correctAnswers = new boolean[answerCount];
-    
     public final static int answerCount = 4;
     
     public ChoiceQuestion(String question, String[] answers, String correctAnswers, String categories) {
@@ -185,5 +179,13 @@ public class ChoiceQuestion extends AbstractQuestion {
             (correctAnswers[1]?PluginData.getMessageUtil().STRESSED:PluginData.getMessageUtil().HIGHLIGHT)+"[B] "+answers[1],
             (correctAnswers[2]?PluginData.getMessageUtil().STRESSED:PluginData.getMessageUtil().HIGHLIGHT)+"[C] "+answers[2],
             (correctAnswers[3]?PluginData.getMessageUtil().STRESSED:PluginData.getMessageUtil().HIGHLIGHT)+"[D] "+answers[3]};
+    }
+
+    public String[] getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(String[] answers) {
+        this.answers = answers;
     }
 }

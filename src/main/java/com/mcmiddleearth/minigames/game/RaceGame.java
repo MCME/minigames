@@ -10,24 +10,14 @@ import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
-import com.mcmiddleearth.pluginutil.BlockUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.UUID;
-import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.*;
 
 /**
  *
@@ -35,19 +25,12 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class RaceGame extends AbstractGame {
     
-    @Getter
     private final CheckpointManager checkpointManager = new CheckpointManager(getName());
     
-    @Getter
     private boolean started = false;
-    
-    @Getter
     private boolean steady = false;
-    
     private int finished = 0;
-    
     private boolean autoShow = true;
-    
     private int timer = 10;
     
     private BukkitRunnable goTask; 
@@ -326,5 +309,17 @@ public class RaceGame extends AbstractGame {
     }
     public boolean hasFinish() {
         return checkpointManager.getFinish()!=null;
+    }
+
+    public CheckpointManager getCheckpointManager() {
+        return checkpointManager;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public boolean isSteady() {
+        return steady;
     }
 }
