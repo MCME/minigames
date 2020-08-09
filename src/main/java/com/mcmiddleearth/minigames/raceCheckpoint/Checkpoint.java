@@ -20,9 +20,14 @@ import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.pluginutil.BlockUtil;
 import com.mcmiddleearth.pluginutil.FileUtil;
 import com.mcmiddleearth.pluginutil.NumericUtil;
+import com.mcmiddleearth.pluginutil.plotStoring.IStoragePlot;
+import com.mcmiddleearth.pluginutil.plotStoring.InvalidRestoreDataException;
+import com.mcmiddleearth.pluginutil.plotStoring.MCMEPlotFormat;
+import com.mcmiddleearth.pluginutil.plotStoring.StoragePlotSnapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -42,14 +47,18 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
  * @author Eriol_Eandur
  */
-public class Checkpoint {
+public class Checkpoint implements IStoragePlot {
     
     private Location location;
+    private Location lowCorner;
+    private Location highCorner;
     
     private static final File restoreDir = new File(PluginData.getRaceDir(),"restoreData");
     private static final File markerDir = new File(PluginData.getRaceDir(),"markerData");
@@ -151,11 +160,38 @@ public class Checkpoint {
         }
         try {
             loadMarkerFromFile();
+            lowCorner = null;
+            highCorner = null;
+            for(BlockState state: marker) {
+                if(lowCorner==null) {
+                    lowCorner = state.getLocation().clone();
+                    highCorner = state.getLocation().clone();
+                }
+                if(state.getX()<lowCorner.getBlockX()) lowCorner.setX(state.getX());
+                if(state.getY()<lowCorner.getBlockY()) lowCorner.setY(state.getY());
+                if(state.getZ()<lowCorner.getBlockZ()) lowCorner.setZ(state.getZ());
+                if(state.getX()>highCorner.getBlockX()) highCorner.setX(state.getX());
+                if(state.getY()>highCorner.getBlockY()) highCorner.setY(state.getY());
+                if(state.getZ()>highCorner.getBlockZ()) highCorner.setZ(state.getZ());
+//Logger.getGlobal().info("Low: "+lowCorner.getBlockX()+" "+lowCorner.getBlockY()+" "+lowCorner.getBlockZ());
+//Logger.getGlobal().info("Low: "+highCorner.getBlockX()+" "+highCorner.getBlockY()+" "+highCorner.getBlockZ());
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "placing Marker failed: marker file not found.", ex);
             return;
         }
-        List<Object> objects = new ArrayList<>();
+        StoragePlotSnapshot snapshot = new StoragePlotSnapshot(this);
+        try(DataOutputStream outStream = new DataOutputStream(
+                                        new BufferedOutputStream(
+                                        new GZIPOutputStream(
+                                        new FileOutputStream(restoreFile))))) {
+            new MCMEPlotFormat().save(this, outStream, snapshot);
+            outStream.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "saving restore data failed.", ex);
+            return;
+        }
+        /*List<Object> objects = new ArrayList<>();
         for(BlockState blockState: marker) {
             Block block = blockState.getBlock();
             objects.add(block);
@@ -172,7 +208,7 @@ public class Checkpoint {
         }
         for(Entity entity: nearEntities) {
             entity.remove();
-        }
+        }*/
         for(BlockState blockState : marker) {
             if (!isSign(blockState.getBlockData()) && !isWallSign(blockState.getBlockData())
                     && !blockState.getType().equals(Material.WALL_TORCH)) {
@@ -190,12 +226,23 @@ public class Checkpoint {
     }
     
     private void removeMarker() {
+//Logger.getGlobal().info("remove Marker");
         File restoreFile = new File(restoreDir, name+"."+restoreExt);
         if(!restoreFile.exists()) {
             Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "RestoreFile is missing.");
             return;
         }
-        for(BlockState state : marker) {
+        try(DataInputStream in = new DataInputStream(
+                                new BufferedInputStream(
+                                new GZIPInputStream(
+                                new FileInputStream(restoreFile))))) {
+            new MCMEPlotFormat().load(in);
+//Logger.getGlobal().info("done");
+            restoreFile.delete();
+        } catch (IOException | InvalidRestoreDataException ex) {
+            Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "Failed to restore blocks when removing marker!", ex);
+        }
+        /*for(BlockState state : marker) {
             if(isSign(state.getBlockData())
                     || isWallSign(state.getBlockData())
                     || state.getType().equals(Material.TORCH)) {
@@ -208,7 +255,7 @@ public class Checkpoint {
             restoreFile.delete();
         } catch (IOException | InvalidConfigurationException ex) {
             Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "Error at removing marker", ex);
-        }
+        }*/
     }
 
     private static void addNewEntity(List<Entity> entityList, Entity newEntity) {
@@ -582,6 +629,33 @@ public class Checkpoint {
 
     public String getMarkerName() {
         return markerName;
+    }
+
+    @Override
+    public World getWorld() {
+        return location.getWorld();
+    }
+
+    @Override
+    public Location getLowCorner() {
+        return lowCorner;
+    }
+
+    @Override
+    public Location getHighCorner() {
+        return highCorner;
+    }
+
+    @Override
+    public boolean isInside(Location location) {
+        return location.getWorld()!=null && location.getWorld().equals(getWorld())
+                && location.getBlockX() >= getLowCorner().getBlockX()
+                && location.getBlockY() >= getLowCorner().getBlockY()
+                && location.getBlockZ() >= getLowCorner().getBlockZ()
+                && location.getBlockX() <= getHighCorner().getBlockX()
+                && location.getBlockY() <= getHighCorner().getBlockY()
+                && location.getBlockZ() <= getHighCorner().getBlockZ();
+
     }
 }
 

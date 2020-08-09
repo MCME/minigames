@@ -31,6 +31,7 @@ public class MiniGamesPlugin extends JavaPlugin{
         getCommand("game").setExecutor(new GameCommandExecutor());
         getCommand("gc").setExecutor(new GCCommandExecutor());
         PluginData.createConversationFactories();
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getLogger().info("Enabled!");
     }
 

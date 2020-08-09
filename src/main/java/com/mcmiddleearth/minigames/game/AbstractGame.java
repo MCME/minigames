@@ -5,6 +5,8 @@
  */
 package com.mcmiddleearth.minigames.game;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
@@ -17,10 +19,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  *
@@ -380,14 +384,33 @@ public abstract class AbstractGame {
     }
     
     protected void sendAnnounceGameMessage() {
-        PluginData.getMessageUtil().sendBroadcastMessage(new FancyMessage(MessageType.INFO,PluginData.getMessageUtil()).
-                                             addClickable(PluginData.getMessageUtil().STRESSED+manager.getName() 
-                                                              + PluginData.getMessageUtil().INFO+" started a new "
-                                                              + PluginData.getMessageUtil().STRESSED+getType().toString()
-                                                              + PluginData.getMessageUtil().INFO+" game. "
-                                                              + "To play that game, "
-                                                              + PluginData.getMessageUtil().STRESSED+"click here "
-                                                              + PluginData.getMessageUtil().INFO+"or type in chat: /game join "+getName(),"/game join "+getName()));
+        Plugin connectPlugin = Bukkit.getPluginManager().getPlugin("MCME-Connect");
+        Player player = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        if(player !=null && connectPlugin != null && connectPlugin.isEnabled()) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("Message");
+            out.writeUTF("ALL");
+            String message = PluginData.getMessageUtil().STRESSED+manager.getName()
+                    + PluginData.getMessageUtil().INFO+" started a new "
+                    + PluginData.getMessageUtil().STRESSED+getType().toString()
+                    + PluginData.getMessageUtil().INFO+" game. "
+                    + "To play that game, type in chat: "
+                    + PluginData.getMessageUtil().STRESSED+"/game join "+getName()
+                    +  PluginData.getMessageUtil().INFO+" (If you are at another world you need to first do "
+                    +  PluginData.getMessageUtil().STRESSED+"/"+player.getWorld().getName()+ PluginData.getMessageUtil().INFO+")";
+            out.writeUTF(message);
+            player.sendPluginMessage(MiniGamesPlugin.getPluginInstance(), "BungeeCord", out.toByteArray());
+            Logger.getGlobal().info("Bungee Broadcast sent! "+message);
+        } else {
+            PluginData.getMessageUtil().sendBroadcastMessage(new FancyMessage(MessageType.INFO, PluginData.getMessageUtil()).
+                    addClickable(PluginData.getMessageUtil().STRESSED + manager.getName()
+                            + PluginData.getMessageUtil().INFO + " started a new "
+                            + PluginData.getMessageUtil().STRESSED + getType().toString()
+                            + PluginData.getMessageUtil().INFO + " game. "
+                            + "To play that game, "
+                            + PluginData.getMessageUtil().STRESSED + "click here "
+                            + PluginData.getMessageUtil().INFO + "or type in chat: /game join " + getName(), "/game join " + getName()));
+        }
     }
     
     public void sendGameEndMessage(Player sender) {
