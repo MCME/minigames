@@ -282,6 +282,7 @@ public class Checkpoint implements IStoragePlot {
     }
     
     private void loadMarkerFromFile() throws FileNotFoundException{
+//Logger.getGlobal().info("load marker");
         File file = new File(markerDir,markerName+"."+markerExt);
         List<BlockState> checkTemp = new ArrayList<>();
         if(!file.exists()) {
@@ -377,9 +378,11 @@ public class Checkpoint implements IStoragePlot {
                                     block = location.getBlock().getRelative(x, y, z);
                                     break;
                             }
+//Logger.getGlobal().info("state: "+block.getBlockData().toString());
 
-                            if (isWallSign(block.getBlockData())
+                            if (isWallSign(blockData)
                                     || type.equals(Material.LEGACY_WALL_SIGN)) {
+//Logger.getGlobal().info("Sign: "+((WallSign) blockData).getFacing());
                                 blockData = adaptData(((WallSign) blockData).getFacing(), null, blockData, rotation, new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST});
                             } else if (type.equals(Material.WALL_TORCH)) {
                                 blockData = adaptData(((Directional) blockData).getFacing(), null, blockData, rotation, new BlockFace[]{BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST});
@@ -565,11 +568,16 @@ public class Checkpoint implements IStoragePlot {
         if(restoreDir.exists()) {
             File[] files = restoreDir.listFiles(FileUtil.getFileExtFilter(restoreExt));
             for(File file: files) {
-                try {
+                try(DataInputStream in = new DataInputStream(
+                        new BufferedInputStream(
+                                new GZIPInputStream(
+                                        new FileInputStream(file))))) {
+                    new MCMEPlotFormat().load(in);
+                /*try {
                     if(!BlockUtil.restore(file, new ArrayList<Entity>(), new ArrayList<BlockState>(),true)) {
                         throw new IOException();
-                    }
-                } catch (IOException | InvalidConfigurationException ex) {
+                    }*/
+                } catch (IOException | InvalidRestoreDataException ex) {
                     Logger.getLogger(Checkpoint.class.getName()).log(Level.SEVERE, "Exception while deleting race markers. Restore data file is still in minigames/race/restoredata. Will try again to restore with next server start/reload", ex);
                     return;
                 }
