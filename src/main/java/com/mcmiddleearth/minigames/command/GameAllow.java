@@ -20,7 +20,7 @@ public class GameAllow extends AbstractGameCommand{
     public GameAllow(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Allows various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|spectate: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.");
+        setUsageDescription(" flight|teleport|join|warp|spectate|collision: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.");
     }
     
     @Override
@@ -50,7 +50,11 @@ public class GameAllow extends AbstractGameCommand{
                 }
                 game.setTeleportAllowed(true);
                 sendTeleportAllowedMessage(cs);
-            } 
+            }
+            else if(args[0].equalsIgnoreCase("collision")) {
+                game.setCollision(true);
+                sendCollisionMessage(cs);
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -75,6 +79,10 @@ public class GameAllow extends AbstractGameCommand{
 
     private void sendTeleportAllowedMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed players of this game to teleport (using commands like /tpa and /warp).");
+    }
+
+    private void sendCollisionMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player collision in his game.");
     }
 
     private void sendInvalidArgumentMessage(CommandSender cs) {

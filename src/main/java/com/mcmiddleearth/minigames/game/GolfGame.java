@@ -51,6 +51,7 @@ public class GolfGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm3Allowed(true);
         setGm2Forced(false);
+        setCollision(true);
 
         locationManager = new GolfLocationManager(this);
         golfers = new ArrayList<>();
