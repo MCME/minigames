@@ -62,6 +62,7 @@ public class PvPGame extends AbstractGame implements Listener {
         setTeleportAllowed(false);
         setGm3Allowed(false);
         setGm2Forced(true);
+        setCollision(true);
 
         locationManager = new PvPLocationManager(this);
         loadoutManager = new PvPLoadoutManager(this);

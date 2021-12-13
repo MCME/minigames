@@ -21,6 +21,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -60,16 +61,19 @@ public abstract class AbstractGame {
     private boolean teleportAllowed = true;
     private boolean gm3Allowed = false;
     private boolean gm2Forced = false;
+    private boolean Collision = true;
     
     private final GameScoreboard board;
+    private final Team team;
     
     private boolean managerOnlineLastTime = true; //for cleanup task
-    
+
     public AbstractGame(Player manager, String name, GameType type, GameScoreboard board) {
         this.name = name;
         this.manager = manager;
         this.board = board;
         this.type = type;
+        this.team = board.getScoreboard().registerNewTeam("noCollision");
         if(manager!=null) {
             warp = manager.getLocation();
             manager.setScoreboard(getBoard().getScoreboard());
@@ -162,6 +166,7 @@ public abstract class AbstractGame {
         players.add(player.getUniqueId());
         getBoard().incrementPlayer();
         player.setScoreboard(board.getScoreboard());
+        team.addEntry(player.getName());
     }
     
     public void addSpectator(Player player) {
@@ -358,7 +363,17 @@ public abstract class AbstractGame {
         }
         flightAllowed = allowed;
     }
-    
+
+    public void setCollision(boolean allowed) {
+        if (!this.Collision && allowed) { // false && true
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS);
+            }
+        else if(this.Collision && !allowed){ // true && false
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        }
+        Collision = allowed; // Collision is by default on ALWAYS
+    }
+
     public void setSpectateAllowed(boolean allowed) {
         if(this.spectateAllowed && !allowed)  {
             List<UUID> copyOfSpectators = new ArrayList<>();

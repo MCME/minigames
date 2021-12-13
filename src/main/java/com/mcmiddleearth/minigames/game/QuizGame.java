@@ -53,6 +53,7 @@ public class QuizGame extends AbstractGame {
     public QuizGame(Player manager, String name) {
         super(manager, name, GameType.LORE_QUIZ, new QuizGameScoreboard());
         setGm3Allowed(true);
+        setCollision(true);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class CheckpointManager {
         if(start!=null) start.delete();
         if(finish!=null) finish.delete();
         for(Checkpoint check:checkpoints) {
-            check.delete();
+            if(check!=null) check.delete();
         }
     }
     
