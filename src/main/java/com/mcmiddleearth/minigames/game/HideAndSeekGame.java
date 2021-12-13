@@ -66,6 +66,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setTeleportAllowed(false);
         setFlightAllowed(false);
         setGm2Forced(true);
+        setCollision(true);
         announceGame();
     }
     

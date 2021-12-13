@@ -19,7 +19,7 @@ public class GameDeny extends AbstractGameCommand{
     public GameDeny(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Denies various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating.");
+        setUsageDescription(" flight|teleport|join|warp: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.");
     }
     
     @Override
@@ -45,7 +45,14 @@ public class GameDeny extends AbstractGameCommand{
             else if(args[0].equalsIgnoreCase("teleport")) {
                 game.setTeleportAllowed(false);
                 sendTeleportAllowedMessage(cs);
-            } 
+            }
+            else if(args[0].equalsIgnoreCase("Collision")) {
+                game.setCollision(false);
+                sendCollisionMessage(cs);
+            }
+            else {
+                sendInvalidArgumentMessage(cs);
+            }
         }
     }
     
@@ -67,4 +74,11 @@ public class GameDeny extends AbstractGameCommand{
     private void sendTeleportAllowedMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You denied players of this game to teleport (using commands like /tpa and /warp).");
     }
- }
+    private void sendCollisionMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You denied player collision in his game.");
+    }
+
+    private void sendInvalidArgumentMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendErrorMessage(cs, "Invalid Argument.");
+    }
+}
