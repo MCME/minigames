@@ -67,7 +67,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("submitquestion", new QuizGameQuestionsSubmit(Permissions.USER));
         addCommandHandler("unban", new GameUnban(Permissions.MANAGER));
         addCommandHandler("warp", new GameWarp(Permissions.USER));
-        addCommandHandler("winner", new QuizGameWinner(Permissions.MANAGER));
+        addCommandHandler("winner", new GameWinner(Permissions.MANAGER));
         addCommandHandler("golfset", new GolfGameSet(Permissions.MANAGER));
         addCommandHandler("savegolf", new GolfGameSave(Permissions.MANAGER));
         addCommandHandler("loadgolf", new GolfGameLoad(Permissions.MANAGER));
@@ -81,6 +81,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("teamred", new PvPGameTeamRed(Permissions.MANAGER));
         addCommandHandler("teamblue", new PvPGameTeamBlue(Permissions.MANAGER));
         addCommandHandler("unstuck", new HaSGameUnstuck(Permissions.USER));
+        addCommandHandler("round", new GeoGameRound(Permissions.MANAGER));
     }
     
     @Override

@@ -32,6 +32,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.mcmiddleearth.minigames.data.PluginData.getGame;
+
 
 /**
  *
@@ -710,5 +712,17 @@ public class QuizGame extends AbstractGame {
 
     public Map<Player, Conversation> getPlayersInQuestion() {
         return playersInQuestion;
+    }
+
+    public void QuizGameWinner(Player player){
+        AbstractGame game = getGame(player);
+        QuizGame quizgame = (QuizGame) game;
+        if(!quizgame.announceWinner(true)){
+            sendNoWinnerMessage(player);
+        }
+    }
+
+    private void sendNoWinnerMessage(Player player) {
+        PluginData.getMessageUtil().sendErrorMessage(player, "There is no winner.");
     }
 }

@@ -75,7 +75,7 @@ public class GameDeny extends AbstractGameCommand{
         PluginData.getMessageUtil().sendInfoMessage(cs, "You denied players of this game to teleport (using commands like /tpa and /warp).");
     }
     private void sendCollisionMessage(CommandSender cs) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "You denied player collision in his game.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You denied player collision in this game.");
     }
 
     private void sendInvalidArgumentMessage(CommandSender cs) {

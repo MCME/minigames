@@ -7,10 +7,13 @@ package com.mcmiddleearth.minigames.game;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.mcmiddleearth.guidebook.command.GuidebookOff;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
+import com.mcmiddleearth.plugins.dynamicbooks.DynamicBooksPlugin;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
@@ -23,7 +26,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+import com.mcmiddleearth.plugins.dynamicbooks.manager.BookManager;
+import com.mcmiddleearth.guidebook.command.GuidebookOff;
 
+import java.awt.print.Book;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -75,7 +81,9 @@ public abstract class AbstractGame {
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
         if(manager!=null) {
-            warp = manager.getLocation();
+            if(type != GameType.GEO_GUESSR) {
+                warp = manager.getLocation();
+            }
             manager.setScoreboard(getBoard().getScoreboard());
             BukkitRunnable cleanupTask = new BukkitRunnable() {
                 @Override
@@ -162,6 +170,10 @@ public abstract class AbstractGame {
         }
         if(!gm3Allowed && player.getGameMode().equals(GameMode.SPECTATOR)) {
             player.setGameMode(GameMode.SURVIVAL);
+        }
+        if(type == GameType.GEO_GUESSR)
+        {
+            com.mcmiddleearth.guidebook.data.PluginData.exclude(player);
         }
         players.add(player.getUniqueId());
         getBoard().incrementPlayer();
@@ -296,7 +308,9 @@ public abstract class AbstractGame {
             }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 1);
         }
     }
-    
+
+
+
     public void playerTeleport(PlayerTeleportEvent event) {
         if((!teleportAllowed && !event.getCause().equals(TeleportCause_FORCE))
                              && !event.getCause().equals(PlayerTeleportEvent.TeleportCause.UNKNOWN)) {

@@ -82,7 +82,7 @@ public class GameAllow extends AbstractGameCommand{
     }
 
     private void sendCollisionMessage(CommandSender cs) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player collision in his game.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player collision in this game.");
     }
 
     private void sendInvalidArgumentMessage(CommandSender cs) {
