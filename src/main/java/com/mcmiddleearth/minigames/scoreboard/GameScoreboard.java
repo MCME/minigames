@@ -23,7 +23,7 @@ public class GameScoreboard {
     private final Objective playerCountObjective;
     
     private final Score playerCountScore;
-    
+
     public GameScoreboard(String name) {
         scoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
         playerCountObjective = scoreboard.registerNewObjective("PlayerCount", "dummy");
@@ -44,7 +44,7 @@ public class GameScoreboard {
     protected int getPlayerCount() {
         return playerCountScore.getScore();
     }
-    
+
     protected Objective getPlayerCountObjective() {
         return playerCountObjective;
     }

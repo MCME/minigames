@@ -89,6 +89,11 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
         setRoundDisplay();
     }
 
+    public void setRoundCount(int roundCount){
+        this.roundCount = roundCount;
+        setRoundDisplay();
+    }
+
     public void stopRound(){
         if(timerTask!=null){
             timerTask.cancel();

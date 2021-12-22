@@ -54,11 +54,12 @@ public class GeoGuessrConversation implements ConversationAbandonedListener {
             } else {
                 sendFailMessage(player, correctAnswer);
             }
-            GeoGuessrGame game = (GeoGuessrGame) cc.getSessionData("game");
-            game.removePlayerFromRound(player);
-            if (!game.isPlayerInRound()) {
-                game.stopRound();
-            }
+
+        }
+        GeoGuessrGame game = (GeoGuessrGame) cc.getSessionData("game");
+        game.removePlayerFromRound(player);
+        if (!game.isPlayerInRound()) {
+            game.stopRound();
         }
     }
 

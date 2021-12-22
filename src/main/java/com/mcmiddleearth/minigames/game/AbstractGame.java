@@ -18,6 +18,7 @@ import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
@@ -80,6 +81,7 @@ public abstract class AbstractGame {
         this.board = board;
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
+        team.setCanSeeFriendlyInvisibles(false);
         if(manager!=null) {
             if(type != GameType.GEO_GUESSR) {
                 warp = manager.getLocation();
@@ -170,10 +172,6 @@ public abstract class AbstractGame {
         }
         if(!gm3Allowed && player.getGameMode().equals(GameMode.SPECTATOR)) {
             player.setGameMode(GameMode.SURVIVAL);
-        }
-        if(type == GameType.GEO_GUESSR)
-        {
-            com.mcmiddleearth.guidebook.data.PluginData.exclude(player);
         }
         players.add(player.getUniqueId());
         getBoard().incrementPlayer();

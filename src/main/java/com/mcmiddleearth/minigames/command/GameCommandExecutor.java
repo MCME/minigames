@@ -82,6 +82,8 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("teamblue", new PvPGameTeamBlue(Permissions.MANAGER));
         addCommandHandler("unstuck", new HaSGameUnstuck(Permissions.USER));
         addCommandHandler("round", new GeoGameRound(Permissions.MANAGER));
+        addCommandHandler("setrounds", new GeoGameSetRounds(Permissions.MANAGER));
+        addCommandHandler("setarea", new GeoGameSetArea(Permissions.MANAGER));
     }
     
     @Override

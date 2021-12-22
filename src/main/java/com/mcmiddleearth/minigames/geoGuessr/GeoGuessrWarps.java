@@ -22,8 +22,6 @@ import java.util.logging.Logger;
 
 public class GeoGuessrWarps {
 
-
-
     private final String dbUser;
     private final String dbPassword;
     private final String dbName;
@@ -38,6 +36,8 @@ public class GeoGuessrWarps {
 
     private PreparedStatement getWarp;
 
+    private PreparedStatement getRows;
+
 
     private Map<String, String> worldUUID = new HashMap<>();
 
@@ -45,12 +45,7 @@ public class GeoGuessrWarps {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private String[][] warps = null;
-
-
-
-
-    /*
+    /*  TESTING
     private static String[][] warp_list = {
             {"test0", "0", "70", "0",},
             {"test 1", "1", "70", "1"},
@@ -64,8 +59,8 @@ public class GeoGuessrWarps {
     public static String[][] getWarps_test() {
         return warp_list;
     }
-
     */
+
 
 
     public GeoGuessrWarps() {
@@ -112,6 +107,8 @@ public class GeoGuessrWarps {
             dbConnection = dataBase.getConnection(dbUser, dbPassword);
             getWarp = dbConnection.prepareStatement("SELECT warp.name, warp.x, warp.y, warp.z FROM warp WHERE warp.type = 1 AND world.uuid = ?");
             getWarp.setQueryTimeout(1);
+            getRows = dbConnection.prepareStatement("SELECT COUNT(warp.name) FROM warp WHERE warp.type = 1 AND world.uuid = ?");
+            getWarp.setQueryTimeout(1);
             connected = true;
         } catch (SQLException ex) {
             Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,7 +120,12 @@ public class GeoGuessrWarps {
         int i = 0;
         if (connected) {
             try {
+                getRows.setString(1, String.valueOf(uuid));
                 getWarp.setString(1, String.valueOf(uuid));
+                ResultSet count = getRows.executeQuery();
+                int rows = count.getInt("COUNT(warp.name)");
+                String[][] warps = new String[rows][4];
+
                 ResultSet result = getWarp.executeQuery();
                 do {
                     warps[i][0] = result.getString("warp.name");
@@ -132,11 +134,12 @@ public class GeoGuessrWarps {
                     warps[i][3] = result.getString("warp.z");
                     i++;
                 } while (result.next());
+                return warps;
             } catch (SQLException throwables) {
                 Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, null, throwables);
                 connected = false;
             }
-            return warps;
+
         }
         return null;
     }

@@ -35,18 +35,26 @@ public class GeoGameRound extends AbstractGameCommand{
                 sendNotEnoughPlayerErrorMessage(cs);
             }
             else{
-
                 int radius = StringUtil.parseInt(args[0]);
-                geogame.setGuessRadius(radius);
-                if(args.length>1){
-                    int guessTime = StringUtil.parseInt(args[1]);
-                    geogame.setGuessTime(guessTime);
+                if(radius >= 5) {
+                    geogame.setGuessRadius(radius);
+                    if(args.length>1){
+                        int guessTime = StringUtil.parseInt(args[1]);
+                        geogame.setGuessTime(guessTime);
+                    }
+                    geogame.sendRound();
+                }else
+                {
+                    sendRadiusToSmall(cs);
                 }
-                geogame.sendRound();
+
 
             }
 
         }
+    }
+    private void sendRadiusToSmall(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs, "The radius can´t be smaller than 5.");
     }
     private void sendNotEnoughPlayerErrorMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Not enough players in game. Minimum is two.");
