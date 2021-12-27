@@ -165,6 +165,7 @@ public abstract class AbstractGame {
     public void addPlayer(Player player) {
         if(!flightAllowed) {
             player.setFlying(false);
+            player.setAllowFlight(false);
         }
         if(gm2Forced) {
             playerPreviousMode.put(player.getUniqueId(), player.getGameMode());
@@ -231,6 +232,7 @@ public abstract class AbstractGame {
         getBoard().incrementPlayer();
         if(!flightAllowed) {
             event.getPlayer().setFlying(false);
+            event.getPlayer().setAllowFlight(false);
         }
     }
     
@@ -320,6 +322,7 @@ public abstract class AbstractGame {
     public void playerToggleFlight(PlayerToggleFlightEvent event) {
         if(!flightAllowed) {
             event.getPlayer().setFlying(false);
+            event.getPlayer().setAllowFlight(false);
             event.setCancelled(true);
             sendFlightNotAllowed(event.getPlayer());
         }
@@ -371,6 +374,7 @@ public abstract class AbstractGame {
         if(this.flightAllowed && !allowed)  {
             for(Player player : getOnlinePlayers()) {
                 player.setFlying(false);
+                player.setAllowFlight(false);
             }
         }
         flightAllowed = allowed;

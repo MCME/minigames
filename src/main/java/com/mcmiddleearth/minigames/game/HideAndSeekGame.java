@@ -90,6 +90,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 hidePlayer(player);
             }
         }
+        for(Player player:hiddenPlayers) {
+            player.setSneaking(true);
+        }
         ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
         sendStartHideMessage();
         Location loc = getWarp().clone();
@@ -107,9 +110,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         this.hiding = false;
         this.seeking = true;
         ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime);
-        for(Player player:hiddenPlayers) {
-            player.setSneaking(true);
-        }
+
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
             @Override
@@ -348,6 +349,18 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
+    public void teleportToManager(Player manager, OfflinePlayer player) {
+        if (PlayerUtil.getOnlinePlayer(player) != null) {
+            if (getOnlinePlayers().contains((Player)player)) {
+                forceTeleport((Player) player, manager.getLocation());
+            } else {
+                sendPlayerNotInGame(manager);
+            }
+        }else{
+            sendPlayerNotOnline(manager);
+        }
+    }
+
     public void teleportToWarp(Player player) {
         player.teleport(getWarp(), TeleportCause_FORCE);
     }
@@ -426,5 +439,13 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
 
     public List<Player> getHiddenPlayers() {
         return hiddenPlayers;
+    }
+
+    private void sendPlayerNotInGame(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t tp this player, he is not part of your game.");
+    }
+
+    private void sendPlayerNotOnline(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t tp this player, he is not online.");
     }
 }

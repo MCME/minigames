@@ -59,8 +59,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private final Map<Player,Conversation> playersInRound = new HashMap<>();
 
-    private Player manager;
-
     public GeoGuessrGame(Player manager, String name) {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
 
@@ -72,7 +70,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         sendReminder(manager);
         UUID uuid = manager.getWorld().getUID();
         warp_list = getXWarps(uuid);
-        this.manager = manager;
     }
 
     public void setArea(GeoGuessrAreas area){
@@ -115,8 +112,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             return area_warps;
         }
         return  warp_list;
-
-
     }
 
     public String[][] getXWarps(UUID uuid){
@@ -183,7 +178,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     public void sendRound(){
             if (row == -1) {
-                PluginData.getMessageUtil().sendInfoMessage(this.manager,"There are no more rounds. Please announce the winners, if not already done.");
+                Player manager = Bukkit.getPlayer(getManager().getUniqueId());
+                PluginData.getMessageUtil().sendInfoMessage(manager,"There are no more rounds. Please announce the winners, if not already done.");
             } else {
                 this.started = true;
                 if (this.radius <= 0) {
@@ -244,8 +240,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             x = x + x_temp;
             z = z + z_temp;
         }
+        Location location_temp = new Location(player.getPlayer().getWorld(), x, y, z);
+        y = player.getWorld().getHighestBlockYAt(location_temp);
+        y++;
         Location location = new Location(player.getPlayer().getWorld(), x, y, z);
-        player.teleport(location);
+        forceTeleport(player,location);
     }
 
     public void hidePlayer(Player player){
@@ -403,7 +402,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     private void sendReminder(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the number of rounds [/game setrounds x] . Default is 5.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }

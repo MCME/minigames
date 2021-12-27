@@ -84,6 +84,9 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("round", new GeoGameRound(Permissions.MANAGER));
         addCommandHandler("setrounds", new GeoGameSetRounds(Permissions.MANAGER));
         addCommandHandler("setarea", new GeoGameSetArea(Permissions.MANAGER));
+        addCommandHandler("tpstart", new RaceGameStartTP(Permissions.MANAGER));
+        addCommandHandler("tpcp",new RaceGameTPCheckpoint(Permissions.USER));
+        addCommandHandler("tphere",new HaSGameTPHere(Permissions.MANAGER));
     }
     
     @Override

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class GeoGameSetRounds extends AbstractGameCommand{
 
     public GeoGameSetRounds(String... permissionNodes){
-        super(0,true,permissionNodes);
+        super(1,true,permissionNodes);
         setShortDescription("Sets the number of rounds.");
         setUsageDescription("Sets the number of rounds. Default is 5 ");
     }

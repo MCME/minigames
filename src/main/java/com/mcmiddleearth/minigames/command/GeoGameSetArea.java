@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class GeoGameSetArea extends AbstractGameCommand{
 
     public GeoGameSetArea(String... permissionNodes){
-        super(0,true,permissionNodes);
+        super(1,true,permissionNodes);
         setShortDescription("Sets a certain game area");
         setUsageDescription("sets a certain game area. Default is all.");
     }
