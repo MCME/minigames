@@ -6,6 +6,11 @@ import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class RaceGameTPCheckpoint extends AbstractGameCommand{
 
     public RaceGameTPCheckpoint(String... permissionNodes){
@@ -17,7 +22,7 @@ public class RaceGameTPCheckpoint extends AbstractGameCommand{
     @Override
     protected void execute(CommandSender cs, String... args) {
         AbstractGame game = getGame((Player) cs);
-        if(game != null && isManager((Player) cs, game) && isCorrectGameType((Player) cs, game, GameType.RACE)) {
+        if(game != null && game.isInGame((Player) cs) && isCorrectGameType((Player) cs, game, GameType.RACE)) {
             RaceGame racegame = (RaceGame) game;
             racegame.tp_Save((Player)cs);
         }

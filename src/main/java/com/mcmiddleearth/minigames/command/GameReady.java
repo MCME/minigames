@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.minigames.game.GolfGame;
 import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
@@ -56,6 +57,10 @@ public class GameReady extends AbstractGameCommand{
                         sendNotEnoughHolesMessage(cs);
                         return;
                     }
+                }
+                if(game instanceof GeoGuessrGame){
+                    GeoGuessrGame geogame = (GeoGuessrGame) game;
+                    geogame.getXWarps();
                 }
                 game.announceGame();
             }

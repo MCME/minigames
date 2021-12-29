@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class GameDeny extends AbstractGameCommand{
     public GameDeny(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Denies various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.");
+        setUsageDescription(" flight|teleport|join|warp|save|collision: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.'save' denies /game tpcp in races.");
     }
     
     @Override
@@ -50,6 +51,15 @@ public class GameDeny extends AbstractGameCommand{
                 game.setCollision(false);
                 sendCollisionMessage(cs);
             }
+            else if(args[0].equalsIgnoreCase("save")){
+                if(game instanceof RaceGame){
+                    RaceGame racegame = (RaceGame) game;
+                    racegame.setSave(false);
+                    sendSaveMessage(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -78,7 +88,14 @@ public class GameDeny extends AbstractGameCommand{
         PluginData.getMessageUtil().sendInfoMessage(cs, "You denied player collision in this game.");
     }
 
+    private void sendSaveMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You denied player save in this game.");
+    }
+
     private void sendInvalidArgumentMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Invalid Argument.");
+    }
+    private void sendNotPossibleMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "This is only for races.");
     }
 }

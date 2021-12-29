@@ -20,6 +20,8 @@ import java.util.*;
 
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 
 import static com.mcmiddleearth.minigames.data.PluginData.getGame;
@@ -40,8 +42,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private boolean started = false;
 
     private final List<String> guidebook = new ArrayList<>();
-
     public final List<Player> hiddenPlayer = new ArrayList<>();
+    private final List<UUID> leaveMessaged = new ArrayList<>();
 
     private Location warp;
 
@@ -54,10 +56,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private int row = roundNumber - 1;
 
     private final GeoGuessrAreas defaultArea = GeoGuessrAreas.All;
-
     private GeoGuessrAreas area = defaultArea;
 
     private final Map<Player,Conversation> playersInRound = new HashMap<>();
+
+    private final UUID uuid;
 
     public GeoGuessrGame(Player manager, String name) {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
@@ -68,8 +71,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         setGm2Forced(true);
         setCollision(true);
         sendReminder(manager);
-        UUID uuid = manager.getWorld().getUID();
-        warp_list = getXWarps(uuid);
+        uuid = manager.getWorld().getUID();
     }
 
     public void setArea(GeoGuessrAreas area){
@@ -85,23 +87,29 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public String[][] getWarpList(UUID uuid) {
 
         GeoGuessrWarps geoGuessrWarps = new GeoGuessrWarps();
-        //For tests
-        //return geoGuessrWarps.getWarps_test();
-
-        warp_list = geoGuessrWarps.getWarps(uuid);
+        String[][] warp_list = geoGuessrWarps.getWarps(uuid);
         geoGuessrWarps.disconnect();
-
+        //String[][] warp_list = geoGuessrWarps.getWarps_test();
         int warp_count = 0;
         if(area != GeoGuessrAreas.All) {
+            int x = 0;
+            int z = 0;
             for (int i = 0; i < warp_list.length; i++){
-                if (area.x1() <= Integer.parseInt(warp_list[i][1]) && area.z1() <= Integer.parseInt(warp_list[i][3]) && area.x2() >= Integer.parseInt(warp_list[i][1]) && area.z2() >= Integer.parseInt(warp_list[i][3])) {
+                x = Integer.parseInt(warp_list[i][1]);
+                z = Integer.parseInt(warp_list[i][3]);
+                if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
                     warp_count++;
                 }
+            }
+            if(warp_count < 5){
+                setRoundNumber(warp_count);
             }
             String[][] area_warps = new String[warp_count][4];
             int j=0;
             for (int i = 0; i < warp_list.length; i++){
-                if (area.x1() <= Integer.parseInt(warp_list[i][1]) && area.z1() <= Integer.parseInt(warp_list[i][3]) && area.x2() >= Integer.parseInt(warp_list[i][1]) && area.z2() >= Integer.parseInt(warp_list[i][3])) {
+                x = Integer.parseInt(warp_list[i][1]);
+                z = Integer.parseInt(warp_list[i][3]);
+                if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
                     area_warps[j][0] = warp_list[i][0];
                     area_warps[j][1] = warp_list[i][1];
                     area_warps[j][2] = warp_list[i][2];
@@ -114,10 +122,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         return  warp_list;
     }
 
-    public String[][] getXWarps(UUID uuid){
-
+    public void getXWarps(){
         String[][] warp_list = getWarpList(uuid);
-        String[][] x_warps = new String[5][4];
+        String[][] x_warps = new String[roundNumber][4];
         int warp = 0;
         int i = 0;
         List<Integer> warp_rows = new ArrayList<>();
@@ -135,7 +142,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
                 i++;
             }
         }while(i <= row);
-        return x_warps;
+        this.warp_list = x_warps;
     }
 
     @Override
@@ -263,7 +270,74 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void playerMove(PlayerMoveEvent event) {
-        super.playerMove(event);
+        super.playerMove(event);   //square instead of Circle radius is half the side length, no checking for y because of the random TP inside there
+        /*
+        if(started) {
+            Location to = event.getTo();
+            if (!to.getWorld().equals(getWarp().getWorld())) {
+                event.getPlayer().teleport(getWarp(), TeleportCause_FORCE);
+                PluginData.getMessageUtil().sendErrorMessage(event.getPlayer(), "You can't go to another world while in this game.");
+                return;
+            }
+            Location from = event.getFrom();
+            Location warp = getWarp();
+            if ((to.getX() > (warp.getX() + allowedRadius(event.getPlayer())) || to.getZ() > (warp.getZ() + allowedRadius(event.getPlayer()))) || (to.getX() < (warp.getX() - allowedRadius(event.getPlayer())) || to.getZ() < (warp.getZ() - allowedRadius(event.getPlayer())))) {
+
+                if(!leaveMessaged.contains(event.getPlayer().getUniqueId())) {
+                    sendLeaveNotAllowed(event.getPlayer());
+                    final UUID uuid = event.getPlayer().getUniqueId();
+                    leaveMessaged.add(uuid);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            leaveMessaged.remove(uuid);
+                        }
+                    }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 200);
+                }
+                Vector vel = to.toVector().subtract(event.getFrom().toVector());
+                Vector radial = event.getPlayer().getLocation().toVector().subtract(getWarp().toVector());
+                Vector tangential = new Vector(radial.getZ(),radial.getY(), -radial.getX());
+                tangential = tangential.multiply(1/tangential.length());
+                double dot = tangential.dot(vel);
+                tangential = tangential.multiply(tangential.dot(vel));
+                Location newTo = new Location(from.getWorld(),
+                        from.getX()+tangential.getX(),
+                        from.getY()+tangential.getY(),
+                        from.getZ()+tangential.getZ(),
+                        to.getYaw(), to.getPitch());
+                Vector radialOld = radial.clone();
+                Vector radialNorm = radial.multiply(1/radial.length()).clone();
+                if((newTo.getX() > (warp.getX() + allowedRadius(event.getPlayer())) || newTo.getZ() > (warp.getZ() + allowedRadius(event.getPlayer()))) || (newTo.getX() < (warp.getX() - allowedRadius(event.getPlayer())) || newTo.getZ() < (warp.getZ() - allowedRadius(event.getPlayer())))) {
+                    radial = radial.multiply(allowedRadius(event.getPlayer()));
+                    radial = radial.subtract(radialNorm.multiply(0.01));
+                    radial = radial.subtract(radialOld);
+                    newTo = newTo.add(radial);
+                }
+                final Player play = event.getPlayer();
+                if(!newTo.getBlock().isEmpty()) {
+                    newTo.setY(newTo.getBlockY()+1);
+                }
+                final Location loc = newTo.clone();
+                radialNorm = radialNorm.multiply(-0.4);
+                //radialNorm.setY(0);
+                if(!loc.clone().add(radialNorm.clone().multiply(3)).getBlock().isEmpty()) {
+                    radialNorm.setY(0);
+                }
+                if(!loc.clone().add(radialNorm.clone().multiply(3)).getBlock().isEmpty()) {
+                    radialNorm = new Vector(0,0,0);
+                }
+                final Vector push = radialNorm;
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        play.teleport(loc, TeleportCause_FORCE);
+                        play.setVelocity(push);
+                    }
+                }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 1);
+            }
+        }
+
+         */
     }
 
     @Override
@@ -405,6 +479,10 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player,"forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
+    }
+
+    private void sendLeaveNotAllowed(Player player) {
+        PluginData.getMessageUtil().sendErrorMessage(player, "You are not allowed to leave game area.");
     }
 
 }

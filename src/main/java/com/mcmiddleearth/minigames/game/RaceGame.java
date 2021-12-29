@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -43,6 +45,8 @@ public class RaceGame extends AbstractGame {
     private Map<UUID,Location> tp_save = new HashMap<>();
 
     private List<Player> save = new ArrayList<>();
+
+    private boolean save_allowed = true;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -51,6 +55,10 @@ public class RaceGame extends AbstractGame {
         setGm2Forced(true);
         setCollision(false);
         ((RaceGameScoreboard)getBoard()).init(this);
+    }
+
+    public void setSave(boolean allowed){
+        save_allowed = allowed;
     }
 
     @Override
@@ -73,6 +81,7 @@ public class RaceGame extends AbstractGame {
                     TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
                                              ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
                 }
+                event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
                 int checkId = checkpointManager.getId(check);
@@ -87,15 +96,26 @@ public class RaceGame extends AbstractGame {
                     }
                     ((RaceGameScoreboard)getBoard()).
                                 chechpointReached(event.getPlayer().getName(), checkId);
-                    //Check what happens when last checkpoint is reached (excluding finish)
+
+                    //Check what happens when last checkpoint is reached
                     LinkedList<Checkpoint> length_check = checkpointManager.getCheckpoints();
-                    if(length_check.size() < checkId) {
+                    if(length_check.size() > checkId) {
                         Checkpoint check_compass = checkpointManager.getCheckpoint(checkId + 1);
                         event.getPlayer().setCompassTarget(check_compass.getLocation());
+                    } else {
+                        Checkpoint finish = checkpointManager.getFinish();
+                        event.getPlayer().setCompassTarget(finish.getLocation());
                     }
                 }
             }
+        }else{   //That people don´t run away before the start
+            super.playerMove(event);
         }
+    }
+
+    @Override
+    public int allowedRadius(Player player){
+        return 10;
     }
 
     private String getPlace() {
@@ -116,11 +136,30 @@ public class RaceGame extends AbstractGame {
         super.addPlayer(player);
         forceTeleport(player,getWarp());
         ((RaceGameScoreboard) getBoard()).addPlayer(player.getName());
-        tp_save.put(player.getUniqueId(),getWarp());
-        save.add(player);
+        if(!save.contains(player)) {   //That it doesnt bug when a Player joins, leaves and joins again
+            tp_save.put(player.getUniqueId(),getWarp());
+            save.add(player);
+        }
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
+
+
     }
-    
+
+    @Override
+    public void removePlayer(OfflinePlayer player) {
+        super.removePlayer(player);
+        if(player.isOnline()){
+            Player player_on = (Player) player;
+            player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
+        }
+        if(save.contains((Player) player)){
+            tp_save.remove((Player) player);
+            boolean remove = save.remove((Player) player);
+        }
+
+
+    }
+
     @Override
     public void end(Player player) {
         checkpointManager.deleteCheckpoints();
@@ -146,6 +185,9 @@ public class RaceGame extends AbstractGame {
     public void steady() {
         steady = true;
         started = true;
+        for(Player player: getOnlinePlayers()){
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+        }
         resetNextCheckpoints();
         cageLocations = getCageLocations(checkpointManager.getStart());
         cagePlayer(true);
@@ -197,21 +239,29 @@ public class RaceGame extends AbstractGame {
     }
 
     public void TpToStart(Player player){
-        Checkpoint start = checkpointManager.getStart();
-        Location teleportLoc = start.getLocation();
-        forceTeleport(player,teleportLoc);
+        if (!started) {
+            Checkpoint start = checkpointManager.getStart();
+            Location teleportLoc = start.getLocation();
+            forceTeleport(player,teleportLoc);
+        }
     }
 
     public void tp_Save(Player player) {
-        if (save.contains(player)) {
-            if (tp_save.containsKey(player.getUniqueId())) {
-                forceTeleport(player, tp_save.get(player.getUniqueId()));
-                save.remove(player);
+        if (save_allowed) {
+            if (save.contains(player)) {
+                if (tp_save.containsKey(player.getUniqueId())) {
+                    forceTeleport(player, tp_save.get(player.getUniqueId()));
+                    save.remove(player);
+                }
+            } else {
+                sendNoSaveLeft(player);
             }
-        }else{
-            sendNoSaveLeft(player);
+        } else {
+            sendNotAllowed(player);
         }
     }
+
+
 
     private void cagePlayer(boolean cage) {
         Checkpoint start = checkpointManager.getStart();
@@ -252,6 +302,17 @@ public class RaceGame extends AbstractGame {
                 if(!listIterator.hasNext()) {
                     listIterator=checkList.listIterator();
                 }
+
+
+                if(checkpointManager.getCheckpoints().size() < 1){
+                    Checkpoint finish = checkpointManager.getFinish();
+                    player.setCompassTarget(finish.getLocation());
+                }else{
+                    Checkpoint first = checkpointManager.getCheckpoint(1);
+                    player.setCompassTarget(first.getLocation());
+                }
+
+
             }
         }
     }
@@ -357,6 +418,10 @@ public class RaceGame extends AbstractGame {
     }
 
     private void sendNoSaveLeft(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You don´t have a save left.");
+        PluginData.getMessageUtil().sendErrorMessage(player, "You don´t have a save left.");
+    }
+
+    private void sendNotAllowed(Player player) {
+        PluginData.getMessageUtil().sendErrorMessage(player, "This is not allowed.");
     }
 }

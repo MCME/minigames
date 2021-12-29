@@ -349,15 +349,23 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
-    public void teleportToManager(Player manager, OfflinePlayer player) {
-        if (PlayerUtil.getOnlinePlayer(player) != null) {
-            if (getOnlinePlayers().contains((Player)player)) {
-                forceTeleport((Player) player, manager.getLocation());
+    public boolean teleportToManager(Player manager, OfflinePlayer player) {
+        if(player == seeker ) {
+            if (PlayerUtil.getOnlinePlayer(player) != null) {
+                if (getOnlinePlayers().contains((Player) player)) {
+                    forceTeleport((Player) player, manager.getLocation());
+                    return true;
+                } else {
+                    sendPlayerNotInGame(manager);
+                    return false;
+                }
             } else {
-                sendPlayerNotInGame(manager);
+                sendPlayerNotOnline(manager);
+                return false;
             }
         }else{
-            sendPlayerNotOnline(manager);
+            sendTPOnlySeeker(manager);
+            return false;
         }
     }
 
@@ -442,10 +450,14 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     }
 
     private void sendPlayerNotInGame(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t tp this player, he is not part of your game.");
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not part of your game.");
     }
 
     private void sendPlayerNotOnline(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t tp this player, he is not online.");
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
+    }
+
+    private void sendTPOnlySeeker(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can only teleport a stuck seeker.");
     }
 }

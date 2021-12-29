@@ -8,12 +8,17 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class HaSGameTPHere extends AbstractGameCommand {
 
     public HaSGameTPHere(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription("Teleports player to user");
-        setUsageDescription("/game tphere <player>  Will tp the player to the manager, if he gets stuck");
+        setUsageDescription("/game tphere <player> . Will tp the player to the manager, if he gets stuck");
     }
 
     @Override
@@ -25,8 +30,9 @@ public class HaSGameTPHere extends AbstractGameCommand {
             if (player == null) {
                 sendPlayerNotFoundErrorMessage(cs);
             } else {
-                hidegame.teleportToManager((Player) cs, player);
-                sendTPdPlayer(cs, player);
+                if(hidegame.teleportToManager((Player) cs, player)){
+                    sendTPdPlayer(cs, player);
+                }
             }
         }
     }
@@ -36,6 +42,6 @@ public class HaSGameTPHere extends AbstractGameCommand {
     }
 
     private void sendTPdPlayer(CommandSender cs, OfflinePlayer player) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "You tp´d" + player.getName() + "to you.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You tp´d " + player.getName() + " to you.");
     }
 }

@@ -24,10 +24,10 @@ public class GameWinner extends AbstractGameCommand{
     protected void execute(CommandSender cs, String... agrs){
         AbstractGame game = getGame((Player)cs);
         if(game != null && isManager((Player)cs,game)){
-            if(isCorrectGameType((Player) cs,game, GameType.GEO_GUESSR)){
+            if(game instanceof GeoGuessrGame){
                 GeoGuessrGame geogame = (GeoGuessrGame) game;
                 geogame.GeoGameWinner((Player) cs);
-            }else if(isCorrectGameType((Player) cs,game, GameType.LORE_QUIZ)){
+            }else if(game instanceof QuizGame){
                 QuizGame quizgame = (QuizGame) game;
                 quizgame.QuizGameWinner((Player) cs);
             }

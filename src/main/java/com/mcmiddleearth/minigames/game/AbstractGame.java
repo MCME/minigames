@@ -81,7 +81,7 @@ public abstract class AbstractGame {
         this.board = board;
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
-        team.setCanSeeFriendlyInvisibles(false);
+        team.setCanSeeFriendlyInvisibles(true);
         if(manager!=null) {
             if(type != GameType.GEO_GUESSR) {
                 warp = manager.getLocation();
