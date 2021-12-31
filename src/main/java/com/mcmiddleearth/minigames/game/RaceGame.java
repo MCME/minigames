@@ -47,6 +47,8 @@ public class RaceGame extends AbstractGame {
     private List<Player> save = new ArrayList<>();
 
     private boolean save_allowed = true;
+
+    private boolean invisibile_allowed = true;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -60,6 +62,8 @@ public class RaceGame extends AbstractGame {
     public void setSave(boolean allowed){
         save_allowed = allowed;
     }
+
+    public void setInvisbile(boolean allowed){ invisibile_allowed = allowed;}
 
     @Override
     public void playerMove(PlayerMoveEvent event) {
@@ -81,7 +85,9 @@ public class RaceGame extends AbstractGame {
                     TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
                                              ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
                 }
-                event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                if(invisibile_allowed) {
+                    event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                }
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
                 int checkId = checkpointManager.getId(check);
@@ -148,9 +154,11 @@ public class RaceGame extends AbstractGame {
     @Override
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
-        if(player.isOnline()){
-            Player player_on = (Player) player;
-            player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
+        if(invisibile_allowed) {
+            if (player.isOnline()) {
+                Player player_on = (Player) player;
+                player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
+            }
         }
         if(save.contains((Player) player)){
             tp_save.remove((Player) player);
@@ -185,8 +193,10 @@ public class RaceGame extends AbstractGame {
     public void steady() {
         steady = true;
         started = true;
-        for(Player player: getOnlinePlayers()){
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+        if(invisibile_allowed) {
+            for (Player player : getOnlinePlayers()) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+            }
         }
         resetNextCheckpoints();
         cageLocations = getCageLocations(checkpointManager.getStart());
