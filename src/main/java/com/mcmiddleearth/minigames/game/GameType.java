@@ -17,7 +17,8 @@ public enum GameType{
     RACE            ("Race"),
     LORE_QUIZ       ("Quiz"),
     GOLF            ("Golf"),
-    PVP             ("PvP");
+    PVP             ("PvP"),
+    GEO_GUESSR      ("Geo");
 
     private final String name;
 
@@ -42,6 +43,7 @@ public enum GameType{
             case LORE_QUIZ: return "Lore Quiz";
             case GOLF: return "Golf";
             case PVP: return "PvP";
+            case GEO_GUESSR: return "GeoGuessr";
         }
         return "Illegal type";
     }
@@ -54,6 +56,7 @@ public enum GameType{
                 case LORE_QUIZ: return Class.forName("com.mcmiddleearth.minigames.game.QuizGame");
                 case GOLF: return Class.forName("com.mcmiddleearth.minigames.game.GolfGame");
                 case PVP: return Class.forName("com.mcmiddleearth.minigames.game.PvPGame");
+                case GEO_GUESSR: return Class.forName("com.mcmiddleearth.minigames.game.GeoGuessrGame");
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GameType.class.getName()).log(Level.SEVERE, null, ex);

@@ -7,14 +7,18 @@ package com.mcmiddleearth.minigames.game;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.mcmiddleearth.guidebook.command.GuidebookOff;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
+import com.mcmiddleearth.plugins.dynamicbooks.DynamicBooksPlugin;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
@@ -23,7 +27,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+import com.mcmiddleearth.plugins.dynamicbooks.manager.BookManager;
+import com.mcmiddleearth.guidebook.command.GuidebookOff;
 
+import java.awt.print.Book;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -74,8 +81,11 @@ public abstract class AbstractGame {
         this.board = board;
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
+        team.setCanSeeFriendlyInvisibles(true);
         if(manager!=null) {
-            warp = manager.getLocation();
+            if(type != GameType.GEO_GUESSR) {
+                warp = manager.getLocation();
+            }
             manager.setScoreboard(getBoard().getScoreboard());
             BukkitRunnable cleanupTask = new BukkitRunnable() {
                 @Override
@@ -155,6 +165,7 @@ public abstract class AbstractGame {
     public void addPlayer(Player player) {
         if(!flightAllowed) {
             player.setFlying(false);
+            player.setAllowFlight(false);
         }
         if(gm2Forced) {
             playerPreviousMode.put(player.getUniqueId(), player.getGameMode());
@@ -221,6 +232,7 @@ public abstract class AbstractGame {
         getBoard().incrementPlayer();
         if(!flightAllowed) {
             event.getPlayer().setFlying(false);
+            event.getPlayer().setAllowFlight(false);
         }
     }
     
@@ -296,7 +308,9 @@ public abstract class AbstractGame {
             }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 1);
         }
     }
-    
+
+
+
     public void playerTeleport(PlayerTeleportEvent event) {
         if((!teleportAllowed && !event.getCause().equals(TeleportCause_FORCE))
                              && !event.getCause().equals(PlayerTeleportEvent.TeleportCause.UNKNOWN)) {
@@ -308,6 +322,7 @@ public abstract class AbstractGame {
     public void playerToggleFlight(PlayerToggleFlightEvent event) {
         if(!flightAllowed) {
             event.getPlayer().setFlying(false);
+            event.getPlayer().setAllowFlight(false);
             event.setCancelled(true);
             sendFlightNotAllowed(event.getPlayer());
         }
@@ -359,6 +374,7 @@ public abstract class AbstractGame {
         if(this.flightAllowed && !allowed)  {
             for(Player player : getOnlinePlayers()) {
                 player.setFlying(false);
+                player.setAllowFlight(false);
             }
         }
         flightAllowed = allowed;

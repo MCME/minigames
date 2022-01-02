@@ -19,7 +19,7 @@ public class GameCreate extends AbstractGameCommand{
     public GameCreate(String... permissionNodes) {
         super(2, true, permissionNodes);
         setShortDescription(": Creates a new mini game.");
-        setUsageDescription(" quiz|race|hide|golf|pvp <gamename>: Creates a lore quiz or a race or a hide and seek or golf game with name <gamename>. The location of the player issuing the command becomes the warp of the game.");
+        setUsageDescription(" quiz|race|hide|golf|pvp|geo <gamename>: Creates a lore quiz or a race or a hide and seek or golf or a geoguessr game with name <gamename>. The location of the player issuing the command becomes the warp of the game.");
     }
     
     @Override
@@ -61,6 +61,15 @@ public class GameCreate extends AbstractGameCommand{
                     game = new PvPGame((Player) cs, args[1]);
                     sendPvPGameCreateMessage(cs);
                     break;
+                case GEO_GUESSR:
+                    sendNotEnabled((Player)cs);
+                    return;
+                    /*
+                    PluginData.stopSpectating((Player)cs);
+                    game = new GeoGuessrGame((Player) cs, args[1]);
+                    sendGeoGuessrGameCreateMessage(cs);
+                    break;
+                     */
                 default:
                     sendInvalidGameTypeErrorMessage(cs);
                     return;
@@ -70,6 +79,10 @@ public class GameCreate extends AbstractGameCommand{
             }
             PluginData.addGame(game);
         }
+    }
+
+    private void sendNotEnabled(Player player) {
+        PluginData.getMessageUtil().sendErrorMessage(player, "This game is not yet enabled.");
     }
     
     public void sendQuizGameCreateMessage(CommandSender cs) {
@@ -94,5 +107,9 @@ public class GameCreate extends AbstractGameCommand{
 
     private void sendPvPGameCreateMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new PvP game.");
+    }
+
+    private void sendGeoGuessrGameCreateMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new GeoGuessr game.");
     }
  }
