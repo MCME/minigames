@@ -90,6 +90,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 hidePlayer(player);
             }
         }
+        for(Player player:hiddenPlayers) {
+            player.setSneaking(true);
+        }
         ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
         sendStartHideMessage();
         Location loc = getWarp().clone();
@@ -107,9 +110,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         this.hiding = false;
         this.seeking = true;
         ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime);
-        for(Player player:hiddenPlayers) {
-            player.setSneaking(true);
-        }
+
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
             @Override
@@ -348,6 +349,26 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
+    public boolean teleportToManager(Player manager, OfflinePlayer player) {
+        if(player == seeker ) {
+            if (PlayerUtil.getOnlinePlayer(player) != null) {
+                if (getOnlinePlayers().contains((Player) player)) {
+                    forceTeleport((Player) player, manager.getLocation());
+                    return true;
+                } else {
+                    sendPlayerNotInGame(manager);
+                    return false;
+                }
+            } else {
+                sendPlayerNotOnline(manager);
+                return false;
+            }
+        }else{
+            sendTPOnlySeeker(manager);
+            return false;
+        }
+    }
+
     public void teleportToWarp(Player player) {
         player.teleport(getWarp(), TeleportCause_FORCE);
     }
@@ -426,5 +447,17 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
 
     public List<Player> getHiddenPlayers() {
         return hiddenPlayers;
+    }
+
+    private void sendPlayerNotInGame(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not part of your game.");
+    }
+
+    private void sendPlayerNotOnline(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
+    }
+
+    private void sendTPOnlySeeker(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You can only teleport a stuck seeker.");
     }
 }

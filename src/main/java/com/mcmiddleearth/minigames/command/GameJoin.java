@@ -58,7 +58,7 @@ public class GameJoin extends AbstractGameCommand{
     
     public void sendPlayerJoinMessage(CommandSender cs, AbstractGame game) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You joined the minigame "+ game.getName()
-                                   +". Please use the game chat with "+PluginData.getMessageUtil().STRESSED+"/gc <message>");
+                                   +". For conversations please use the game chat with "+PluginData.getMessageUtil().STRESSED+"/gc <message>");
         GameChatUtil.sendAllInfoMessage(cs, game, cs.getName()+" joined the game.");
     }
 

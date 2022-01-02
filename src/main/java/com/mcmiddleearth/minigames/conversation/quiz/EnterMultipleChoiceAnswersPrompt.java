@@ -33,7 +33,7 @@ class EnterMultipleChoiceAnswersPrompt extends ValidatingPrompt {
     public String getPromptText(ConversationContext cc) {
         cc.setSessionData("input", true);
         return ChatColor.DARK_GREEN+"[Hint] Type in the letters of the correct answers. \n"
-                   +ChatColor.GREEN+ChatColor.BOLD+"More than one"
+                   +ChatColor.LIGHT_PURPLE+ChatColor.BOLD+"More than one"    //Will help identify Multiple Choice Questions
                    +ChatColor.RESET+ChatColor.DARK_GREEN+" answer may be correct.";
     }
 

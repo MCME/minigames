@@ -8,6 +8,7 @@ package com.mcmiddleearth.minigames.command;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.HideAndSeekGame;
+import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -20,7 +21,7 @@ public class GameAllow extends AbstractGameCommand{
     public GameAllow(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Allows various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|spectate|collision: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.");
+        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.");
     }
     
     @Override
@@ -55,6 +56,24 @@ public class GameAllow extends AbstractGameCommand{
                 game.setCollision(true);
                 sendCollisionMessage(cs);
             }
+            else if(args[0].equalsIgnoreCase("save")) {
+                if(game instanceof RaceGame){
+                    RaceGame racegame = (RaceGame) game;
+                    racegame.setSave(true);
+                    sendSaveMessage(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
+            else if(args[0].equalsIgnoreCase("invisible")){
+                if(game instanceof RaceGame){
+                    RaceGame racegame = (RaceGame) game;
+                    racegame.setInvisbile(true);
+                    sendInvisibleMessage(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -82,16 +101,27 @@ public class GameAllow extends AbstractGameCommand{
     }
 
     private void sendCollisionMessage(CommandSender cs) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player collision in his game.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player collision in this game.");
     }
 
     private void sendInvalidArgumentMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Invalid Argument.");
     }
 
+    private void sendSaveMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player save in this game.");
+    }
+
+    private void sendInvisibleMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You allowed player to be invisible in this race.");
+    }
+
     private void sentNotPossibleMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "It is not possible to allow teleport in a "
                                          +PluginData.getMessageUtil().ERROR_STRESSED+"Hide and Seek"
                                          +PluginData.getMessageUtil().ERROR+" game.");
+    }
+    private void sendNotPossibleMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "This is only for races.");
     }
 }
