@@ -62,10 +62,14 @@ public class GameCreate extends AbstractGameCommand{
                     sendPvPGameCreateMessage(cs);
                     break;
                 case GEO_GUESSR:
+                    sendNotEnabled((Player)cs);
+                    return;
+                    /*
                     PluginData.stopSpectating((Player)cs);
                     game = new GeoGuessrGame((Player) cs, args[1]);
                     sendGeoGuessrGameCreateMessage(cs);
                     break;
+                     */
                 default:
                     sendInvalidGameTypeErrorMessage(cs);
                     return;
@@ -75,6 +79,10 @@ public class GameCreate extends AbstractGameCommand{
             }
             PluginData.addGame(game);
         }
+    }
+
+    private void sendNotEnabled(Player player) {
+        PluginData.getMessageUtil().sendErrorMessage(player, "This game is not yet enabled.");
     }
     
     public void sendQuizGameCreateMessage(CommandSender cs) {
