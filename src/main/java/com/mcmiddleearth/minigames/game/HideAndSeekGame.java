@@ -12,6 +12,7 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.DynmapUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
+import com.sun.tools.jdi.Packet;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -32,6 +33,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -91,7 +93,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             }
         }
         for(Player player:hiddenPlayers) {
-            player.setSneaking(true);
+            //player.setSneaking(true);
         }
         ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
         sendStartHideMessage();
@@ -151,7 +153,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     
     private void unhidePlayer(Player player) {
         hiddenPlayers.remove(player);
-        player.setSneaking(false);
+        //String name = "[Found] " + player.getName();
+        //player.setDisplayName(name);
+        //player.setSneaking(false);
         DynmapUtil.show(player);
     }
     
@@ -231,7 +235,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         if(seeking) {
             if(!PlayerUtil.isSame(event.getPlayer(),seeker)) {
-                event.getPlayer().setSneaking(true);
+                //event.getPlayer().setSneaking(true);
             } else {
                 Player[] myList = hiddenPlayers.toArray(new Player[0]);
                 for(Player hidden : myList) {
@@ -350,21 +354,16 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     }
 
     public boolean teleportToManager(Player manager, OfflinePlayer player) {
-        if(player == seeker ) {
-            if (PlayerUtil.getOnlinePlayer(player) != null) {
-                if (getOnlinePlayers().contains((Player) player)) {
-                    forceTeleport((Player) player, manager.getLocation());
-                    return true;
-                } else {
-                    sendPlayerNotInGame(manager);
-                    return false;
-                }
+        if (PlayerUtil.getOnlinePlayer(player) != null) {
+            if (getOnlinePlayers().contains((Player) player)) {
+                forceTeleport((Player) player, manager.getLocation());
+                return true;
             } else {
-                sendPlayerNotOnline(manager);
+                sendPlayerNotInGame(manager);
                 return false;
             }
-        }else{
-            sendTPOnlySeeker(manager);
+        } else {
+            sendPlayerNotOnline(manager);
             return false;
         }
     }
@@ -421,8 +420,26 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     }
 
     private void sendPlayerFoundMessage(Player hidden) {
+        Player seeker = (Player) this.seeker;
         PluginData.getMessageUtil().sendInfoMessage(hidden, seeker.getName() +" found you.");
-        PluginData.getMessageUtil().sendInfoMessage((Player) seeker, "You found "+ hidden.getName() + ".");
+        PluginData.getMessageUtil().sendInfoMessage(seeker, "You found "+ hidden.getName() + ".");
+        hidden.playEffect(hidden.getLocation(),Effect.BLAZE_SHOOT,0);
+        seeker.playEffect(seeker.getLocation(),Effect.CLICK2,0);
+    }
+
+    public void sendHiddenList(Player player){
+        List<String> hiddenPlayers = new ArrayList<>();
+        for(Player hidden : this.hiddenPlayers){
+            hiddenPlayers.add(hidden.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(player, "These are the still hidden players:");
+        PluginData.getMessageUtil().sendInfoMessage(player, hiddenPlayers.toString());
+    }
+
+    public void setGlow(Player manager){
+        for(Player player: getOnlinePlayers()){
+            player.setGlowing(true);
+        }
     }
 
     public void setSeekTime(int seekTime) {
@@ -455,9 +472,5 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
 
     private void sendPlayerNotOnline(Player player) {
         PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
-    }
-
-    private void sendTPOnlySeeker(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You can only teleport a stuck seeker.");
     }
 }

@@ -87,6 +87,8 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("tpstart", new RaceGameStartTP(Permissions.MANAGER));
         addCommandHandler("tpcp",new RaceGameTPCheckpoint(Permissions.USER));
         addCommandHandler("tphere",new HaSGameTPHere(Permissions.MANAGER));
+        addCommandHandler("hiddenlist", new HaSHiddenList(Permissions.USER));
+        addCommandHandler("glow", new HaSGameGlow(Permissions.MANAGER));
     }
     
     @Override

@@ -86,6 +86,9 @@ public abstract class AbstractGame {
             if(type != GameType.GEO_GUESSR) {
                 warp = manager.getLocation();
             }
+            if(type == GameType.HIDE_AND_SEEK){
+                team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            }
             manager.setScoreboard(getBoard().getScoreboard());
             BukkitRunnable cleanupTask = new BukkitRunnable() {
                 @Override

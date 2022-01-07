@@ -16,6 +16,7 @@ import com.mcmiddleearth.pluginutil.StringUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.Conversation.ConversationState;
@@ -172,6 +173,7 @@ public class QuizGame extends AbstractGame {
                 if(player.isConversing()) {
                     PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
                 } else {
+                    player.playEffect(player.getLocation(), Effect.CLICK1,0);
                     Conversation newConvo = askQuestionFactory.start(player, this, question);
                     playersInQuestion.put(player,newConvo);
                 }
