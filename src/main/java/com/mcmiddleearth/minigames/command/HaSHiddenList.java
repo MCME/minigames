@@ -11,8 +11,8 @@ public class HaSHiddenList extends AbstractGameCommand{
     public HaSHiddenList(String... permissionNodes) {
         super(0, true, permissionNodes);
         cmdGroup = CmdGroup.HIDE_AND_SEEK;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("Shows all hidden Players.");
+        setUsageDescription("/game hiddenlist. Can give everyone in the game a list of all hidden players");
     }
 
     @Override
