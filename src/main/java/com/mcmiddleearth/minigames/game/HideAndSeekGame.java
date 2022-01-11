@@ -134,6 +134,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             if(hiddenPlayers.contains(player)) {
                 unhidePlayer(player);
             }
+            //player.setDisplayName(player.getName());
+            player.setGlowing(false);
             forceTeleport(player,getWarp());
         }
         this.seeking = false;
@@ -148,6 +150,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     
     private void hidePlayer(Player player) {
         hiddenPlayers.add(player);
+        //String name = "[Hidden] " + player.getName();
+        //player.setDisplayName(name);
         DynmapUtil.hide(player);
     }
     
