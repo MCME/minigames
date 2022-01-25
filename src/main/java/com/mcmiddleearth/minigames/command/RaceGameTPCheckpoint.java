@@ -15,6 +15,7 @@ public class RaceGameTPCheckpoint extends AbstractGameCommand{
 
     public RaceGameTPCheckpoint(String... permissionNodes){
         super(0,true,permissionNodes);
+        cmdGroup = CmdGroup.RACE;
         setShortDescription("Teleport to last checkpoint");
         setUsageDescription("Lets the user teleport to the last checkpoint, but only one time, like a last chance save.");
     }

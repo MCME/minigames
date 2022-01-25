@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.game.*;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -40,6 +41,9 @@ public class GameCreate extends AbstractGameCommand{
                 case HIDE_AND_SEEK:
                     PluginData.stopSpectating((Player)cs);
                     game = new HideAndSeekGame((Player) cs, args[1]);
+                    game.addPlayer((Player) cs);
+                    PluginData.setGameChat((Player) cs,true);
+                    sendPlayerJoinMessage(cs, game);
                     break;
                 case RACE:
                     PluginData.stopSpectating((Player)cs);
@@ -62,14 +66,10 @@ public class GameCreate extends AbstractGameCommand{
                     sendPvPGameCreateMessage(cs);
                     break;
                 case GEO_GUESSR:
-                    sendNotEnabled((Player)cs);
-                    return;
-                    /*
                     PluginData.stopSpectating((Player)cs);
                     game = new GeoGuessrGame((Player) cs, args[1]);
                     sendGeoGuessrGameCreateMessage(cs);
                     break;
-                     */
                 default:
                     sendInvalidGameTypeErrorMessage(cs);
                     return;
@@ -81,10 +81,12 @@ public class GameCreate extends AbstractGameCommand{
         }
     }
 
-    private void sendNotEnabled(Player player) {
-        PluginData.getMessageUtil().sendErrorMessage(player, "This game is not yet enabled.");
+    public void sendPlayerJoinMessage(CommandSender cs, AbstractGame game) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You joined the minigame "+ game.getName()
+                +". For conversations please use the game chat with "+PluginData.getMessageUtil().STRESSED+"/gc <message>");
+        GameChatUtil.sendAllInfoMessage(cs, game, cs.getName()+" joined the game.");
     }
-    
+
     public void sendQuizGameCreateMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new Lore Quiz game.");
     }

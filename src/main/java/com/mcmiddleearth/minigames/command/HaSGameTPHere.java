@@ -17,6 +17,7 @@ public class HaSGameTPHere extends AbstractGameCommand {
 
     public HaSGameTPHere(String... permissionNodes) {
         super(1, true, permissionNodes);
+        cmdGroup = CmdGroup.HIDE_AND_SEEK;
         setShortDescription("Teleports player to user");
         setUsageDescription("/game tphere <player> . Will tp the player to the manager, if he gets stuck");
     }

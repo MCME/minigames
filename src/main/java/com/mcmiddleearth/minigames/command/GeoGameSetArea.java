@@ -17,6 +17,7 @@ public class GeoGameSetArea extends AbstractGameCommand{
 
     public GeoGameSetArea(String... permissionNodes){
         super(1,true,permissionNodes);
+        cmdGroup = CmdGroup.GEO_GUESSR;
         setShortDescription("Sets a certain game area");
         setUsageDescription("sets a certain game area. Default is all.");
     }

@@ -105,9 +105,9 @@ public class GeoGuessrWarps {
     private void connect() {
         try {
             dbConnection = dataBase.getConnection(dbUser, dbPassword);
-            getWarp = dbConnection.prepareStatement("SELECT warp.name, warp.x, warp.y, warp.z FROM warp WHERE warp.type = 1 AND world.uuid = ?");
+            getWarp = dbConnection.prepareStatement("SELECT warp.name, warp.x, warp.y, warp.z FROM warp WHERE warp.type = 1 AND warp.world_id = ?");
             getWarp.setQueryTimeout(1);
-            getRows = dbConnection.prepareStatement("SELECT COUNT(warp.name) FROM warp WHERE warp.type = 1 AND world.uuid = ?");
+            getRows = dbConnection.prepareStatement("SELECT COUNT(warp.name) FROM warp WHERE warp.type = 1 AND warp.world_id = ?");
             getWarp.setQueryTimeout(1);
             connected = true;
         } catch (SQLException ex) {
@@ -120,8 +120,9 @@ public class GeoGuessrWarps {
         int i = 0;
         if (connected) {
             try {
-                getRows.setString(1, String.valueOf(uuid));
-                getWarp.setString(1, String.valueOf(uuid));
+                String str_uuid = "2";
+                getRows.setString(1, String.valueOf(str_uuid));
+                getWarp.setString(1, String.valueOf(str_uuid));
                 ResultSet count = getRows.executeQuery();
                 int rows = count.getInt("COUNT(warp.name)");
                 String[][] warps = new String[rows][4];

@@ -42,13 +42,16 @@ public class RaceGame extends AbstractGame {
     
     private final Map<UUID,Integer> nextCheckpoints = new HashMap<>();
 
+    private final Map<UUID,ItemStack> helmet_save = new HashMap<>();
+
     private Map<UUID,Location> tp_save = new HashMap<>();
 
     private List<Player> save = new ArrayList<>();
 
     private boolean save_allowed = true;
 
-    private boolean invisibile_allowed = true;
+    //Visibility default off because its still buggy for non donors
+    private boolean invisibile_allowed = false;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -67,8 +70,6 @@ public class RaceGame extends AbstractGame {
 
     @Override
     public void playerMove(PlayerMoveEvent event) {
-        //no super.playerMove call overrides limited game area in AbstractGame
-        
         if(started) {
             if(checkpointManager.getFinish().isCheckLocation(event.getPlayer().getLocation())
                     && getNextCheckpoint(event.getPlayer())==checkpointManager.getCheckpoints().size()+1) {
@@ -87,6 +88,10 @@ public class RaceGame extends AbstractGame {
                 }
                 if(invisibile_allowed) {
                     event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                    if(helmet_save.containsKey(event.getPlayer().getUniqueId())){
+                        event.getPlayer().getInventory().setHelmet(helmet_save.get(event.getPlayer().getUniqueId()));
+                        helmet_save.remove(event.getPlayer().getUniqueId());
+                    }
                 }
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
@@ -146,6 +151,14 @@ public class RaceGame extends AbstractGame {
             tp_save.put(player.getUniqueId(),getWarp());
             save.add(player);
         }
+
+        Material chestplate = player.getInventory().getChestplate().getType();
+        if(chestplate == Material.ELYTRA) {
+            player.getInventory().setHelmet(new ItemStack(Material.AIR));
+            player.getInventory().addItem(new ItemStack(chestplate));
+            sendElytraRemoved(player);
+        }
+
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
 
 
@@ -158,14 +171,16 @@ public class RaceGame extends AbstractGame {
             if (player.isOnline()) {
                 Player player_on = (Player) player;
                 player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
+                if(helmet_save.containsKey(player.getUniqueId())){
+                    ((Player) player).getInventory().setHelmet(helmet_save.get(player.getUniqueId()));
+                    helmet_save.remove(player.getUniqueId());
+                }
             }
         }
         if(save.contains((Player) player)){
             tp_save.remove((Player) player);
             boolean remove = save.remove((Player) player);
         }
-
-
     }
 
     @Override
@@ -196,6 +211,13 @@ public class RaceGame extends AbstractGame {
         if(invisibile_allowed) {
             for (Player player : getOnlinePlayers()) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+                ItemStack helmet = player.getInventory().getHelmet();
+                if(helmet != null) {
+                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
+                    helmet_save.put(player.getUniqueId(),helmet);
+                    //player.getInventory().addItem(helmet);
+                    sendHelmetRemoved(player);
+                }
             }
         }
         resetNextCheckpoints();
@@ -429,6 +451,14 @@ public class RaceGame extends AbstractGame {
 
     private void sendNoSaveLeft(Player player) {
         PluginData.getMessageUtil().sendErrorMessage(player, "You don´t have a save left.");
+    }
+
+    private void sendHelmetRemoved(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You will get your helmet back after the race.");
+    }
+
+    private void sendElytraRemoved(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "The elytra was put into your inventory.");
     }
 
     private void sendNotAllowed(Player player) {

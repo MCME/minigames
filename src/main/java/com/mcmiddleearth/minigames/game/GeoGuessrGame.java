@@ -183,50 +183,53 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
     }
 
-    public void sendRound(){
-            if (row == -1) {
-                Player manager = Bukkit.getPlayer(getManager().getUniqueId());
-                PluginData.getMessageUtil().sendInfoMessage(manager,"There are no more rounds. Please announce the winners, if not already done.");
-            } else {
-                this.started = true;
-                if (this.radius <= 0) {
-                    this.radius = this.defaultRadius;
-                }
-                double x = Double.parseDouble(warp_list[row][1]);
-                double y = Double.parseDouble(warp_list[row][2]);
-                double z = Double.parseDouble(warp_list[row][3]);
+    public void sendRound() {
+        if (row == -1) {
+            Player manager = Bukkit.getPlayer(getManager().getUniqueId());
+            PluginData.getMessageUtil().sendInfoMessage(manager, "There are no more rounds. Please announce the winners, if not already done.");
+        } else {
+            this.started = true;
+            if (this.radius <= 0) {
+                this.radius = this.defaultRadius;
+            }
+            double x = Double.parseDouble(warp_list[row][1]);
+            double y = Double.parseDouble(warp_list[row][2]);
+            double z = Double.parseDouble(warp_list[row][3]);
 
-                (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer());
+            (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer());
 
-                GeoGuessrConversation geoGuessrConversation = new GeoGuessrConversation(MiniGamesPlugin.getPluginInstance(), guessTime);
-                ((GeoGuessrGameScoreboard) getBoard()).addRound();
+            GeoGuessrConversation geoGuessrConversation = new GeoGuessrConversation(MiniGamesPlugin.getPluginInstance(), guessTime);
+            ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
-                for (Player player : getOnlinePlayers()) {
-
+            for (Player player : getOnlinePlayers()) {
+                    /*
                     Plugin plugin = MiniGamesPlugin.getPluginInstance();
+
                     for(Player player2 : getOnlinePlayers()) {
                         player.hidePlayer(plugin, player2);
                     }
-                    warp = new Location(player.getWorld(), x, y, z);
-                    teleportPlayer(player,x,y,z);
-                    if (player.isConversing()) {
-                        PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next Location to you as you are already in another conversation.");
-                    } else {
-                        giveWarpbook(player);
-                        if (!com.mcmiddleearth.guidebook.data.PluginData.isExcluded(player)) {
-                            guidebook.add(player.getName());
-                        }
-                        com.mcmiddleearth.guidebook.data.PluginData.exclude(player);
-                        Conversation newConvo = geoGuessrConversation.start(player, this, warp_list[row][0]);
-                        playersInRound.put(player, newConvo);
-                        PluginData.getMessageUtil().sendInfoMessage(player, "Type the correct warp in.");
+                     */
+                warp = new Location(player.getWorld(), x, y, z);
+                teleportPlayer(player, x, y, z);
+                if (player.isConversing()) {
+                    PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next Location to you as you are already in another conversation.");
+                } else {
+                    giveWarpbook(player);
+                    if (!com.mcmiddleearth.guidebook.data.PluginData.isExcluded(player)) {
+                        guidebook.add(player.getName());
                     }
+                    com.mcmiddleearth.guidebook.data.PluginData.exclude(player);
+                    Conversation newConvo = geoGuessrConversation.start(player, this, warp_list[row][0]);
+                    playersInRound.put(player, newConvo);
+                    PluginData.getMessageUtil().sendInfoMessage(player, "Type the correct warp in.");
                 }
-                row--;
             }
+            row--;
         }
+    }
 
     private void teleportPlayer(Player player, double x, double y, double z){
+        /*
         Random generator = new Random();
         int x_temp = generator.nextInt(this.radius-1);
         int z_temp = generator.nextInt(this.radius-1);
@@ -249,7 +252,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
         Location location_temp = new Location(player.getPlayer().getWorld(), x, y, z);
         y = player.getWorld().getHighestBlockYAt(location_temp);
-        y++;
+        y++;  */
         Location location = new Location(player.getPlayer().getWorld(), x, y, z);
         forceTeleport(player,location);
     }
@@ -426,6 +429,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
+        /*
         if(!isPlayerInRound()) {
             for (Player player : getOnlinePlayers()) {
 
@@ -435,6 +439,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
                 }
             }
         }
+         */
         if (row < 0) {
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
