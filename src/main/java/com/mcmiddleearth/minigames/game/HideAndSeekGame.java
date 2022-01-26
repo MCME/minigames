@@ -161,6 +161,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         player.setDisplayName(name);
         player.setSneaking(false);
         DynmapUtil.show(player);
+        player.setGlowing(false);
     }
     
     private void revealPlayer(Player player) {
@@ -180,6 +181,10 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     @Override 
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
+        if(player.isOnline()){
+            Player player_on = (Player) player;
+            player_on.setGlowing(false);
+        }
         if(seeker != null && PlayerUtil.isSame(player,seeker)) {
             stop();
         }
