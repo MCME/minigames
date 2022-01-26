@@ -440,9 +440,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player, hiddenPlayers.toString());
     }
 
-    public void setGlow(Player manager){
+    public void setGlow(Player manager, boolean allowed){
         for(Player player: getOnlinePlayers()){
-            player.setGlowing(true);
+            player.setGlowing(allowed);
         }
     }
 

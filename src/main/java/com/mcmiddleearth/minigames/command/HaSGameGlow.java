@@ -21,7 +21,10 @@ public class HaSGameGlow extends AbstractGameCommand{
         if (game != null && isManager((Player) cs, game) && isCorrectGameType((Player) cs, game, GameType.HIDE_AND_SEEK)) {
             if(args[0].equalsIgnoreCase("all")){
                 HideAndSeekGame hidegame = (HideAndSeekGame) game;
-                hidegame.setGlow((Player) cs);
+                hidegame.setGlow((Player) cs,true);
+            }else if(args[0].equalsIgnoreCase("noone")){
+                HideAndSeekGame hidegame = (HideAndSeekGame) game;
+                hidegame.setGlow((Player) cs,false);
             }else {
                 sendSubcommandNotFoundErrorMessage(cs);
             }
