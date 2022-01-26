@@ -1,0 +1,9 @@
+#minigames
+
+#sql connection
+sqlConnection:
+  user: mywarp
+  password: mywarp
+  name: mywarp
+  ip: localhost
+  port: 3306
