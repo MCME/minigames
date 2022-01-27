@@ -134,7 +134,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             if(hiddenPlayers.contains(player)) {
                 unhidePlayer(player);
             }
-            //player.setDisplayName(player.getName());
+            player.setDisplayName(player.getName());
             player.setGlowing(false);
             forceTeleport(player,getWarp());
         }
@@ -157,10 +157,11 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     
     private void unhidePlayer(Player player) {
         hiddenPlayers.remove(player);
-        //String name = "[Found] " + player.getName();
-        //player.setDisplayName(name);
-        //player.setSneaking(false);
+        String name = "[Found] " + player.getName();
+        player.setDisplayName(name);
+        player.setSneaking(false);
         DynmapUtil.show(player);
+        player.setGlowing(false);
     }
     
     private void revealPlayer(Player player) {
@@ -180,6 +181,10 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     @Override 
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
+        if(player.isOnline()){
+            Player player_on = (Player) player;
+            player_on.setGlowing(false);
+        }
         if(seeker != null && PlayerUtil.isSame(player,seeker)) {
             stop();
         }
@@ -440,9 +445,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player, hiddenPlayers.toString());
     }
 
-    public void setGlow(Player manager){
+    public void setGlow(Player manager, boolean allowed){
         for(Player player: getOnlinePlayers()){
-            player.setGlowing(true);
+            player.setGlowing(allowed);
         }
     }
 

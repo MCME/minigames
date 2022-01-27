@@ -51,7 +51,7 @@ public class RaceGame extends AbstractGame {
     private boolean save_allowed = true;
 
     //Visibility default off because its still buggy for non donors
-    private boolean invisibile_allowed = false;
+    private boolean invisibile_allowed = true;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -152,16 +152,15 @@ public class RaceGame extends AbstractGame {
             save.add(player);
         }
 
-        Material chestplate = player.getInventory().getChestplate().getType();
-        if(chestplate == Material.ELYTRA) {
-            player.getInventory().setHelmet(new ItemStack(Material.AIR));
-            player.getInventory().addItem(new ItemStack(chestplate));
-            sendElytraRemoved(player);
+        if(player.getInventory().getChestplate() != null){
+            Material chestplate = player.getInventory().getChestplate().getType();
+            if(chestplate == Material.ELYTRA) {
+                player.getInventory().setChestplate(new ItemStack(Material.AIR));
+                player.getInventory().addItem(new ItemStack(chestplate));
+                sendElytraRemoved(player);
+            }
         }
-
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
-
-
     }
 
     @Override

@@ -64,11 +64,12 @@ public class GeoGuessrWarps {
 
 
     public GeoGuessrWarps() {
-        dbUser = (String) config.get("user");
-        dbPassword = (String) config.get("password");//,"mywarp");
-        dbName = (String) config.get("dbName");//,"mywarp");
-        dbIp = (String) config.get("ip");//, "localhost");
-        port = (Integer) config.get("port");//,3306);
+        Plugin plugin = MiniGamesPlugin.getPluginInstance();
+        dbUser = plugin.getConfig().getString("user");
+        dbPassword = plugin.getConfig().getString("password");
+        dbName = plugin.getConfig().getString("name");
+        dbIp = plugin.getConfig().getString("localhost");
+        port = plugin.getConfig().getInt("port");
         dataBase = new MySQLDataSource(dbIp, port, dbName);
         connect();
         boolean check = checkConnection();
