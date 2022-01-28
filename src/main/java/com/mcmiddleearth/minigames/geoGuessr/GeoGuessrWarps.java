@@ -33,7 +33,7 @@ public class GeoGuessrWarps {
     private final String dbIp;
     private final int port;
 
-    private Map config = new HashMap();
+    //private Map config = new HashMap();
 
     private final MySQLDataSource dataBase;
 
@@ -51,7 +51,7 @@ public class GeoGuessrWarps {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private BukkitTask keepAliveTask;
-
+    /*
     private static String[][] warp_list = {
             {"test0", "0", "70", "0",},
             {"test 1", "1", "70", "1"},
