@@ -1,5 +1,8 @@
 package com.mcmiddleearth.minigames.geoGuessr;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 import org.mariadb.jdbc.MySQLDataSource;
 
 import java.sql.Connection;
@@ -65,11 +68,12 @@ public class GeoGuessrWarps {
 
     public GeoGuessrWarps() {
         Plugin plugin = MiniGamesPlugin.getPluginInstance();
-        dbUser = plugin.getConfig().getString("user");
-        dbPassword = plugin.getConfig().getString("password");
-        dbName = plugin.getConfig().getString("name");
-        dbIp = plugin.getConfig().getString("localhost");
-        port = plugin.getConfig().getInt("port");
+        ConfigurationSection dbConfig = plugin.getConfig().getConfigurationSection("sqlConnection");
+        dbUser = dbConfig.getString("user");
+        dbPassword = dbConfig.getString("password");
+        dbName = dbConfig.getString("name");
+        dbIp = dbConfig.getString("localhost");
+        port = dbConfig.getInt("port");
         dataBase = new MySQLDataSource(dbIp, port, dbName);
         connect();
         boolean check = checkConnection();
@@ -129,13 +133,13 @@ public class GeoGuessrWarps {
                 String[][] warps = new String[rows][4];
 
                 ResultSet result = getWarp.executeQuery();
-                do {
+                while (result.next()) {
                     warps[i][0] = result.getString("warp.name");
                     warps[i][1] = result.getString("warp.x");
                     warps[i][2] = result.getString("warp.y");
                     warps[i][3] = result.getString("warp.z");
                     i++;
-                } while (result.next());
+                }
                 return warps;
             } catch (SQLException throwables) {
                 Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, null, throwables);
