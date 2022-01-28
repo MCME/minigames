@@ -129,16 +129,22 @@ public class GeoGuessrWarps {
                 getRows.setString(1, String.valueOf(str_uuid));
                 getWarp.setString(1, String.valueOf(str_uuid));
                 ResultSet count = getRows.executeQuery();
-                int rows = count.getInt("COUNT(warp.name)");
-                String[][] warps = new String[rows][4];
+                if (count.first()) {
+                    int rows = count.getInt("COUNT(warp.name)");
+                    String[][] warps = new String[rows][4];
 
-                ResultSet result = getWarp.executeQuery();
-                while (result.next()) {
-                    warps[i][0] = result.getString("warp.name");
-                    warps[i][1] = result.getString("warp.x");
-                    warps[i][2] = result.getString("warp.y");
-                    warps[i][3] = result.getString("warp.z");
-                    i++;
+                    ResultSet result = getWarp.executeQuery();
+
+                    if (result.first()) {
+                        while (result.next()) {
+                            warps[i][0] = result.getString("warp.name");
+                            warps[i][1] = result.getString("warp.x");
+                            warps[i][2] = result.getString("warp.y");
+                            warps[i][3] = result.getString("warp.z");
+                            i++;
+                        }
+                        return warps;
+                    }
                 }
                 return warps;
             } catch (SQLException throwables) {
