@@ -33,7 +33,7 @@ public class GeoGuessrWarps {
     private final String dbIp;
     private final int port;
 
-    private Map config = new HashMap();
+    //private Map config = new HashMap();
 
     private final MySQLDataSource dataBase;
 
@@ -51,7 +51,7 @@ public class GeoGuessrWarps {
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private BukkitTask keepAliveTask;
-
+    /*
     private static String[][] warp_list = {
             {"test0", "0", "70", "0",},
             {"test 1", "1", "70", "1"},
@@ -66,9 +66,6 @@ public class GeoGuessrWarps {
         return warp_list;
     }
     */
-
-
-
     public GeoGuessrWarps() {
         Plugin plugin = MiniGamesPlugin.getPluginInstance();
         ConfigurationSection dbConfig = plugin.getConfig().getConfigurationSection("sqlConnection");
@@ -114,11 +111,9 @@ public class GeoGuessrWarps {
                     }
                 }.runTaskAsynchronously(MiniGamesPlugin.getPluginInstance());
             }
-            return true;
         } catch (SQLException ex) {
             Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, "No DB connection!!", ex);
             connected = false;
-            return false;
         }
     }
 
