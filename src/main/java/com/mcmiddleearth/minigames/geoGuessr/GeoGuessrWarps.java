@@ -66,9 +66,6 @@ public class GeoGuessrWarps {
         return warp_list;
     }
     */
-
-
-
     public GeoGuessrWarps() {
         Plugin plugin = MiniGamesPlugin.getPluginInstance();
         ConfigurationSection dbConfig = plugin.getConfig().getConfigurationSection("sqlConnection");
