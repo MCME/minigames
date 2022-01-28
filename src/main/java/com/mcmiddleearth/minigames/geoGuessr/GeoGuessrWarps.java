@@ -114,11 +114,9 @@ public class GeoGuessrWarps {
                     }
                 }.runTaskAsynchronously(MiniGamesPlugin.getPluginInstance());
             }
-            return true;
         } catch (SQLException ex) {
             Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, "No DB connection!!", ex);
             connected = false;
-            return false;
         }
     }
 
