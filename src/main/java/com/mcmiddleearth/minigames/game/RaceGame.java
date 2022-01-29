@@ -75,6 +75,11 @@ public class RaceGame extends AbstractGame {
         ((RaceGameScoreboard)getBoard()).addHighscore(op.getName(),(int) no1.getValue());
     }
 
+    public void resetHighscore(Player player){
+        highscore.resetHighscore(player.getUniqueId());
+        resetHighscore(player);
+    }
+
     public void getStats(Player player){
         int pb = highscore.getPB(player.getUniqueId());
         sendPB(player,pb);
@@ -508,6 +513,10 @@ public class RaceGame extends AbstractGame {
 
     private void newRecord(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"You broke the record of the race.");
+    }
+
+    private void sendReset(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"Record of the race was reset.");
     }
 
     public void setRaceName(String name){

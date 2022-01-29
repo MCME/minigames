@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +26,9 @@ public class raceHighscoreAbstract {
             config.createSection(filename);
             config.getConfigurationSection(filename).createSection("PB");
             config.getConfigurationSection(filename).createSection("Highscore");
-            config.getConfigurationSection(filename).getConfigurationSection("Highscore").set(String.valueOf(manager.getUniqueId()),Integer.MAX_VALUE-1);
+            config.getConfigurationSection(filename).getConfigurationSection("Highscore");
+            config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("UUID",String.valueOf(manager.getUniqueId()));
+            config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("Time",Integer.MAX_VALUE-1);
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -59,12 +63,17 @@ public class raceHighscoreAbstract {
     }
 
     public Map.Entry getHighscore(){
-        Map<String,Object> highscore = config.getConfigurationSection(filename).getConfigurationSection("Highscore").getValues(false);
+        Map<String,Object> highscore = new HashMap<>();//config.getConfigurationSection(filename).getConfigurationSection("Highscore").getValues(false);
+        //Map.Entry<String,Object> highscore = null;
+        Object uuid = config.getConfigurationSection(filename).getConfigurationSection("Highscore").get("UUID");
+        Object time = config.getConfigurationSection(filename).getConfigurationSection("Highscore").get("Time");
+        highscore.put((String)uuid,time);
         return highscore.entrySet().iterator().next();
     }
 
     public void setHighscore(UUID uuid, int Time){
-        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set(String.valueOf(uuid),Time);
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("UUID",String.valueOf(uuid));
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("Time",(Object) Time);
         try {
             config.save(file);
         } catch (IOException e) {
@@ -72,6 +81,14 @@ public class raceHighscoreAbstract {
         }
     }
 
-
+    public void resetHighscore(UUID uuid){
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("UUID",String.valueOf(uuid));
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("Time",(Object) Integer.MAX_VALUE);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
