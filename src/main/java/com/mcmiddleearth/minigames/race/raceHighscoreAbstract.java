@@ -81,6 +81,14 @@ public class raceHighscoreAbstract {
         }
     }
 
-
+    public void resetHighscore(UUID uuid){
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("UUID",String.valueOf(uuid));
+        config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("Time",(Object) Integer.MAX_VALUE);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -90,6 +90,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("hiddenlist", new HaSHiddenList(Permissions.USER));
         addCommandHandler("glow", new HaSGameGlow(Permissions.MANAGER));
         addCommandHandler("racestat",new RaceGameStats(Permissions.USER));
+        addCommandHandler("resethighscore",new RaceGameDeleteHighscore(Permissions.STAFF));
     }
     
     @Override
