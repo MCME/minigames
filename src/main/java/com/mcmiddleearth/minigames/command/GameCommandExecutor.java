@@ -89,6 +89,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("tphere",new HaSGameTPHere(Permissions.MANAGER));
         addCommandHandler("hiddenlist", new HaSHiddenList(Permissions.USER));
         addCommandHandler("glow", new HaSGameGlow(Permissions.MANAGER));
+        addCommandHandler("racestat",new RaceGameStats(Permissions.USER));
     }
     
     @Override

@@ -20,6 +20,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,7 @@ public class PluginData {
     private static final List<String> questionCategories = new ArrayList<>();
     private static final File raceDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
                                                     + File.separator + "Races");
+    private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
     private static final File pvpDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
@@ -81,6 +83,16 @@ public class PluginData {
 
         if(!loadoutDirectory.exists()) {
             loadoutDirectory.mkdirs();
+        }
+
+        if(!highscoreDir.exists()){
+            highscoreDir.mkdirs();
+            File highscore = new File(highscoreDir,"Highscore.yml");
+            try {
+                highscore.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
    
@@ -264,6 +276,10 @@ public class PluginData {
 
     public static File getRaceDir() {
         return raceDir;
+    }
+
+    public static File getHighscoreDir(){
+        return highscoreDir;
     }
 
     public static File getGolfDir() {
