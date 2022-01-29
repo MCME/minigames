@@ -40,6 +40,7 @@ public class GameReady extends AbstractGameCommand{
                         sendRaceNoStartFinishMessage(cs);
                         return;
                     }
+                    raceGame.setHighscore();
                 }
 
                 if(game instanceof GolfGame) {

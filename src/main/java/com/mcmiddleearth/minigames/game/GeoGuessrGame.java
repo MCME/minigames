@@ -273,7 +273,10 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void playerMove(PlayerMoveEvent event) {
-        super.playerMove(event);   //square instead of Circle radius is half the side length, no checking for y because of the random TP inside there
+        if(started){
+            super.playerMove(event);
+        }
+        //square instead of Circle radius is half the side length, no checking for y because of the random TP inside there
         /*
         if(started) {
             Location to = event.getTo();

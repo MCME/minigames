@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.race.raceHighscoreAbstract;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
@@ -29,7 +30,7 @@ import java.util.*;
 public class RaceGame extends AbstractGame {
     
     private final CheckpointManager checkpointManager = new CheckpointManager(getName());
-    
+
     private boolean started = false;
     private boolean steady = false;
     private int finished = 0;
@@ -50,6 +51,10 @@ public class RaceGame extends AbstractGame {
 
     private boolean save_allowed = true;
 
+    private String raceName;
+
+    private raceHighscoreAbstract highscore;
+
     //Visibility default off because its still buggy for non donors
     private boolean invisibile_allowed = true;
     
@@ -60,6 +65,19 @@ public class RaceGame extends AbstractGame {
         setGm2Forced(true);
         setCollision(false);
         ((RaceGameScoreboard)getBoard()).init(this);
+    }
+
+    public void setHighscore(){
+        raceHighscoreAbstract highscore = new raceHighscoreAbstract(raceName, getManager().getPlayer());
+        this.highscore = highscore;
+        Map.Entry<String,Object> no1 = highscore.getHighscore();
+        OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(no1.getKey()));
+        ((RaceGameScoreboard)getBoard()).addHighscore(op.getName(),(int) no1.getValue());
+    }
+
+    public void getStats(Player player){
+        int pb = highscore.getPB(player.getUniqueId());
+        sendPB(player,pb);
     }
 
     public void setSave(boolean allowed){
@@ -82,9 +100,18 @@ public class RaceGame extends AbstractGame {
                 finished ++;
                 TitleUtil.showTitle(event.getPlayer(),ChatColor.GOLD+"FINISH", 
                                             "You are placed "+getPlace()+".");
+                int currentTime = ((RaceGameScoreboard)getBoard()).getTime(event.getPlayer().getName());
                 if(finished==1) {
-                    TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
-                                             ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
+                    Map.Entry<String,Object> no1 = highscore.getHighscore();
+                    if((int) no1.getValue() > currentTime){
+                        TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
+                                ChatColor.BLUE+event.getPlayer().getName(),"broke the record of the race and won.");
+                        newRecord(event.getPlayer());
+                        highscore.setHighscore(event.getPlayer().getUniqueId(),currentTime);
+                    }else{
+                        TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
+                                ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
+                    }
                 }
                 if(invisibile_allowed) {
                     event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -92,6 +119,11 @@ public class RaceGame extends AbstractGame {
                         event.getPlayer().getInventory().setHelmet(helmet_save.get(event.getPlayer().getUniqueId()));
                         helmet_save.remove(event.getPlayer().getUniqueId());
                     }
+                }
+                int pb = highscore.getPB(event.getPlayer().getUniqueId());
+                if(currentTime < pb){
+                    highscore.setPB(event.getPlayer().getUniqueId(),currentTime);
+                    sendNewPB(event.getPlayer(),currentTime);
                 }
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
@@ -145,6 +177,7 @@ public class RaceGame extends AbstractGame {
     @Override
     public void addPlayer(Player player) {
         super.addPlayer(player);
+        int i = highscore.getPB(player.getUniqueId());
         forceTeleport(player,getWarp());
         ((RaceGameScoreboard) getBoard()).addPlayer(player.getName());
         if(!save.contains(player)) {   //That it doesnt bug when a Player joins, leaves and joins again
@@ -462,5 +495,26 @@ public class RaceGame extends AbstractGame {
 
     private void sendNotAllowed(Player player) {
         PluginData.getMessageUtil().sendErrorMessage(player, "This is not allowed.");
+    }
+
+    private void sendNewPB(Player player, Integer PB){
+        player.playEffect(player.getLocation(),Effect.FIREWORK_SHOOT,2);
+        PluginData.getMessageUtil().sendInfoMessage(player, "You got a new personal best with "+PB);
+    }
+
+    private void sendPB(Player player, Integer PB){
+        PluginData.getMessageUtil().sendInfoMessage(player, "Your personal best for this race is "+PB);
+    }
+
+    private void newRecord(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"You broke the record of the race.");
+    }
+
+    public void setRaceName(String name){
+        this.raceName = name;
+    }
+
+    public String getRaceName(){
+        return this.raceName;
     }
 }
