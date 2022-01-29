@@ -10,7 +10,7 @@ for file in all_files:
         data = json.load(f)
         if data["start"]["location"]["world"] == "world":
             data["start"]["location"]["y"] = data["start"]["location"]["y"] - 64
-            data["finish"]["location"]["y"] = data["start"]["location"]["y"] - 64
+            data["finish"]["location"]["y"] = data["finish"]["location"]["y"] - 64
             for cp in data["checkpoints"]:
                 cp["location"]["y"] = cp["location"]["y"] - 64
             f.seek(0) 
