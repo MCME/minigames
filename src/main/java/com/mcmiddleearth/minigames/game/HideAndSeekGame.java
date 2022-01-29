@@ -31,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,6 +98,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
         sendStartHideMessage();
+        sendRadiusMessage();
         Location loc = getWarp().clone();
         loc.setPitch(80);
         forceTeleport((Player) seeker,loc);
@@ -150,16 +152,14 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     
     private void hidePlayer(Player player) {
         hiddenPlayers.add(player);
-        //String name = "[Hidden] " + player.getName();
-        //player.setDisplayName(name);
         DynmapUtil.hide(player);
     }
     
     private void unhidePlayer(Player player) {
         hiddenPlayers.remove(player);
-        String name = "[Found] " + player.getName();
-        player.setDisplayName(name);
-        player.setSneaking(false);
+        //player.setSneaking(false);
+        Team team = player.getScoreboard().getTeam("noCollision");
+        team.removeEntry(player.getName());
         DynmapUtil.show(player);
         player.setGlowing(false);
     }
@@ -387,6 +387,12 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             if(!PlayerUtil.isSame(player,seeker)) {
                 TitleUtil.showTitle(player, ChatColor.YELLOW+" HIDE!!!"," ");
             }
+        }
+    }
+
+    private void sendRadiusMessage(){
+        for(Player player : getOnlinePlayers()){
+            PluginData.getMessageUtil().sendInfoMessage(player, "The radius is "+ String.valueOf(radius));
         }
     }
 
