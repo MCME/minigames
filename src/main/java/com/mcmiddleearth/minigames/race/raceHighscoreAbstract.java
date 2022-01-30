@@ -101,8 +101,12 @@ public class raceHighscoreAbstract {
         Map<String,Object> all = config.getConfigurationSection(filename).getConfigurationSection("PB").getValues(false);
         Map<String,Object> top5 = new HashMap<>();
         Map.Entry<String,Object> top;
+        int j = 5;
 
-        for(int i = 1;i <= 5; i++) {
+        if(all.size() < 5 ){
+            j = all.size();
+        }
+        for(int i = j;i <= 5; i++) {
             top = null;
             for (Map.Entry<String, Object> entry : all.entrySet()) {
                 if (top == null || (Integer) entry.getValue() < (Integer) top.getValue()) {
@@ -110,11 +114,8 @@ public class raceHighscoreAbstract {
                 }
             }
             OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(top.getKey()));
-            // Shopuld be op.getName()
             top5.put(String.valueOf(op.getName()), top.getValue());
             all.remove(top.getKey());
-            //Player player = Bukkit.getPlayer("Jubo");
-            //player.sendMessage(String.valueOf(op.getName()));
         }
         return top5;
     }
