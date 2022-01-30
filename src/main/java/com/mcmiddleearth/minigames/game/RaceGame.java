@@ -77,12 +77,14 @@ public class RaceGame extends AbstractGame {
 
     public void resetHighscore(Player player){
         highscore.resetHighscore(player.getUniqueId());
-        resetHighscore(player);
+        sendReset(player);
     }
 
     public void getStats(Player player){
         int pb = highscore.getPB(player.getUniqueId());
         sendPB(player,pb);
+        Map<String,Object> top5 = highscore.getTop5();
+        sendTop5(player,String.valueOf(top5));
     }
 
     public void setSave(boolean allowed){
@@ -509,6 +511,10 @@ public class RaceGame extends AbstractGame {
 
     private void sendPB(Player player, Integer PB){
         PluginData.getMessageUtil().sendInfoMessage(player, "Your personal best for this race is "+PB);
+    }
+
+    private void sendTop5(Player player, String top5){
+        PluginData.getMessageUtil().sendInfoMessage(player, "These are the Top 5 "+top5);
     }
 
     private void newRecord(Player player){

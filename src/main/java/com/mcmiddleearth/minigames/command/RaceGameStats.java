@@ -18,7 +18,7 @@ public class RaceGameStats extends AbstractGameCommand{
     @Override
     protected void execute(CommandSender cs, String... args) {
         AbstractGame game = getGame((Player) cs);
-        if(game != null && isManager((Player) cs, game) && isCorrectGameType((Player) cs, game, GameType.RACE)) {
+        if(game != null && game.isInGame((Player) cs) && isCorrectGameType((Player) cs, game, GameType.RACE)) {
             RaceGame racegame = (RaceGame) game;
             racegame.getStats((Player)cs);
         }
