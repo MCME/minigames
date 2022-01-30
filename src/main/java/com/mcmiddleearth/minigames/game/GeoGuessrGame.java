@@ -370,6 +370,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
         if(winner.size()>0 && (allowEqual || winner.size()==1)){
             for(Player player: winner){
+                getWinHighscore().setGeoWin(player.getUniqueId());
                 TitleUtil.showTitle(player,ChatColor.GOLD+"Congrats","You won the GeoGuessr game.");
                 String winnerNames = winner.get(0).getName();
                 for(int i = 1; i<winner.size()-1;i++){

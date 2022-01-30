@@ -10,8 +10,7 @@ public enum GeoGuessrAreas {
     Anfalas_Lefnui_Pinath("Anfalas and Pinnath Gelin","g",-2400,2700,2150,6000),
     Lebennin("Lebennin","h",5300,4200,7800,6600),
     Belfalas_and_Lamedon("Belfalas and Lamedon","i",2160,2520,5200,8200),
-    Misty_Mountains("the Misty Mountains","j",2030,700,5500,-4000),
-    TEST("Test","t",10,10,20,20);
+    Misty_Mountains("the Misty Mountains","j",2030,700,5500,-4000);
 
     private final String name;
     private final String abb;

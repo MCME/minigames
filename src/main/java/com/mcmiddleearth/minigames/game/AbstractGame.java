@@ -10,6 +10,7 @@ import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.guidebook.command.GuidebookOff;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.minigames.game.GeoGuessrGame;
@@ -75,6 +76,8 @@ public abstract class AbstractGame {
     
     private boolean managerOnlineLastTime = true; //for cleanup task
 
+    private gameWinHighscore winHighscore;
+
     public AbstractGame(Player manager, String name, GameType type, GameScoreboard board) {
         this.name = name;
         this.manager = manager;
@@ -89,6 +92,8 @@ public abstract class AbstractGame {
             if(type == GameType.HIDE_AND_SEEK){
                 team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
+            gameWinHighscore winHighscore = new gameWinHighscore();
+            this.winHighscore = winHighscore;
             manager.setScoreboard(getBoard().getScoreboard());
             BukkitRunnable cleanupTask = new BukkitRunnable() {
                 @Override
@@ -544,6 +549,10 @@ public abstract class AbstractGame {
 
     public void setGm2Forced(boolean gm2Forced) {
         this.gm2Forced = gm2Forced;
+    }
+
+    public gameWinHighscore getWinHighscore(){
+        return winHighscore;
     }
 
     public GameScoreboard getBoard() {

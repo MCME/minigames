@@ -411,6 +411,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     private void sendStopSeekingMessage() {
         if(hiddenPlayers.isEmpty()) {
                 TitleUtil.showTitle((Player) seeker, ChatColor.GOLD+"YOU WON", "You found all players.");
+                getWinHighscore().setSeekWin(seeker.getUniqueId());
             }
             else {
                TitleUtil.showTitle((Player) seeker, ChatColor.BLUE+"GAME OVER", "You found not all players.");
@@ -422,6 +423,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 }
                 else if (isHidden(player)) {
                     TitleUtil.showTitle(player, ChatColor.GOLD+"YOU WON", seeker.getName()+" found you not.");
+                    getWinHighscore().setHideWin(player.getUniqueId());
                 }
                 else {
                     TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", seeker.getName()+" found you but not all players.");
