@@ -1,6 +1,8 @@
 package com.mcmiddleearth.minigames.race;
 
 import com.mcmiddleearth.minigames.data.PluginData;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -84,6 +86,10 @@ public class raceHighscoreAbstract {
     public void resetHighscore(UUID uuid){
         config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("UUID",String.valueOf(uuid));
         config.getConfigurationSection(filename).getConfigurationSection("Highscore").set("Time",(Object) Integer.MAX_VALUE);
+        Map<String,Object> pb = config.getConfigurationSection(filename).getConfigurationSection("PB").getValues(false);
+        for(String key : pb.keySet()){
+            config.getConfigurationSection(filename).getConfigurationSection("PB").set(key,Integer.MAX_VALUE);
+        }
         try {
             config.save(file);
         } catch (IOException e) {
@@ -91,4 +97,25 @@ public class raceHighscoreAbstract {
         }
     }
 
+    public Map<String,Object> getTop5(){
+        Map<String,Object> all = config.getConfigurationSection(filename).getConfigurationSection("PB").getValues(false);
+        Map<String,Object> top5 = new HashMap<>();
+        Map.Entry<String,Object> top;
+
+        for(int i = 1;i <= 5; i++) {
+            top = null;
+            for (Map.Entry<String, Object> entry : all.entrySet()) {
+                if (top == null || (Integer) entry.getValue() < (Integer) top.getValue()) {
+                    top = entry;
+                }
+            }
+            OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(top.getKey()));
+            // Shopuld be op.getName()
+            top5.put(String.valueOf(op.getName()), top.getValue());
+            all.remove(top.getKey());
+            //Player player = Bukkit.getPlayer("Jubo");
+            //player.sendMessage(String.valueOf(op.getName()));
+        }
+        return top5;
+    }
 }

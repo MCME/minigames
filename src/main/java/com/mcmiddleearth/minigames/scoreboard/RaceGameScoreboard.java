@@ -130,9 +130,7 @@ public class RaceGameScoreboard extends GameScoreboard{
     }
 
     public void addHighscore(String playerName,Integer time){
-        Score text = startObjective.getScore("Highscore:");
-        text.setScore(time+1);
-        Score score = startObjective.getScore(playerName+" with");
+        Score score = startObjective.getScore("Record: "+playerName+" with");
         score.setScore(time);
     }
 
