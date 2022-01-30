@@ -314,6 +314,7 @@ public class RaceGame extends AbstractGame {
             Checkpoint start = checkpointManager.getStart();
             Location teleportLoc = start.getLocation();
             forceTeleport(player,teleportLoc);
+            setWarp(teleportLoc);
         }
     }
 

@@ -496,6 +496,8 @@ public abstract class AbstractGame {
         return warp;
     }
 
+    public void setWarp(Location loc){this.warp = loc;}
+
     public boolean isWarpAllowed() {
         return warpAllowed;
     }
