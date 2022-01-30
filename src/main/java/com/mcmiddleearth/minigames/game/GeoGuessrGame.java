@@ -92,11 +92,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         //String[][] warp_list = geoGuessrWarps.getWarps_test();
         int warp_count = 0;
         if(area != GeoGuessrAreas.All) {
-            int x = 0;
-            int z = 0;
+            double x = 0;
+            double z = 0;
             for (int i = 0; i < warp_list.length; i++){
-                x = Integer.parseInt(warp_list[i][1]);
-                z = Integer.parseInt(warp_list[i][3]);
+                x = Double.parseDouble(warp_list[i][1]);
+                z = Double.parseDouble(warp_list[i][3]);
                 if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
                     warp_count++;
                 }
@@ -107,8 +107,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             String[][] area_warps = new String[warp_count][4];
             int j=0;
             for (int i = 0; i < warp_list.length; i++){
-                x = Integer.parseInt(warp_list[i][1]);
-                z = Integer.parseInt(warp_list[i][3]);
+                x = Double.parseDouble(warp_list[i][1]);
+                z = Double.parseDouble(warp_list[i][3]);
                 if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
                     area_warps[j][0] = warp_list[i][0];
                     area_warps[j][1] = warp_list[i][1];
