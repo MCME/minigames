@@ -91,6 +91,8 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("glow", new HaSGameGlow(Permissions.MANAGER));
         addCommandHandler("racestats",new RaceGameStats(Permissions.USER));
         addCommandHandler("resetscores",new RaceGameDeleteHighscore(Permissions.STAFF));
+        addCommandHandler("stats",new GameStats(Permissions.USER));
+        addCommandHandler("leaderboard",new GameLeaderboard(Permissions.USER));
     }
     
     @Override

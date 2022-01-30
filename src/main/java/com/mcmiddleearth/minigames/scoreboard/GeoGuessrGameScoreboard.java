@@ -75,6 +75,11 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
         score.setScore(score.getScore()+1);
     }
 
+    public void firstScore(String player){
+        Score score = geoObjective.getScore(player);
+        score.setScore(score.getScore()+2);
+    }
+
     public int getScore(String playerName) {
         return geoObjective.getScore(playerName).getScore();
     }

@@ -231,6 +231,7 @@ public class QuizGame extends AbstractGame {
         }
         if(winner.size()>0 && (allowEqual || winner.size()==1)) {
             for(Player player: winner) {
+                getWinHighscore().setQuizWin(player.getUniqueId());
                 TitleUtil.showTitle(player, ChatColor.GOLD+"Congrats","You won the quiz game.");
                 String winnerNames = winner.get(0).getName();
                 for(int i=1;i<winner.size()-1;i++) {

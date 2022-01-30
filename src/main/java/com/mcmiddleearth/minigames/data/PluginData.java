@@ -15,6 +15,8 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.MessageUtil;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.ParseException;
 
@@ -87,9 +89,20 @@ public class PluginData {
 
         if(!highscoreDir.exists()){
             highscoreDir.mkdirs();
-            File highscore = new File(highscoreDir,"Highscore.yml");
+            File highscore = new File(highscoreDir,"highscore.yml");
             try {
                 highscore.createNewFile();
+                FileConfiguration config = YamlConfiguration.loadConfiguration(highscore);
+                config.createSection("hide");
+                config.getConfigurationSection("hide").createSection("seek");
+                config.getConfigurationSection("hide").createSection("hide");
+                config.save(highscore);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File racetime = new File(highscoreDir,"racetime.yml");
+            try {
+                racetime.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }

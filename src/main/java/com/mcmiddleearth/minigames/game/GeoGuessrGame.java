@@ -41,6 +41,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
+    private boolean first = false;
+
     private final List<String> guidebook = new ArrayList<>();
     public final List<Player> hiddenPlayer = new ArrayList<>();
     private final List<UUID> leaveMessaged = new ArrayList<>();
@@ -66,7 +68,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
 
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
-        setTeleportAllowed(true);
+        setTeleportAllowed(false);
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(true);
@@ -189,6 +191,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             PluginData.getMessageUtil().sendInfoMessage(manager, "There are no more rounds. Please announce the winners, if not already done.");
         } else {
             this.started = true;
+            this.first = false;
             if (this.radius <= 0) {
                 this.radius = this.defaultRadius;
             }
@@ -367,6 +370,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
         if(winner.size()>0 && (allowEqual || winner.size()==1)){
             for(Player player: winner){
+                getWinHighscore().setGeoWin(player.getUniqueId());
                 TitleUtil.showTitle(player,ChatColor.GOLD+"Congrats","You won the GeoGuessr game.");
                 String winnerNames = winner.get(0).getName();
                 for(int i = 1; i<winner.size()-1;i++){
@@ -469,6 +473,15 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     public void incrementScore(Player player){
         ((GeoGuessrGameScoreboard)getBoard()).score(player.getName());
+    }
+
+    public boolean incrementFirstScore(Player player){
+        if(!first){
+            first = true;
+            ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName());
+            return true;
+        }
+        return false;
     }
 
     public void GeoGameWinner(Player player){

@@ -7,7 +7,8 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.race.raceHighscoreAbstract;
+import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
+import com.mcmiddleearth.minigames.highscores.raceHighscoreAbstract;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
@@ -110,6 +111,7 @@ public class RaceGame extends AbstractGame {
                 int currentTime = ((RaceGameScoreboard)getBoard()).getTime(event.getPlayer().getName());
                 if(finished==1) {
                     Map.Entry<String,Object> no1 = highscore.getHighscore();
+                    getWinHighscore().setRaceWin(event.getPlayer().getUniqueId());
                     if((int) no1.getValue() > currentTime){
                         TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
                                 ChatColor.BLUE+event.getPlayer().getName(),"broke the record of the race and won.");
