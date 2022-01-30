@@ -57,16 +57,17 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private int row = roundNumber - 1;
 
-    private final GeoGuessrAreas defaultArea = GeoGuessrAreas.All;
-    private GeoGuessrAreas area = defaultArea;
+    private final String defaultArea = "a";
+    private String area = defaultArea;
 
     private final Map<Player,Conversation> playersInRound = new HashMap<>();
 
     private final UUID uuid;
 
+    private GeoGuessrAreas geoArea;
+
     public GeoGuessrGame(Player manager, String name) {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
-
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
         setTeleportAllowed(false);
         setFlightAllowed(false);
@@ -74,9 +75,10 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         setCollision(true);
         sendReminder(manager);
         uuid = manager.getWorld().getUID();
+        geoArea = new GeoGuessrAreas(area);
     }
 
-    public void setArea(GeoGuessrAreas area){
+    public void setArea(String area){
         this.area = area;
     }
 
@@ -93,13 +95,13 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         geoGuessrWarps.disconnect();
         //String[][] warp_list = geoGuessrWarps.getWarps_test();
         int warp_count = 0;
-        if(area != GeoGuessrAreas.All) {
+        if(!(geoArea.getName().equalsIgnoreCase("all"))) {
             double x = 0;
             double z = 0;
             for (int i = 0; i < warp_list.length; i++){
                 x = Double.parseDouble(warp_list[i][1]);
                 z = Double.parseDouble(warp_list[i][3]);
-                if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
+                if (x > geoArea.x1() && x < geoArea.x2() && z > geoArea.z1() && z < geoArea.z2()) {
                     warp_count++;
                 }
             }
@@ -111,7 +113,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             for (int i = 0; i < warp_list.length; i++){
                 x = Double.parseDouble(warp_list[i][1]);
                 z = Double.parseDouble(warp_list[i][3]);
-                if (x > area.x1() && x < area.x2() && z > area.z1() && z < area.z2()) {
+                if (x > geoArea.x1() && x < geoArea.x2() && z > geoArea.z1() && z < geoArea.z2()) {
                     area_warps[j][0] = warp_list[i][0];
                     area_warps[j][1] = warp_list[i][1];
                     area_warps[j][2] = warp_list[i][2];
