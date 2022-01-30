@@ -53,6 +53,7 @@ public class PluginData {
     private static final File raceDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
                                                     + File.separator + "Races");
     private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
+    private static final File geoGuessrDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessr");
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
     private static final File pvpDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
@@ -73,6 +74,10 @@ public class PluginData {
 
         if(!raceDir.exists()) {
             raceDir.mkdirs();
+        }
+
+        if(!geoGuessrDir.exists()){
+            geoGuessrDir.mkdirs();
         }
 
         if(!golfDir.exists()) {
@@ -290,6 +295,8 @@ public class PluginData {
     public static File getRaceDir() {
         return raceDir;
     }
+
+    public static File getGeoGuessrDir(){return geoGuessrDir;}
 
     public static File getHighscoreDir(){
         return highscoreDir;
