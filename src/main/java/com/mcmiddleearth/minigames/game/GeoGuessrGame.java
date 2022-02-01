@@ -169,15 +169,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     @Override
-    public void end(Player player){
-        super.end(player);
-        unhidePlayer(player);
-        if (guidebook.contains(player.getName())) {
-            com.mcmiddleearth.guidebook.data.PluginData.include(player);
-        }
-    }
-
-    @Override
     public String getGameChatTag(Player player) {
         if(PlayerUtil.isSame(getManager(), player)) {
             return ChatColor.DARK_AQUA + "<Host ";
