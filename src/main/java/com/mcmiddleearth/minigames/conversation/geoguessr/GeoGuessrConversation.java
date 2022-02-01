@@ -49,7 +49,9 @@ public class GeoGuessrConversation implements ConversationAbandonedListener {
             }
         } else {
             if (correctAnswer.equalsIgnoreCase(answer)) {
-                ((GeoGuessrGame)cc.getSessionData("game")).incrementScore(player);
+                if(!(((GeoGuessrGame)cc.getSessionData("game")).incrementFirstScore(player))){
+                    ((GeoGuessrGame)cc.getSessionData("game")).incrementScore(player);
+                }
                 sendSuccessMessage(player);
             } else {
                 sendFailMessage(player, correctAnswer);
@@ -72,7 +74,7 @@ public class GeoGuessrConversation implements ConversationAbandonedListener {
     }
 
     private void sendSuccessMessage(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You answered this Round correctly.");
+        PluginData.getMessageUtil().sendInfoMessage(player, "You answered this round correctly.");
     }
 
     private void sendFailMessage(Player player, String answer) {

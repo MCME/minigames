@@ -15,11 +15,14 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.MessageUtil;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +52,8 @@ public class PluginData {
     private static final List<String> questionCategories = new ArrayList<>();
     private static final File raceDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
                                                     + File.separator + "Races");
+    private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
+    private static final File geoGuessrDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessr");
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
     private static final File pvpDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
@@ -71,6 +76,10 @@ public class PluginData {
             raceDir.mkdirs();
         }
 
+        if(!geoGuessrDir.exists()){
+            geoGuessrDir.mkdirs();
+        }
+
         if(!golfDir.exists()) {
             golfDir.mkdirs();
         }
@@ -81,6 +90,27 @@ public class PluginData {
 
         if(!loadoutDirectory.exists()) {
             loadoutDirectory.mkdirs();
+        }
+
+        if(!highscoreDir.exists()){
+            highscoreDir.mkdirs();
+            File highscore = new File(highscoreDir,"highscore.yml");
+            try {
+                highscore.createNewFile();
+                FileConfiguration config = YamlConfiguration.loadConfiguration(highscore);
+                config.createSection("hide");
+                config.getConfigurationSection("hide").createSection("seek");
+                config.getConfigurationSection("hide").createSection("hide");
+                config.save(highscore);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File racetime = new File(highscoreDir,"racetime.yml");
+            try {
+                racetime.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
    
@@ -264,6 +294,12 @@ public class PluginData {
 
     public static File getRaceDir() {
         return raceDir;
+    }
+
+    public static File getGeoGuessrDir(){return geoGuessrDir;}
+
+    public static File getHighscoreDir(){
+        return highscoreDir;
     }
 
     public static File getGolfDir() {

@@ -7,6 +7,8 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
+import com.mcmiddleearth.minigames.highscores.raceHighscoreAbstract;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
@@ -29,7 +31,7 @@ import java.util.*;
 public class RaceGame extends AbstractGame {
     
     private final CheckpointManager checkpointManager = new CheckpointManager(getName());
-    
+
     private boolean started = false;
     private boolean steady = false;
     private int finished = 0;
@@ -42,12 +44,19 @@ public class RaceGame extends AbstractGame {
     
     private final Map<UUID,Integer> nextCheckpoints = new HashMap<>();
 
+    private final Map<UUID,ItemStack> helmet_save = new HashMap<>();
+
     private Map<UUID,Location> tp_save = new HashMap<>();
 
     private List<Player> save = new ArrayList<>();
 
     private boolean save_allowed = true;
 
+    private String raceName;
+
+    private raceHighscoreAbstract highscore;
+
+    //Visibility default off because its still buggy for non donors
     private boolean invisibile_allowed = true;
     
     public RaceGame(Player manager, String name) {
@@ -59,6 +68,26 @@ public class RaceGame extends AbstractGame {
         ((RaceGameScoreboard)getBoard()).init(this);
     }
 
+    public void setHighscore(){
+        raceHighscoreAbstract highscore = new raceHighscoreAbstract(raceName, getManager().getPlayer());
+        this.highscore = highscore;
+        Map.Entry<String,Object> no1 = highscore.getHighscore();
+        OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(no1.getKey()));
+        ((RaceGameScoreboard)getBoard()).addHighscore(op.getName(),(int) no1.getValue());
+    }
+
+    public void resetHighscore(Player player){
+        highscore.resetHighscore(player.getUniqueId());
+        sendReset(player);
+    }
+
+    public void getStats(Player player){
+        int pb = highscore.getPB(player.getUniqueId());
+        sendPB(player,pb);
+        Map<String,Object> top5 = highscore.getTop5();
+        sendTop5(player,String.valueOf(top5));
+    }
+
     public void setSave(boolean allowed){
         save_allowed = allowed;
     }
@@ -67,8 +96,6 @@ public class RaceGame extends AbstractGame {
 
     @Override
     public void playerMove(PlayerMoveEvent event) {
-        //no super.playerMove call overrides limited game area in AbstractGame
-        
         if(started) {
             if(checkpointManager.getFinish().isCheckLocation(event.getPlayer().getLocation())
                     && getNextCheckpoint(event.getPlayer())==checkpointManager.getCheckpoints().size()+1) {
@@ -81,12 +108,31 @@ public class RaceGame extends AbstractGame {
                 finished ++;
                 TitleUtil.showTitle(event.getPlayer(),ChatColor.GOLD+"FINISH", 
                                             "You are placed "+getPlace()+".");
+                int currentTime = ((RaceGameScoreboard)getBoard()).getTime(event.getPlayer().getName());
                 if(finished==1) {
-                    TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
-                                             ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
+                    Map.Entry<String,Object> no1 = highscore.getHighscore();
+                    getWinHighscore().setRaceWin(event.getPlayer().getUniqueId());
+                    if((int) no1.getValue() > currentTime){
+                        TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
+                                ChatColor.BLUE+event.getPlayer().getName(),"broke the record of the race and won.");
+                        newRecord(event.getPlayer());
+                        highscore.setHighscore(event.getPlayer().getUniqueId(),currentTime);
+                    }else{
+                        TitleUtil.showTitleAll(getOnlinePlayers(),event.getPlayer(),
+                                ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
+                    }
                 }
                 if(invisibile_allowed) {
                     event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+                    if(helmet_save.containsKey(event.getPlayer().getUniqueId())){
+                        event.getPlayer().getInventory().setHelmet(helmet_save.get(event.getPlayer().getUniqueId()));
+                        helmet_save.remove(event.getPlayer().getUniqueId());
+                    }
+                }
+                int pb = highscore.getPB(event.getPlayer().getUniqueId());
+                if(currentTime < pb){
+                    highscore.setPB(event.getPlayer().getUniqueId(),currentTime);
+                    sendNewPB(event.getPlayer(),currentTime);
                 }
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
@@ -140,15 +186,23 @@ public class RaceGame extends AbstractGame {
     @Override
     public void addPlayer(Player player) {
         super.addPlayer(player);
+        int i = highscore.getPB(player.getUniqueId());
         forceTeleport(player,getWarp());
         ((RaceGameScoreboard) getBoard()).addPlayer(player.getName());
         if(!save.contains(player)) {   //That it doesnt bug when a Player joins, leaves and joins again
             tp_save.put(player.getUniqueId(),getWarp());
             save.add(player);
         }
+
+        if(player.getInventory().getChestplate() != null){
+            Material chestplate = player.getInventory().getChestplate().getType();
+            if(chestplate == Material.ELYTRA) {
+                player.getInventory().setChestplate(new ItemStack(Material.AIR));
+                player.getInventory().addItem(new ItemStack(chestplate));
+                sendElytraRemoved(player);
+            }
+        }
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
-
-
     }
 
     @Override
@@ -158,14 +212,16 @@ public class RaceGame extends AbstractGame {
             if (player.isOnline()) {
                 Player player_on = (Player) player;
                 player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
+                if(helmet_save.containsKey(player.getUniqueId())){
+                    ((Player) player).getInventory().setHelmet(helmet_save.get(player.getUniqueId()));
+                    helmet_save.remove(player.getUniqueId());
+                }
             }
         }
         if(save.contains((Player) player)){
             tp_save.remove((Player) player);
             boolean remove = save.remove((Player) player);
         }
-
-
     }
 
     @Override
@@ -196,6 +252,13 @@ public class RaceGame extends AbstractGame {
         if(invisibile_allowed) {
             for (Player player : getOnlinePlayers()) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+                ItemStack helmet = player.getInventory().getHelmet();
+                if(helmet != null) {
+                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
+                    helmet_save.put(player.getUniqueId(),helmet);
+                    //player.getInventory().addItem(helmet);
+                    sendHelmetRemoved(player);
+                }
             }
         }
         resetNextCheckpoints();
@@ -253,6 +316,7 @@ public class RaceGame extends AbstractGame {
             Checkpoint start = checkpointManager.getStart();
             Location teleportLoc = start.getLocation();
             forceTeleport(player,teleportLoc);
+            setWarp(teleportLoc);
         }
     }
 
@@ -431,7 +495,44 @@ public class RaceGame extends AbstractGame {
         PluginData.getMessageUtil().sendErrorMessage(player, "You don´t have a save left.");
     }
 
+    private void sendHelmetRemoved(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "You will get your helmet back after the race.");
+    }
+
+    private void sendElytraRemoved(Player player) {
+        PluginData.getMessageUtil().sendInfoMessage(player, "The elytra was put into your inventory.");
+    }
+
     private void sendNotAllowed(Player player) {
         PluginData.getMessageUtil().sendErrorMessage(player, "This is not allowed.");
+    }
+
+    private void sendNewPB(Player player, Integer PB){
+        player.playEffect(player.getLocation(),Effect.FIREWORK_SHOOT,2);
+        PluginData.getMessageUtil().sendInfoMessage(player, "You got a new personal best with "+PB);
+    }
+
+    private void sendPB(Player player, Integer PB){
+        PluginData.getMessageUtil().sendInfoMessage(player, "Your personal best for this race is "+PB);
+    }
+
+    private void sendTop5(Player player, String top5){
+        PluginData.getMessageUtil().sendInfoMessage(player, "These are the Top 5 "+top5);
+    }
+
+    private void newRecord(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"You broke the record of the race.");
+    }
+
+    private void sendReset(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"Record of the race was reset.");
+    }
+
+    public void setRaceName(String name){
+        this.raceName = name;
+    }
+
+    public String getRaceName(){
+        return this.raceName;
     }
 }

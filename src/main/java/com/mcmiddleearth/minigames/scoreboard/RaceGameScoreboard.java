@@ -119,12 +119,21 @@ public class RaceGameScoreboard extends GameScoreboard{
     public void finish(String playerName) {
         finishObjective.getScore(playerName).setScore(time);
     }
+
+    public int getTime(String playerName){
+        return finishObjective.getScore(playerName).getScore();
+    }
     
     public void addPlayer(String playerName) {
         Score score = startObjective.getScore(playerName);
         score.setScore(0);
     }
-    
+
+    public void addHighscore(String playerName,Integer time){
+        Score score = startObjective.getScore("Record: "+playerName+" with");
+        score.setScore(time);
+    }
+
     public void showStart() {
         startObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
     }

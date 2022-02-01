@@ -1,5 +1,10 @@
 package com.mcmiddleearth.minigames.geoGuessr;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.mariadb.jdbc.MySQLDataSource;
 
 import java.sql.Connection;
@@ -28,7 +33,7 @@ public class GeoGuessrWarps {
     private final String dbIp;
     private final int port;
 
-    private Map config = new HashMap();
+    //private Map config = new HashMap();
 
     private final MySQLDataSource dataBase;
 
@@ -45,7 +50,8 @@ public class GeoGuessrWarps {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    /*  TESTING
+    private BukkitTask keepAliveTask;
+    /*
     private static String[][] warp_list = {
             {"test0", "0", "70", "0",},
             {"test 1", "1", "70", "1"},
@@ -60,22 +66,27 @@ public class GeoGuessrWarps {
         return warp_list;
     }
     */
-
-
-
     public GeoGuessrWarps() {
-        dbUser = (String) config.get("user");
-        dbPassword = (String) config.get("password");//,"mywarp");
-        dbName = (String) config.get("dbName");//,"mywarp");
-        dbIp = (String) config.get("ip");//, "localhost");
-        port = (Integer) config.get("port");//,3306);
+        Plugin plugin = MiniGamesPlugin.getPluginInstance();
+        ConfigurationSection dbConfig = plugin.getConfig().getConfigurationSection("sqlConnection");
+        dbUser = dbConfig.getString("user");
+        dbPassword = dbConfig.getString("password");
+        dbName = dbConfig.getString("name");
+        dbIp = dbConfig.getString("localhost");
+        port = dbConfig.getInt("port");
         dataBase = new MySQLDataSource(dbIp, port, dbName);
         connect();
-        boolean check = checkConnection();
+        keepAliveTask = new BukkitRunnable(){
+            @Override
+            public void run(){checkConnection();}
+        }.runTaskTimerAsynchronously(MiniGamesPlugin.getPluginInstance(),0,1200);
     }
 
-    public void disconnect() {
+    public synchronized void disconnect() {
         connected = false;
+        if(keepAliveTask !=null){
+            keepAliveTask.cancel();
+        }
         try {
             dbConnection.close();
         } catch (SQLException ex) {
@@ -83,7 +94,7 @@ public class GeoGuessrWarps {
         }
     }
 
-    private boolean checkConnection() {
+    private synchronized void checkConnection() {
         try {
             if (connected && dbConnection.isValid(5)) {
                 connected = true;
@@ -92,22 +103,26 @@ public class GeoGuessrWarps {
                 if (dbConnection != null) {
                     dbConnection.close();
                 }
-                connect();
+                new BukkitRunnable(){
+                    @Override
+                    public void run(){
+                        connect();
+                        MiniGamesPlugin.getPluginInstance().getLogger().log(Level.INFO,"Reconnection to warp database.");
+                    }
+                }.runTaskAsynchronously(MiniGamesPlugin.getPluginInstance());
             }
-            return true;
         } catch (SQLException ex) {
             Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, "No DB connection!!", ex);
             connected = false;
-            return false;
         }
     }
 
-    private void connect() {
+    private synchronized void connect() {
         try {
             dbConnection = dataBase.getConnection(dbUser, dbPassword);
-            getWarp = dbConnection.prepareStatement("SELECT warp.name, warp.x, warp.y, warp.z FROM warp WHERE warp.type = 1 AND world.uuid = ?");
+            getWarp = dbConnection.prepareStatement("SELECT warp.name, warp.x, warp.y, warp.z FROM warp WHERE warp.type = 1 AND warp.world_id = ?");
             getWarp.setQueryTimeout(1);
-            getRows = dbConnection.prepareStatement("SELECT COUNT(warp.name) FROM warp WHERE warp.type = 1 AND world.uuid = ?");
+            getRows = dbConnection.prepareStatement("SELECT COUNT(warp.name) FROM warp WHERE warp.type = 1 AND warp.world_id = ?");
             getWarp.setQueryTimeout(1);
             connected = true;
         } catch (SQLException ex) {
@@ -116,30 +131,35 @@ public class GeoGuessrWarps {
         }
     }
 
-    public String[][] getWarps(UUID uuid) {
+    public synchronized String[][] getWarps(UUID uuid) {
         int i = 0;
         if (connected) {
             try {
-                getRows.setString(1, String.valueOf(uuid));
-                getWarp.setString(1, String.valueOf(uuid));
+                String str_uuid = "2";
+                getRows.setString(1, String.valueOf(str_uuid));
+                getWarp.setString(1, String.valueOf(str_uuid));
                 ResultSet count = getRows.executeQuery();
-                int rows = count.getInt("COUNT(warp.name)");
-                String[][] warps = new String[rows][4];
+                if (count.next()) {
+                    int rows = count.getInt("COUNT(warp.name)");
+                    String[][] warps = new String[rows][4];
 
-                ResultSet result = getWarp.executeQuery();
-                do {
-                    warps[i][0] = result.getString("warp.name");
-                    warps[i][1] = result.getString("warp.x");
-                    warps[i][2] = result.getString("warp.y");
-                    warps[i][3] = result.getString("warp.z");
-                    i++;
-                } while (result.next());
-                return warps;
+                    ResultSet result = getWarp.executeQuery();
+
+                    if (result.next()) {
+                        do {
+                            warps[i][0] = result.getString("warp.name");
+                            warps[i][1] = result.getString("warp.x");
+                            warps[i][2] = result.getString("warp.y");
+                            warps[i][3] = result.getString("warp.z");
+                            i++;
+                        } while (result.next());
+                        return warps;
+                    }
+                }
             } catch (SQLException throwables) {
                 Logger.getLogger(GeoGuessrWarps.class.getName()).log(Level.SEVERE, null, throwables);
                 connected = false;
             }
-
         }
         return null;
     }

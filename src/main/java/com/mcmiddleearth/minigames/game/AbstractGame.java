@@ -7,18 +7,15 @@ package com.mcmiddleearth.minigames.game;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.mcmiddleearth.guidebook.command.GuidebookOff;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
-import com.mcmiddleearth.minigames.game.GeoGuessrGame;
-import com.mcmiddleearth.plugins.dynamicbooks.DynamicBooksPlugin;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
@@ -27,10 +24,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
-import com.mcmiddleearth.plugins.dynamicbooks.manager.BookManager;
-import com.mcmiddleearth.guidebook.command.GuidebookOff;
 
-import java.awt.print.Book;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -75,6 +69,8 @@ public abstract class AbstractGame {
     
     private boolean managerOnlineLastTime = true; //for cleanup task
 
+    private gameWinHighscore winHighscore;
+
     public AbstractGame(Player manager, String name, GameType type, GameScoreboard board) {
         this.name = name;
         this.manager = manager;
@@ -86,6 +82,11 @@ public abstract class AbstractGame {
             if(type != GameType.GEO_GUESSR) {
                 warp = manager.getLocation();
             }
+            if(type == GameType.HIDE_AND_SEEK){
+                team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            }
+            gameWinHighscore winHighscore = new gameWinHighscore();
+            this.winHighscore = winHighscore;
             manager.setScoreboard(getBoard().getScoreboard());
             BukkitRunnable cleanupTask = new BukkitRunnable() {
                 @Override
@@ -493,6 +494,8 @@ public abstract class AbstractGame {
         return warp;
     }
 
+    public void setWarp(Location loc){this.warp = loc;}
+
     public boolean isWarpAllowed() {
         return warpAllowed;
     }
@@ -539,6 +542,10 @@ public abstract class AbstractGame {
 
     public void setGm2Forced(boolean gm2Forced) {
         this.gm2Forced = gm2Forced;
+    }
+
+    public gameWinHighscore getWinHighscore(){
+        return winHighscore;
     }
 
     public GameScoreboard getBoard() {
