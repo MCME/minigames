@@ -72,7 +72,7 @@ public class GeoGuessrWarps {
         dbUser = dbConfig.getString("user");
         dbPassword = dbConfig.getString("password");
         dbName = dbConfig.getString("name");
-        dbIp = dbConfig.getString("localhost");
+        dbIp = dbConfig.getString("ip");
         port = dbConfig.getInt("port");
         dataBase = new MySQLDataSource(dbIp, port, dbName);
         connect();
