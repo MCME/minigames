@@ -6,6 +6,11 @@ import com.mcmiddleearth.minigames.game.HideAndSeekGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class HaSHiddenList extends AbstractGameCommand{
 
     public HaSHiddenList(String... permissionNodes) {

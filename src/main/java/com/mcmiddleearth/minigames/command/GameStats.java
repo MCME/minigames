@@ -7,6 +7,11 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class GameStats extends AbstractGameCommand{
 
     public GameStats(String... permissionNodes) {

@@ -9,6 +9,11 @@ import org.bukkit.plugin.Plugin;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class GeoGuessrConversation implements ConversationAbandonedListener {
 
     private final ConversationFactory factory;

@@ -13,6 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class raceHighscoreAbstract {
 
     private File file;

@@ -6,8 +6,12 @@ import com.mcmiddleearth.pluginutil.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
+
+/**
+ *
+ * @author Jubo
+ */
 
 public class GameLeaderboard extends AbstractGameCommand{
 

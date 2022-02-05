@@ -19,10 +19,6 @@ import org.bukkit.event.Listener;
 import java.util.*;
 
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
-
 
 import static com.mcmiddleearth.minigames.data.PluginData.getGame;
 
@@ -94,7 +90,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         GeoGuessrWarps geoGuessrWarps = new GeoGuessrWarps();
         String[][] warp_list = geoGuessrWarps.getWarps(world);
         geoGuessrWarps.disconnect();
-        //String[][] warp_list = geoGuessrWarps.getWarps_test();
         int warp_count = 0;
         if(!(geoArea.getName().equalsIgnoreCase("all"))) {
             double x = 0;
@@ -199,13 +194,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
             for (Player player : getOnlinePlayers()) {
-                    /*
-                    Plugin plugin = MiniGamesPlugin.getPluginInstance();
-
-                    for(Player player2 : getOnlinePlayers()) {
-                        player.hidePlayer(plugin, player2);
-                    }
-                     */
                 warp = new Location(player.getWorld(), x, y, z);
                 teleportPlayer(player, x, y, z);
                 if (player.isConversing()) {
@@ -226,30 +214,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     private void teleportPlayer(Player player, double x, double y, double z){
-        /*
-        Random generator = new Random();
-        int x_temp = generator.nextInt(this.radius-1);
-        int z_temp = generator.nextInt(this.radius-1);
-
-        int i = generator.nextInt(2);
-        int j = generator.nextInt(2);
-
-        if(i == 0 && j == 0){
-            x = x - x_temp;
-            z = z - z_temp;
-        }else if(i == 0 && j == 1){
-            x = x - x_temp;
-            z = z + z_temp;
-        }else if(i == 1 && j == 0){
-            x = x + x_temp;
-            z = z - z_temp;
-        }else if(i == 1 && j == 1){
-            x = x + x_temp;
-            z = z + z_temp;
-        }
-        Location location_temp = new Location(player.getPlayer().getWorld(), x, y, z);
-        y = player.getWorld().getHighestBlockYAt(location_temp);
-        y++;  */
         Location location = new Location(player.getPlayer().getWorld(), x, y, z);
         forceTeleport(player,location);
     }
@@ -273,74 +237,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         if(started){
             super.playerMove(event);
         }
-        //square instead of Circle radius is half the side length, no checking for y because of the random TP inside there
-        /*
-        if(started) {
-            Location to = event.getTo();
-            if (!to.getWorld().equals(getWarp().getWorld())) {
-                event.getPlayer().teleport(getWarp(), TeleportCause_FORCE);
-                PluginData.getMessageUtil().sendErrorMessage(event.getPlayer(), "You can't go to another world while in this game.");
-                return;
-            }
-            Location from = event.getFrom();
-            Location warp = getWarp();
-            if ((to.getX() > (warp.getX() + allowedRadius(event.getPlayer())) || to.getZ() > (warp.getZ() + allowedRadius(event.getPlayer()))) || (to.getX() < (warp.getX() - allowedRadius(event.getPlayer())) || to.getZ() < (warp.getZ() - allowedRadius(event.getPlayer())))) {
-
-                if(!leaveMessaged.contains(event.getPlayer().getUniqueId())) {
-                    sendLeaveNotAllowed(event.getPlayer());
-                    final UUID uuid = event.getPlayer().getUniqueId();
-                    leaveMessaged.add(uuid);
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            leaveMessaged.remove(uuid);
-                        }
-                    }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 200);
-                }
-                Vector vel = to.toVector().subtract(event.getFrom().toVector());
-                Vector radial = event.getPlayer().getLocation().toVector().subtract(getWarp().toVector());
-                Vector tangential = new Vector(radial.getZ(),radial.getY(), -radial.getX());
-                tangential = tangential.multiply(1/tangential.length());
-                double dot = tangential.dot(vel);
-                tangential = tangential.multiply(tangential.dot(vel));
-                Location newTo = new Location(from.getWorld(),
-                        from.getX()+tangential.getX(),
-                        from.getY()+tangential.getY(),
-                        from.getZ()+tangential.getZ(),
-                        to.getYaw(), to.getPitch());
-                Vector radialOld = radial.clone();
-                Vector radialNorm = radial.multiply(1/radial.length()).clone();
-                if((newTo.getX() > (warp.getX() + allowedRadius(event.getPlayer())) || newTo.getZ() > (warp.getZ() + allowedRadius(event.getPlayer()))) || (newTo.getX() < (warp.getX() - allowedRadius(event.getPlayer())) || newTo.getZ() < (warp.getZ() - allowedRadius(event.getPlayer())))) {
-                    radial = radial.multiply(allowedRadius(event.getPlayer()));
-                    radial = radial.subtract(radialNorm.multiply(0.01));
-                    radial = radial.subtract(radialOld);
-                    newTo = newTo.add(radial);
-                }
-                final Player play = event.getPlayer();
-                if(!newTo.getBlock().isEmpty()) {
-                    newTo.setY(newTo.getBlockY()+1);
-                }
-                final Location loc = newTo.clone();
-                radialNorm = radialNorm.multiply(-0.4);
-                //radialNorm.setY(0);
-                if(!loc.clone().add(radialNorm.clone().multiply(3)).getBlock().isEmpty()) {
-                    radialNorm.setY(0);
-                }
-                if(!loc.clone().add(radialNorm.clone().multiply(3)).getBlock().isEmpty()) {
-                    radialNorm = new Vector(0,0,0);
-                }
-                final Vector push = radialNorm;
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        play.teleport(loc, TeleportCause_FORCE);
-                        play.setVelocity(push);
-                    }
-                }.runTaskLater(MiniGamesPlugin.getPluginInstance(), 1);
-            }
-        }
-
-         */
     }
 
     @Override
@@ -430,17 +326,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
-        /*
-        if(!isPlayerInRound()) {
-            for (Player player : getOnlinePlayers()) {
-
-                Plugin plugin = MiniGamesPlugin.getPluginInstance();
-                for (Player player2 : getOnlinePlayers()) {
-                    player.showPlayer(plugin, player2);
-                }
-            }
-        }
-         */
         if (row < 0) {
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
@@ -500,5 +385,4 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private void sendFirst(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correct!");
     }
-
 }
