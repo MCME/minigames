@@ -25,7 +25,7 @@ public class GeoGameSetArea extends AbstractGameCommand{
     @Override
     protected void execute(CommandSender cs, String... args){
         AbstractGame game = getGame((Player)cs);
-        if(game != null && isManager((Player)cs, game) && isCorrectGameType((Player)cs,game,GameType.GEO_GUESSR)) {
+        if(game != null && isManager((Player)cs, game) && isCorrectGameType((Player)cs,game,GameType.GEO_GUESSR) && !(game.isAnnounced())) {
             GeoGuessrAreas geoarea = new GeoGuessrAreas(args[0]);
             if(geoarea.containsArea(args[0])){
                 String area = geoarea.getName();

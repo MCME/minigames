@@ -131,13 +131,19 @@ public class GeoGuessrWarps {
         }
     }
 
-    public synchronized String[][] getWarps(UUID uuid) {
+    public synchronized String[][] getWarps(World world) {
         int i = 0;
         if (connected) {
             try {
                 String str_uuid = "2";
-                getRows.setString(1, String.valueOf(str_uuid));
-                getWarp.setString(1, String.valueOf(str_uuid));
+                if (world.getName().equalsIgnoreCase("world")) {
+                    str_uuid = "2";
+                } else if (world.getName().equalsIgnoreCase("moria")) {
+                    str_uuid = "5";
+                }
+
+                getRows.setString(1, str_uuid);
+                getWarp.setString(1, str_uuid);
                 ResultSet count = getRows.executeQuery();
                 if (count.next()) {
                     int rows = count.getInt("COUNT(warp.name)");

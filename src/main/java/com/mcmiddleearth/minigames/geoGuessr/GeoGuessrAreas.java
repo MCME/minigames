@@ -1,12 +1,15 @@
 package com.mcmiddleearth.minigames.geoGuessr;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.game.GeoGuessrGame;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+
+/**
+ *
+ * @author Jubo
+ */
 
 public class GeoGuessrAreas {
 
@@ -38,6 +41,10 @@ public class GeoGuessrAreas {
 
     public String getName(){
         return config.getConfigurationSection(area).getString("name");
+    }
+
+    public void setArea(String area){
+        this.area = area;
     }
 
     public boolean containsArea(String area){

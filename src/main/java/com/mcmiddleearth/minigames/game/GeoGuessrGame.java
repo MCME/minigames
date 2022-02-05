@@ -62,7 +62,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private final Map<Player,Conversation> playersInRound = new HashMap<>();
 
-    private final UUID uuid;
+    private final World world;
 
     private GeoGuessrAreas geoArea;
 
@@ -72,13 +72,14 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         setTeleportAllowed(false);
         setFlightAllowed(false);
         setGm2Forced(true);
-        setCollision(true);
+        setCollision(false);
         sendReminder(manager);
-        uuid = manager.getWorld().getUID();
+        world = manager.getWorld();
         geoArea = new GeoGuessrAreas(area);
     }
 
     public void setArea(String area){
+        geoArea.setArea(area);
         this.area = area;
     }
 
@@ -88,10 +89,10 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         this.row = roundNumber - 1;
     }
 
-    public String[][] getWarpList(UUID uuid) {
+    public String[][] getWarpList(World world) {
 
         GeoGuessrWarps geoGuessrWarps = new GeoGuessrWarps();
-        String[][] warp_list = geoGuessrWarps.getWarps(uuid);
+        String[][] warp_list = geoGuessrWarps.getWarps(world);
         geoGuessrWarps.disconnect();
         //String[][] warp_list = geoGuessrWarps.getWarps_test();
         int warp_count = 0;
@@ -127,7 +128,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void getXWarps(){
-        String[][] warp_list = getWarpList(uuid);
+        String[][] warp_list = getWarpList(world);
         String[][] x_warps = new String[roundNumber][4];
         int warp = 0;
         int i = 0;
@@ -472,6 +473,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         if(!first){
             first = true;
             ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName());
+            sendFirst(player);
             return true;
         }
         return false;
@@ -495,8 +497,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }
 
-    private void sendLeaveNotAllowed(Player player) {
-        PluginData.getMessageUtil().sendErrorMessage(player, "You are not allowed to leave game area.");
+    private void sendFirst(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correct!");
     }
 
 }
