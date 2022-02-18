@@ -86,6 +86,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void restartGame(){
+        this.row = roundNumber - 1;
         ((GeoGuessrGameScoreboard)getBoard()).restart();
         getXWarps();
     }
