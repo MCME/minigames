@@ -108,4 +108,12 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
     public void playerFinished(){
         unfinishedScore.setScore(unfinishedScore.getScore()-1);
     }
+
+    public void restart(){
+        currentRound = 0;
+        for(String name: players){
+            geoObjective.getScore(name).setScore(0);
+        }
+        setRoundDisplay();
+    }
 }
