@@ -7,7 +7,6 @@ package com.mcmiddleearth.minigames.game;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.mcmiddleearth.guidebook.command.GuidebookOff;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
@@ -18,7 +17,6 @@ import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
@@ -29,7 +27,6 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 import com.mcmiddleearth.guidebook.command.GuidebookOff;
 
-import java.awt.print.Book;
 import java.util.*;
 import java.util.logging.Logger;
 
