@@ -38,6 +38,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
+    private boolean signHide = true;
+
     private boolean first = false;
 
     private final List<String> guidebook = new ArrayList<>();
@@ -206,8 +208,10 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
             warp = new Location(world, x, y, z);
-            signs = new GeoGuessrSigns();
-            signs.removeSigns(warp,radius);
+            if(signHide){
+                signs = new GeoGuessrSigns();
+                signs.removeSigns(warp,radius);
+            }
 
             for (Player player : getOnlinePlayers()) {
                 teleportPlayer(player, x, y, z);
@@ -341,7 +345,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
-        signs.replaceSigns();
+        if(signHide){
+            signs.replaceSigns();
+        }
         if (row < 0) {
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
@@ -378,6 +384,18 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void end(Player sender){
+        super.end(sender);
+        if(signHide){
+            signs.replaceSigns();
+        }
+    }
+
+    public void setSigns(boolean bool){
+        this.signHide = bool;
     }
 
     public void GeoGameWinner(Player player){

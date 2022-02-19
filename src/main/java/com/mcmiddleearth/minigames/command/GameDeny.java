@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ public class GameDeny extends AbstractGameCommand{
     public GameDeny(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Denies various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|save|collision|invisible: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.'save' denies /game tpcp in races.'invisible' denies Invisibility in races.");
+        setUsageDescription(" flight|teleport|join|warp|save|collision|invisible|signs: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.'save' denies /game tpcp in races.'invisible' denies Invisibility in races.'signs' removes Signs in GeoGuessr");
     }
     
     @Override
@@ -68,6 +69,15 @@ public class GameDeny extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
+            else if(args[0].equalsIgnoreCase("signs")){
+                if(game instanceof GeoGuessrGame){
+                    GeoGuessrGame geogame = (GeoGuessrGame) game;
+                    geogame.setSigns(true);
+                    sendSigns(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -107,7 +117,12 @@ public class GameDeny extends AbstractGameCommand{
     private void sendInvalidArgumentMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Invalid Argument.");
     }
+
+    private void sendSigns(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You switched signs in GeoGuessr off.");
+    }
+
     private void sendNotPossibleMessage(CommandSender cs) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "This is only for races.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "This is not possible.");
     }
 }
