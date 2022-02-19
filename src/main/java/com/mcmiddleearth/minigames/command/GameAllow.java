@@ -22,7 +22,7 @@ public class GameAllow extends AbstractGameCommand{
     public GameAllow(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Allows various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.");
+        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible|signs: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.'signs' allow signs fr GeoGuessr");
     }
     
     @Override

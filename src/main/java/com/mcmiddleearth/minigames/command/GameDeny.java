@@ -21,7 +21,7 @@ public class GameDeny extends AbstractGameCommand{
     public GameDeny(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Denies various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|save|collision|invisible: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.'save' denies /game tpcp in races.'invisible' denies Invisibility in races.");
+        setUsageDescription(" flight|teleport|join|warp|save|collision|invisible|signs: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. 'warp' denies players to warp to game location. 'spectate' denies players to see the game scoreboad without participating. 'collision' denies players to collide in games.'save' denies /game tpcp in races.'invisible' denies Invisibility in races.'signs' removes Signs in GeoGuessr");
     }
     
     @Override
