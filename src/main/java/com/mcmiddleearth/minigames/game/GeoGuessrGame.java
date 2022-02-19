@@ -395,7 +395,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void setSigns(boolean bool){
-        this.signHide = bool;
+        if(!started){
+            this.signHide = bool;
+        }
     }
 
     public void GeoGameWinner(Player player){
