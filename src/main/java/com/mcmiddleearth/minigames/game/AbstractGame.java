@@ -12,6 +12,7 @@ import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
 import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+import com.mcmiddleearth.guidebook.command.GuidebookOff;
 
 import java.util.*;
 import java.util.logging.Logger;

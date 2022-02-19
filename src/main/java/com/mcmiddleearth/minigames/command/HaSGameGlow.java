@@ -7,6 +7,11 @@ import com.mcmiddleearth.minigames.game.HideAndSeekGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class HaSGameGlow extends AbstractGameCommand{
     public HaSGameGlow(String... permissionNodes) {
         super(1, true, permissionNodes);

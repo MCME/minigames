@@ -12,7 +12,6 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.DynmapUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
-import com.sun.tools.jdi.Packet;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -34,7 +33,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -93,9 +91,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 hidePlayer(player);
             }
         }
-        for(Player player:hiddenPlayers) {
-            //player.setSneaking(true);
-        }
         ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
         sendStartHideMessage();
         sendRadiusMessage();
@@ -153,11 +148,12 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     private void hidePlayer(Player player) {
         hiddenPlayers.add(player);
         DynmapUtil.hide(player);
+        Team team = player.getScoreboard().getTeam("noCollision");
+        team.addEntry(player.getName());
     }
     
     private void unhidePlayer(Player player) {
         hiddenPlayers.remove(player);
-        //player.setSneaking(false);
         Team team = player.getScoreboard().getTeam("noCollision");
         team.removeEntry(player.getName());
         DynmapUtil.show(player);
@@ -401,9 +397,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         for(Player player : getOnlinePlayers()) {
             if(!PlayerUtil.isSame(player, seeker)) {
                 TitleUtil.showTitle(player, ChatColor.BLUE+" FREEZE!!!",seeker.getName() + " is seeking you.");
-                if(PlayerUtil.getOnlinePlayer(player)!=null) {
-                    PluginData.getMessageUtil().sendInfoMessage(PlayerUtil.getOnlinePlayer(player), "Hold SHIFT to hide your name tag.");
-                }
             }
         }
     }
