@@ -54,6 +54,7 @@ public class PluginData {
                                                     + File.separator + "Races");
     private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
     private static final File geoGuessrDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessr");
+    private static final File geoGuessrRestoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessrRestore");
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
     private static final File pvpDirectory = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
@@ -90,6 +91,16 @@ public class PluginData {
 
         if(!loadoutDirectory.exists()) {
             loadoutDirectory.mkdirs();
+        }
+
+        if(!geoGuessrRestoreDir.exists()){
+            geoGuessrRestoreDir.mkdirs();
+            File restore = new File(geoGuessrRestoreDir,"restoreGeo.yml");
+            try {
+                restore.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if(!highscoreDir.exists()){
@@ -297,6 +308,8 @@ public class PluginData {
     }
 
     public static File getGeoGuessrDir(){return geoGuessrDir;}
+
+    public static File getGeoGuessrRestoreDir(){return geoGuessrRestoreDir;}
 
     public static File getHighscoreDir(){
         return highscoreDir;

@@ -4,6 +4,7 @@ import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.conversation.geoguessr.GeoGuessrConversation;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrAreas;
+import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrSigns;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrWarps;
 import com.mcmiddleearth.minigames.scoreboard.GeoGuessrGameScoreboard;
 import com.mcmiddleearth.pluginutil.DynmapUtil;
@@ -60,6 +61,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private final World world;
 
+    private GeoGuessrSigns signs;
+
     private GeoGuessrAreas geoArea;
 
     public GeoGuessrGame(Player manager, String name) {
@@ -72,6 +75,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         sendReminder(manager);
         world = manager.getWorld();
         geoArea = new GeoGuessrAreas(area);
+        GeoGuessrSigns signs = new GeoGuessrSigns();
+        this.signs = signs;
     }
 
     public void setArea(String area){
@@ -89,6 +94,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         this.row = roundNumber - 1;
         ((GeoGuessrGameScoreboard)getBoard()).restart();
         getXWarps();
+        this.signs = new GeoGuessrSigns();
     }
 
     public String[][] getWarpList(World world) {
@@ -199,8 +205,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             GeoGuessrConversation geoGuessrConversation = new GeoGuessrConversation(MiniGamesPlugin.getPluginInstance(), guessTime);
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
+            warp = new Location(world, x, y, z);
+            signs = new GeoGuessrSigns();
+            signs.removeSigns(warp,radius);
+
             for (Player player : getOnlinePlayers()) {
-                warp = new Location(player.getWorld(), x, y, z);
                 teleportPlayer(player, x, y, z);
                 if (player.isConversing()) {
                     PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next Location to you as you are already in another conversation.");
@@ -332,6 +341,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
+        signs.replaceSigns();
         if (row < 0) {
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
