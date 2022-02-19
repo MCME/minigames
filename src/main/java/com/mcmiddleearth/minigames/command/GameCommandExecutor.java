@@ -93,6 +93,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("resetscores",new RaceGameDeleteHighscore(Permissions.STAFF));
         addCommandHandler("stats",new GameStats(Permissions.USER));
         addCommandHandler("leaderboard",new GameLeaderboard(Permissions.USER));
+        addCommandHandler("restoresigns",new GeoGameRestore(Permissions.STAFF));
     }
     
     @Override
