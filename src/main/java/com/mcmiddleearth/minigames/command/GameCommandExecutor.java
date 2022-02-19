@@ -50,7 +50,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("random", new QuizGameRandom(Permissions.MANAGER));
         addCommandHandler("ready", new GameReady(Permissions.MANAGER));
         addCommandHandler("remove", new RaceGameRemove(Permissions.MANAGER));
-        addCommandHandler("restart", new QuizGameRestart(Permissions.MANAGER));
+        addCommandHandler("restart", new GameRestart(Permissions.MANAGER));
         addCommandHandler("reviewquestions", new QuizGameQuestionsReview(Permissions.STAFF));
         addCommandHandler("savemarker", new RaceGameSaveMarker(Permissions.MANAGER));
         addCommandHandler("savequiz", new QuizGameSave(Permissions.MANAGER));
