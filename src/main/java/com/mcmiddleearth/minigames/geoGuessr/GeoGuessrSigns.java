@@ -81,7 +81,6 @@ public class GeoGuessrSigns implements IStoragePlot {
                             sign.setLine(i-1,"");
                         }
                         blocks.put(b.getLocation(),signText);
-                        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(b.getLocation()));
                         sign.update();
                     }
                 }
