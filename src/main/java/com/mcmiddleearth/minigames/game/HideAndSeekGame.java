@@ -386,7 +386,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
-    private void sendRadiusMessage(){
+    public void sendRadiusMessage(){
         for(Player player : getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(player, "The radius is "+ String.valueOf(radius));
         }
@@ -455,6 +455,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     public void setSeekTime(int seekTime) {
         this.seekTime = seekTime;
     }
+
+    public void setRadius(int radius){ this.radius = radius; }
 
     public void setHideTime(int hideTime) {
         this.hideTime = hideTime;
