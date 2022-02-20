@@ -3,7 +3,6 @@ package com.mcmiddleearth.minigames.geoGuessr;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.pluginutil.plotStoring.IStoragePlot;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,6 +15,11 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+/**
+ *
+ * @author Jubo
+ */
 
 public class GeoGuessrSigns implements IStoragePlot {
 
@@ -50,7 +54,7 @@ public class GeoGuessrSigns implements IStoragePlot {
 
     public GeoGuessrSigns(){}
 
-    // other things to do. hide radius during the game, new minigame catch, add a round during game geo
+    // other things to do: new minigame catch
 
     public void removeSigns(Location location,double radius) {
         if(!restoreDir.exists()) {
