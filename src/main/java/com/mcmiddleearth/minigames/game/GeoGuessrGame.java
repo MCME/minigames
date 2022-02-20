@@ -419,6 +419,6 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     private void sendFirst(Player player){
-        PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correct!");
+        PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correctly!");
     }
 }
