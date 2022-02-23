@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.scoreboard;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import org.bukkit.ChatColor;
+import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -30,6 +31,8 @@ public class HideAndSeekGameScoreboard extends GameScoreboard {
     private final static String playerCountTitle = "Next Seeker: ";
     
     private BukkitRunnable timerTask;
+
+    private BossBar bar;
     
     public HideAndSeekGameScoreboard() {
         super(playerCountTitle+"?");
@@ -44,11 +47,13 @@ public class HideAndSeekGameScoreboard extends GameScoreboard {
         locatedPlayerScore = seekingObjective.getScore(ChatColor.GREEN+"located Players: ");
     }
     
-    public void startHiding(String seeker, int hidingTime) {
+    public void startHiding(String seeker, int hidingTime,BossBar bar) {
+        this.bar = bar;
         hidingObjective.setDisplayName(title+seeker);
         seekingObjective.setDisplayName(title+seeker);
         hidingTimeScore.setScore(hidingTime);
         hidingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        double progress = 1.0 / hidingTime;
         if(timerTask!=null) {
             timerTask.cancel();
         }
@@ -57,17 +62,22 @@ public class HideAndSeekGameScoreboard extends GameScoreboard {
             public void run() {
                 hidingTimeScore.setScore(hidingTimeScore.getScore()-1);
                 if(hidingTimeScore.getScore()<1) {
+                    bar.setProgress(1.0);
                     cancel();
+                }else{
+                    bar.setProgress(bar.getProgress()-progress);
                 }
             }};
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);
     }
     
-    public void startSeeking(int seekingTime) {
+    public void startSeeking(int seekingTime,BossBar bar) {
+        this.bar = bar;
         seekingTimeScore.setScore(seekingTime);
         hiddenPlayerScore.setScore(getPlayerCount()-1);
         locatedPlayerScore.setScore(0);
         seekingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        double progress = 1.0 / seekingTime;
         if(timerTask!=null) {
             timerTask.cancel();
         }
@@ -76,7 +86,10 @@ public class HideAndSeekGameScoreboard extends GameScoreboard {
             public void run() {
                 seekingTimeScore.setScore(seekingTimeScore.getScore()-1);
                 if(seekingTimeScore.getScore()<1) {
+                    bar.setProgress(1.0);
                     cancel();
+                }else{
+                    bar.setProgress(bar.getProgress()-progress);
                 }
             }};
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);

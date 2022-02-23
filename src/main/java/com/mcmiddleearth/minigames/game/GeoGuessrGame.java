@@ -13,6 +13,9 @@ import com.mcmiddleearth.pluginutil.TitleUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -67,6 +70,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private GeoGuessrAreas geoArea;
 
+    private BossBar bar;
+
     public GeoGuessrGame(Player manager, String name) {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
@@ -79,6 +84,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         geoArea = new GeoGuessrAreas(area);
         GeoGuessrSigns signs = new GeoGuessrSigns();
         this.signs = signs;
+
+        BossBar bar = Bukkit.createBossBar(ChatColor.GREEN+"GeoGuessr", BarColor.GREEN, BarStyle.SOLID);
+        bar.setProgress(1.0);
+        bar.setVisible(true);
+        this.bar = bar;
     }
 
     public void setArea(String area){
@@ -164,6 +174,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         super.addPlayer(player);
         ((GeoGuessrGameScoreboard)getBoard()).addPlayer(player.getName());
         hidePlayer(player);
+        bar.addPlayer(player);
     }
 
     @Override
@@ -172,6 +183,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         if (player.isOnline()) {
             Player player_on = player.getPlayer();
             unhidePlayer(player_on);
+            bar.removePlayer(player_on);
             if (guidebook.contains(player_on.getName())) {
                 com.mcmiddleearth.guidebook.data.PluginData.include(player_on);
             }
@@ -202,7 +214,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             double y = Double.parseDouble(warp_list[row][2]);
             double z = Double.parseDouble(warp_list[row][3]);
 
-            (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer());
+            bar.setProgress(1.0);
+            (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer(),bar);
 
             GeoGuessrConversation geoGuessrConversation = new GeoGuessrConversation(MiniGamesPlugin.getPluginInstance(), guessTime);
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
@@ -345,10 +358,12 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
+        bar.setProgress(1.0);
         if(signHide){
             signs.replaceSigns();
         }
         if (row < 0) {
+            bar.setTitle(ChatColor.GREEN+"GeoGuessr");
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
                 if (manager != null) {
@@ -391,6 +406,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         super.end(sender);
         if(signHide){
             signs.replaceSigns();
+        }
+        for(Player player : getOnlinePlayers()){
+            bar.removePlayer(player);
         }
     }
 

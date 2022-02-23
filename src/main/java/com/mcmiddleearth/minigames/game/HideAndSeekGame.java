@@ -14,6 +14,9 @@ import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,6 +61,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     public final List<Player> hiddenPlayers = new ArrayList<>();
     
     private BukkitRunnable seekTask, stopTask;
+
+    private BossBar bar;
     
     public HideAndSeekGame(Player manager, String name) {
         super(manager, name, GameType.HIDE_AND_SEEK, new HideAndSeekGameScoreboard());
@@ -69,7 +74,14 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setGm2Forced(true);
         setCollision(true);
         announceGame();
+
+        BossBar bar = Bukkit.createBossBar("Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
+        bar.setProgress(1.0);
+        bar.setVisible(true);
+        this.bar = bar;
     }
+
+
     
     public void hiding(int radius) {
         if(radius>0) {
@@ -80,6 +92,10 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         this.hiding = true;
         this.seeking = false;
+
+        bar.setTitle("Hide and Seek: Hiding");
+        bar.setProgress(1.0);
+
         if(seeker == null || PlayerUtil.getOnlinePlayer(seeker)==null) {
             seeker = getOnlinePlayers().get(new Double(Math.floor(Math.random()*(getPlayers().size()))).intValue());
         }
@@ -91,7 +107,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 hidePlayer(player);
             }
         }
-        ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime);
+        ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime,bar);
         sendStartHideMessage();
         sendRadiusMessage();
         Location loc = getWarp().clone();
@@ -108,7 +124,13 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     public void seeking() {
         this.hiding = false;
         this.seeking = true;
-        ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime);
+
+        bar.setTitle(ChatColor.YELLOW+"Hide and Seek: Seeking");
+        bar.setProgress(1.0);
+        for(Player p : getOnlinePlayers()){
+            bar.addPlayer(p);
+        }
+        ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime,bar);
 
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
@@ -126,6 +148,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         if(stopTask!=null) {
             stopTask.cancel();
         }
+        bar.setTitle("Hide and Seek");
         sendStopSeekingMessage();
         for(Player player : getOnlinePlayers()) {
             if(hiddenPlayers.contains(player)) {
@@ -134,6 +157,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             player.setDisplayName(player.getName());
             player.setGlowing(false);
             forceTeleport(player,getWarp());
+            //bar.removePlayer(player);
         }
         this.seeking = false;
         this.hiding = false;
@@ -172,6 +196,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     public void addPlayer(Player player) {
         super.addPlayer(player);
         forceTeleport(player,getWarp());
+        bar.addPlayer(player);
     }
     
     @Override 
@@ -180,6 +205,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         if(player.isOnline()){
             Player player_on = (Player) player;
             player_on.setGlowing(false);
+            bar.removePlayer(player_on);
         }
         if(seeker != null && PlayerUtil.isSame(player,seeker)) {
             stop();
