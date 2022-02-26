@@ -3,16 +3,11 @@ package com.mcmiddleearth.minigames.command;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
 import com.mcmiddleearth.pluginutil.StringUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  *

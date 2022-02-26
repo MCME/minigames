@@ -5,6 +5,11 @@ import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrSigns;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
+
 public class GeoGameRestore extends AbstractGameCommand{
 
     public GeoGameRestore(String... permissionNodes){

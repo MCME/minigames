@@ -7,13 +7,15 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.highscores.gameWinHighscore;
 import com.mcmiddleearth.minigames.highscores.raceHighscoreAbstract;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.raceCheckpoint.CheckpointManager;
 import com.mcmiddleearth.minigames.scoreboard.RaceGameScoreboard;
 import com.mcmiddleearth.pluginutil.TitleUtil;
 import org.bukkit.*;
+//import org.bukkit.boss.BarColor;
+//import org.bukkit.boss.BarStyle;
+//import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -45,6 +47,8 @@ public class RaceGame extends AbstractGame {
     private final Map<UUID,Integer> nextCheckpoints = new HashMap<>();
 
     private final Map<UUID,ItemStack> helmet_save = new HashMap<>();
+
+    //private final Map<UUID,BossBar> bar = new HashMap<>();
 
     private Map<UUID,Location> tp_save = new HashMap<>();
 
@@ -134,6 +138,8 @@ public class RaceGame extends AbstractGame {
                     highscore.setPB(event.getPlayer().getUniqueId(),currentTime);
                     sendNewPB(event.getPlayer(),currentTime);
                 }
+                //bar.get(event.getPlayer().getUniqueId()).setProgress(0.0);
+                //bar.get(event.getPlayer().getUniqueId()).setTitle("Race: Finish");
             }
             for(Checkpoint check:checkpointManager.getCheckpoints()) {
                 int checkId = checkpointManager.getId(check);
@@ -141,6 +147,8 @@ public class RaceGame extends AbstractGame {
                         && checkId == getNextCheckpoint(event.getPlayer())) {
                     tp_save.replace(event.getPlayer().getUniqueId(),event.getPlayer().getLocation());
                     incrementCheckpoint(event.getPlayer());
+                    //bar.get(event.getPlayer().getUniqueId()).setProgress(bar.get(event.getPlayer().getUniqueId()).getProgress()+(double)(1/checkpointManager.getCheckpoints().size()));
+                    //bar.get(event.getPlayer().getUniqueId()).setTitle("Race: Checkpoint "+checkId);
                     PluginData.getMessageUtil().sendInfoMessage(event.getPlayer(),"You reached checkpoint "+checkId+".");
                     event.getPlayer().playEffect(check.getLocation(),Effect.CLICK2,0);
                     if(autoShow) {
@@ -203,6 +211,10 @@ public class RaceGame extends AbstractGame {
             }
         }
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
+
+        //bar.put(player.getUniqueId(),Bukkit.createBossBar(ChatColor.YELLOW+"Race", BarColor.YELLOW, BarStyle.SOLID));
+        //bar.get(player.getUniqueId()).setProgress(1.0);
+        //bar.get(player.getUniqueId()).setVisible(true);
     }
 
     @Override
@@ -226,6 +238,12 @@ public class RaceGame extends AbstractGame {
 
     @Override
     public void end(Player player) {
+        /*
+        for(Player p : getOnlinePlayers()){
+            bar.get(p.getUniqueId()).removePlayer(p);
+            bar.remove(p.getUniqueId());
+        }
+         */
         checkpointManager.deleteCheckpoints();
         if(steady) cagePlayer(false);
         super.end(player);
