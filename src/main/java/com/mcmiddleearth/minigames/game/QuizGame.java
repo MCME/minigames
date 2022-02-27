@@ -63,7 +63,7 @@ public class QuizGame extends AbstractGame {
         setGm3Allowed(true);
         setCollision(true);
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.DARK_PURPLE+"Quiz", BarColor.PURPLE, BarStyle.SOLID);
+        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Quiz", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -216,7 +216,7 @@ public class QuizGame extends AbstractGame {
         removeAllPlayersFromQuestion();
         bar.setProgress(1.0);
         if(!hasNextQuestion()) {
-            bar.setTitle(ChatColor.DARK_PURPLE+"Quiz");
+            bar.setTitle(ChatColor.YELLOW+"Quiz");
             if(!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
                 if(manager!=null) {

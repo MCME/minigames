@@ -75,7 +75,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setCollision(true);
         announceGame();
 
-        BossBar bar = Bukkit.createBossBar("Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
+        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -93,7 +93,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         this.hiding = true;
         this.seeking = false;
 
-        bar.setTitle("Hide and Seek: Hiding");
+        bar.setTitle(ChatColor.YELLOW+"Hide and Seek: Hiding");
         bar.setProgress(1.0);
 
         if(seeker == null || PlayerUtil.getOnlinePlayer(seeker)==null) {
@@ -148,7 +148,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         if(stopTask!=null) {
             stopTask.cancel();
         }
-        bar.setTitle("Hide and Seek");
+        bar.setTitle(ChatColor.YELLOW+"Hide and Seek");
         sendStopSeekingMessage();
         for(Player player : getOnlinePlayers()) {
             if(hiddenPlayers.contains(player)) {

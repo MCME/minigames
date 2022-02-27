@@ -61,7 +61,7 @@ public class QuizGameScoreboard extends GameScoreboard{
         unfinishedScore.setScore(players);
         currentQuestion++;
         setQuestionDisplay();
-        bar.setTitle(ChatColor.DARK_PURPLE+"Quiz: Question "+currentQuestion);
+        bar.setTitle(ChatColor.YELLOW+"Quiz: Question "+currentQuestion);
         double progress = 1.0 / time;
         if(timerTask!=null) {
             timerTask.cancel();

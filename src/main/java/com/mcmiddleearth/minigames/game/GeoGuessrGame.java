@@ -85,7 +85,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         GeoGuessrSigns signs = new GeoGuessrSigns();
         this.signs = signs;
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.GREEN+"GeoGuessr", BarColor.GREEN, BarStyle.SOLID);
+        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"GeoGuessr", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -363,7 +363,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             signs.replaceSigns();
         }
         if (row < 0) {
-            bar.setTitle(ChatColor.GREEN+"GeoGuessr");
+            bar.setTitle(ChatColor.YELLOW+"GeoGuessr");
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
                 if (manager != null) {

@@ -46,7 +46,7 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
         answerTimeScore.setScore(time);
         unfinishedScore.setScore(players);
         setRoundDisplay();
-        bar.setTitle(ChatColor.GREEN+"GeoGuessr: Round "+(currentRound+1));
+        bar.setTitle(ChatColor.YELLOW+"GeoGuessr: Round "+(currentRound+1));
         double progress = 1.0 / time;
         if(timerTask!=null){
             timerTask.cancel();
