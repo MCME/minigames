@@ -94,7 +94,9 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("stats",new GameStats(Permissions.USER));
         addCommandHandler("leaderboard",new GameLeaderboard(Permissions.USER));
         addCommandHandler("restoresigns",new GeoGameRestore(Permissions.STAFF));
-        addCommandHandler("radius",new HaSGameRadius(Permissions.STAFF));
+        addCommandHandler("radius",new HaSGameRadius(Permissions.MANAGER));
+        //addCommandHandler("catcher",new CatchGameCatcher(Permissions.MANAGER));
+        //addCommandHandler("catch",new CatchGameCatch(Permissions.MANAGER));
     }
     
     @Override

@@ -56,7 +56,7 @@ public class RaceGame extends AbstractGame {
 
     private boolean save_allowed = true;
 
-    private String raceName;
+    private String raceName = "temporaryRace";
 
     private raceHighscoreAbstract highscore;
 
