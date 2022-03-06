@@ -42,6 +42,7 @@ public class RaceGameSave extends AbstractGameCommand implements Confirmationabl
             raceGame = (RaceGame) game;
             file = new File(PluginData.getRaceDir(), args[0] + ".json");
             description = args[1];
+            raceGame.setRaceName(args[0]);
             for(int i = 2; i < args.length;i++) {
                 description = description + " "+ args[i];
             }
