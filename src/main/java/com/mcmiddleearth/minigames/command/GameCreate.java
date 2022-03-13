@@ -32,11 +32,15 @@ public class GameCreate extends AbstractGameCommand{
             }
             AbstractGame game;
             GameType type = GameType.getGameType(args[0]);
+            //Golf is not finished and PVP is currently broken
+            if(args[0].equalsIgnoreCase("golf") || args[0].equalsIgnoreCase("pvp")){
+                sendCurrentlyDeactivaed(cs,args[0]);
+                return;
+            }
             if(type==null) {
                 sendInvalidGameTypeErrorMessage(cs);
                 return;
             }
-
             switch(type) {
                 case HIDE_AND_SEEK:
                     PluginData.stopSpectating((Player)cs);
@@ -113,5 +117,9 @@ public class GameCreate extends AbstractGameCommand{
 
     private void sendGeoGuessrGameCreateMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new GeoGuessr game.");
+    }
+
+    private void sendCurrentlyDeactivaed(CommandSender cs, String name){
+        PluginData.getMessageUtil().sendErrorMessage(cs,name+" is currently deactived.");
     }
  }
