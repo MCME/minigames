@@ -2,32 +2,24 @@ package com.mcmiddleearth.minigames.geoGuessr;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
-import com.mcmiddleearth.pluginutil.FileUtil;
 import com.mcmiddleearth.pluginutil.plotStoring.IStoragePlot;
-import com.mcmiddleearth.pluginutil.plotStoring.InvalidRestoreDataException;
-import com.mcmiddleearth.pluginutil.plotStoring.MCMEPlotFormat;
-import com.mcmiddleearth.pluginutil.plotStoring.StoragePlotSnapshot;
-import com.sk89q.worldedit.world.block.BlockType;
-import jdk.javadoc.internal.doclint.HtmlTag;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
-import org.flywaydb.core.internal.metadatatable.MetaDataTable;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+
+/**
+ *
+ * @author Jubo
+ */
 
 public class GeoGuessrSigns implements IStoragePlot {
 
@@ -62,7 +54,7 @@ public class GeoGuessrSigns implements IStoragePlot {
 
     public GeoGuessrSigns(){}
 
-    // other things to do. hide radius during the game, new minigame catch
+    // other things to do: new minigame catch
 
     public void removeSigns(Location location,double radius) {
         if(!restoreDir.exists()) {
@@ -133,6 +125,30 @@ public class GeoGuessrSigns implements IStoragePlot {
             config.save(file);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void restoreSigns(Player player){
+        File file = new File(PluginData.getGeoGuessrRestoreDir(),"restoreGeo.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for(int i = 0; i <= Integer.MAX_VALUE; i++){
+            if(config.contains(String.valueOf(i))){
+                double x = config.getConfigurationSection(String.valueOf(i)).getDouble("x");
+                double y = config.getConfigurationSection(String.valueOf(i)).getDouble("y");
+                double z = config.getConfigurationSection(String.valueOf(i)).getDouble("z");
+                List<String> signText = new ArrayList<>();
+                for(int l = 0;l < 4;l++){
+                    signText.add(config.getConfigurationSection(String.valueOf(i)).getString(String.valueOf(l)));
+                }
+                Location loc = new Location(player.getWorld(),x,y,z);
+                org.bukkit.block.Sign sign = (org.bukkit.block.Sign) loc.getBlock().getState();
+                for(int j = 0; j < 4;j++ ){
+                    sign.setLine(j,signText.get(j));
+                }
+                sign.update();
+            }else{
+                return;
+            }
         }
     }
 

@@ -13,6 +13,9 @@ import com.mcmiddleearth.pluginutil.TitleUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -37,6 +40,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private int guessTime = defaultGuessTime;
 
     private boolean started = false;
+
+    private boolean signHide = true;
 
     private boolean first = false;
 
@@ -65,6 +70,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private GeoGuessrAreas geoArea;
 
+    private BossBar bar;
+
     public GeoGuessrGame(Player manager, String name) {
         super(manager, name, GameType.GEO_GUESSR, new GeoGuessrGameScoreboard());
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
@@ -77,6 +84,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         geoArea = new GeoGuessrAreas(area);
         GeoGuessrSigns signs = new GeoGuessrSigns();
         this.signs = signs;
+
+        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"GeoGuessr", BarColor.WHITE, BarStyle.SOLID);
+        bar.setProgress(1.0);
+        bar.setVisible(true);
+        this.bar = bar;
     }
 
     public void setArea(String area){
@@ -162,6 +174,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         super.addPlayer(player);
         ((GeoGuessrGameScoreboard)getBoard()).addPlayer(player.getName());
         hidePlayer(player);
+        bar.addPlayer(player);
     }
 
     @Override
@@ -170,6 +183,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         if (player.isOnline()) {
             Player player_on = player.getPlayer();
             unhidePlayer(player_on);
+            bar.removePlayer(player_on);
             if (guidebook.contains(player_on.getName())) {
                 com.mcmiddleearth.guidebook.data.PluginData.include(player_on);
             }
@@ -200,14 +214,17 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             double y = Double.parseDouble(warp_list[row][2]);
             double z = Double.parseDouble(warp_list[row][3]);
 
-            (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer());
+            bar.setProgress(1.0);
+            (((GeoGuessrGameScoreboard) getBoard())).startRound(guessTime, this.countOnlinePlayer(),bar);
 
             GeoGuessrConversation geoGuessrConversation = new GeoGuessrConversation(MiniGamesPlugin.getPluginInstance(), guessTime);
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
             warp = new Location(world, x, y, z);
-            signs = new GeoGuessrSigns();
-            signs.removeSigns(warp,radius);
+            if(signHide){
+                signs = new GeoGuessrSigns();
+                signs.removeSigns(warp,radius);
+            }
 
             for (Player player : getOnlinePlayers()) {
                 teleportPlayer(player, x, y, z);
@@ -341,8 +358,12 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void stopRound() {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
-        signs.replaceSigns();
+        bar.setProgress(1.0);
+        if(signHide){
+            signs.replaceSigns();
+        }
         if (row < 0) {
+            bar.setTitle(ChatColor.YELLOW+"GeoGuessr");
             if (!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
                 if (manager != null) {
@@ -380,6 +401,23 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         return false;
     }
 
+    @Override
+    public void end(Player sender){
+        super.end(sender);
+        if(signHide){
+            signs.replaceSigns();
+        }
+        for(Player player : getOnlinePlayers()){
+            bar.removePlayer(player);
+        }
+    }
+
+    public void setSigns(boolean bool){
+        if(!started){
+            this.signHide = bool;
+        }
+    }
+
     public void GeoGameWinner(Player player){
         AbstractGame game = getGame(player);
         GeoGuessrGame geogame = (GeoGuessrGame) game;
@@ -393,12 +431,13 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     private void sendReminder(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player,"forget to set the number of rounds [/game setrounds x] . Default is 5.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Switch signtext on with /game allow signs.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }
 
     private void sendFirst(Player player){
-        PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correct!");
+        PluginData.getMessageUtil().sendInfoMessage(player,"You were the first to guess it correctly!");
     }
 }

@@ -18,6 +18,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.Conversation.ConversationState;
 import org.bukkit.entity.Player;
@@ -53,16 +56,24 @@ public class QuizGame extends AbstractGame {
     
     private final Map<Player,Conversation> playersInQuestion = new HashMap<>();
 
+    private BossBar bar;
+
     public QuizGame(Player manager, String name) {
         super(manager, name, GameType.LORE_QUIZ, new QuizGameScoreboard());
         setGm3Allowed(true);
         setCollision(true);
+
+        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Quiz", BarColor.WHITE, BarStyle.SOLID);
+        bar.setProgress(1.0);
+        bar.setVisible(true);
+        this.bar = bar;
     }
 
     @Override
     public void addPlayer(Player player) {
         super.addPlayer(player);
         ((QuizGameScoreboard)getBoard()).addPlayer(player.getName());
+        bar.addPlayer(player);
     }
     
     @Override
@@ -166,7 +177,8 @@ public class QuizGame extends AbstractGame {
             AbstractQuestion question = getNextQuestion();
             nextQuestion++;
             question.setAnswered(true);
-            ((QuizGameScoreboard)getBoard()).startQuestion(answerTime, this.countOnlinePlayer());
+            bar.setProgress(1.0);
+            ((QuizGameScoreboard)getBoard()).startQuestion(answerTime, this.countOnlinePlayer(),bar);
             AskQuestionConversationFactory askQuestionFactory 
                     = new AskQuestionConversationFactory(MiniGamesPlugin.getPluginInstance(),answerTime);
             for (Player player : getOnlinePlayers()) {
@@ -202,7 +214,9 @@ public class QuizGame extends AbstractGame {
     public void stopQuestion() {
         ((QuizGameScoreboard)getBoard()).stopQuestion();
         removeAllPlayersFromQuestion();
+        bar.setProgress(1.0);
         if(!hasNextQuestion()) {
+            bar.setTitle(ChatColor.YELLOW+"Quiz");
             if(!announceWinner(false)) {
                 Player manager = Bukkit.getPlayer(getManager().getUniqueId());
                 if(manager!=null) {
@@ -259,6 +273,9 @@ public class QuizGame extends AbstractGame {
     @Override
     public void end(Player sender) {
         removeAllPlayersFromQuestion();
+        for(Player player : getOnlinePlayers()){
+            bar.removePlayer(player);
+        }
         super.end(sender);
     }
     
@@ -267,6 +284,7 @@ public class QuizGame extends AbstractGame {
         super.removePlayer(player);
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId()); 
         if(onlinePlayer!=null) {
+            bar.removePlayer(onlinePlayer);
             Conversation convo = playersInQuestion.get(onlinePlayer);
             if(convo != null && convo.getState().equals(ConversationState.STARTED)) {
                 convo.abandon();

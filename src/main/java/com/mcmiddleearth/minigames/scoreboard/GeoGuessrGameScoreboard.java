@@ -2,6 +2,7 @@ package com.mcmiddleearth.minigames.scoreboard;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import org.bukkit.ChatColor;
+import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -41,10 +42,12 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
         unfinishedScore.setScore(0);
     }
 
-    public void startRound(int time, int players){
+    public void startRound(int time, int players, BossBar bar){
         answerTimeScore.setScore(time);
         unfinishedScore.setScore(players);
         setRoundDisplay();
+        bar.setTitle(ChatColor.YELLOW+"GeoGuessr: Round "+(currentRound+1));
+        double progress = 1.0 / time;
         if(timerTask!=null){
             timerTask.cancel();
         }
@@ -55,7 +58,10 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
                 answerTimeScore.setScore(answerTimeScore.getScore()-1);
                 if(answerTimeScore.getScore()<1) {
                     geoObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    bar.setProgress(1.0);
                     cancel();
+                }else{
+                    bar.setProgress(bar.getProgress()-progress);
                 }
             }};
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);

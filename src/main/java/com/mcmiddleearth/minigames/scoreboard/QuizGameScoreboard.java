@@ -20,6 +20,7 @@ import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.ChatColor;
+import org.bukkit.boss.BossBar;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -55,11 +56,13 @@ public class QuizGameScoreboard extends GameScoreboard{
         unfinishedScore.setScore(0);
     }
     
-    public void startQuestion(int time, int players) {
+    public void startQuestion(int time, int players, BossBar bar) {
         answerTimeScore.setScore(time);
         unfinishedScore.setScore(players);
         currentQuestion++;
         setQuestionDisplay();
+        bar.setTitle(ChatColor.YELLOW+"Quiz: Question "+currentQuestion);
+        double progress = 1.0 / time;
         if(timerTask!=null) {
             timerTask.cancel();
         }
@@ -70,7 +73,10 @@ public class QuizGameScoreboard extends GameScoreboard{
                 answerTimeScore.setScore(answerTimeScore.getScore()-1);
                 if(answerTimeScore.getScore()<1) {
                     quizObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    bar.setProgress(1.0);
                     cancel();
+                }else{
+                    bar.setProgress(bar.getProgress()-progress);
                 }
             }};
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);

@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.minigames.game.HideAndSeekGame;
 import com.mcmiddleearth.minigames.game.RaceGame;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ public class GameAllow extends AbstractGameCommand{
     public GameAllow(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Allows various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.");
+        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible|signs: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.'signs' allow signs fr GeoGuessr");
     }
     
     @Override
@@ -74,6 +75,15 @@ public class GameAllow extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
+            else if(args[0].equalsIgnoreCase("signs")){
+                if(game instanceof GeoGuessrGame){
+                    GeoGuessrGame geogame = (GeoGuessrGame) game;
+                    geogame.setSigns(false);
+                    sendSigns(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -121,7 +131,12 @@ public class GameAllow extends AbstractGameCommand{
                                          +PluginData.getMessageUtil().ERROR_STRESSED+"Hide and Seek"
                                          +PluginData.getMessageUtil().ERROR+" game.");
     }
+
+    private void sendSigns(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You switched signs in GeoGuessr on.");
+    }
+
     private void sendNotPossibleMessage(CommandSender cs) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "This is only for races.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, "This is not possible.");
     }
 }

@@ -7,7 +7,6 @@ package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import org.bukkit.command.CommandSender;
