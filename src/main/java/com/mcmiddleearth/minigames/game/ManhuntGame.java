@@ -328,6 +328,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(((Player) event.getDamager()).getItemInHand() == carrot){
             Player player = (Player) event.getEntity();
             if(seeking && hiddenPlayers.contains(player)) {
+                sendPlayerFoundMessage(player);
                 this.revealPlayer(player);
             }
         }
