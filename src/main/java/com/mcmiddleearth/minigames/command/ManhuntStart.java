@@ -1,0 +1,42 @@
+package com.mcmiddleearth.minigames.command;
+
+import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.GameType;
+import com.mcmiddleearth.minigames.game.ManhuntGame;
+import com.mcmiddleearth.pluginutil.StringUtil;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class ManhuntStart extends AbstractGameCommand{
+
+    public ManhuntStart(String... permissionNodes){
+        super(3,true,permissionNodes);
+        cmdGroup = CmdGroup.MANHUNT;
+        setShortDescription("");
+        setUsageDescription("/game manhunt_start radius searchTime hideTime");
+    }
+
+    @Override
+    protected void execute(CommandSender cs, String... args){
+        AbstractGame game = getGame((Player)cs);
+        if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.MANHUNT)){
+            if(game.countOnlinePlayer() < 2){
+                sendNotEnoughPlayerErrorMessage(cs);
+            }else{
+                ManhuntGame manhuntgame = (ManhuntGame) game;
+                int radius = StringUtil.parseInt(args[0]);
+                int searchTime = StringUtil.parseInt(args[1]);
+                int hideTime = StringUtil.parseInt(args[2]);
+
+                manhuntgame.setSeekTime(searchTime);
+                manhuntgame.setHideTime(hideTime);
+                manhuntgame.hiding(radius);
+            }
+        }
+    }
+    private void sendNotEnoughPlayerErrorMessage(CommandSender cs) {
+        PluginData.getMessageUtil().sendErrorMessage(cs, "Not enough players in game. Minimum is two.");
+    }
+
+}
