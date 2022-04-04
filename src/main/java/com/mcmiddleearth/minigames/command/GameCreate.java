@@ -11,6 +11,8 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 /**
  *
  * @author Eriol_Eandur
@@ -41,6 +43,7 @@ public class GameCreate extends AbstractGameCommand{
                 sendInvalidGameTypeErrorMessage(cs);
                 return;
             }
+            UUID uuid = ((Player) cs).getUniqueId();
             switch(type) {
                 case HIDE_AND_SEEK:
                     PluginData.stopSpectating((Player)cs);
@@ -74,6 +77,25 @@ public class GameCreate extends AbstractGameCommand{
                     game = new GeoGuessrGame((Player) cs, args[1]);
                     sendGeoGuessrGameCreateMessage(cs);
                     break;
+                case CATCH:
+                    PluginData.stopSpectating((Player)cs);
+                    game = new CatchGame((Player)cs,args[1]);
+                    game.addPlayer((Player) cs);
+                    PluginData.setGameChat((Player) cs,true);
+                    sendPlayerJoinMessage(cs, game);
+                    break;
+                case MANHUNT:
+                    if(String.valueOf(uuid).equalsIgnoreCase("4a4a85b0-0d8f-425b-ae25-4900f017ac89") || String.valueOf(uuid).equalsIgnoreCase("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")){
+                        PluginData.stopSpectating((Player)cs);
+                        game = new ManhuntGame((Player)cs,args[1]);
+                        game.addPlayer((Player)cs);
+                        PluginData.setGameChat((Player)cs,true);
+                        sendPlayerJoinMessage(cs,game);
+                        break;
+                    }else{
+                        sendCurrentlyDeactivaed(cs,"Manhunt");
+                        return;
+                    }
                 default:
                     sendInvalidGameTypeErrorMessage(cs);
                     return;
