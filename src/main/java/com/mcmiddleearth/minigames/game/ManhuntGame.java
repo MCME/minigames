@@ -324,6 +324,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
             return;
         }
         ItemStack carrot = new ItemStack(Material.CARROT);
+        event.getDamager().sendMessage("Test");
         if(((Player) event.getDamager()).getItemInHand() == carrot){
             Player player = (Player) event.getEntity();
             if(seeking && hiddenPlayers.contains(player)) {
@@ -338,7 +339,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         Action action = event.getAction();
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
-        if (!hiddenPlayers.isEmpty() && seeker != null) {
+        if (!hiddenPlayers.isEmpty()) {
             if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
                 if (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK) || action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
                     if (itemInHand.getType().equals(Material.GHAST_TEAR)) {
