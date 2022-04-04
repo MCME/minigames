@@ -14,14 +14,14 @@ public class ManhuntStart extends AbstractGameCommand{
         super(3,true,permissionNodes);
         cmdGroup = CmdGroup.MANHUNT;
         setShortDescription("");
-        setUsageDescription("");
+        setUsageDescription("/game manhunt_start radius searchTime hideTime");
     }
 
     @Override
     protected void execute(CommandSender cs, String... args){
         AbstractGame game = getGame((Player)cs);
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.MANHUNT)){
-            if(game.countOnlinePlayer() < 1){
+            if(game.countOnlinePlayer() < 2){
                 sendNotEnoughPlayerErrorMessage(cs);
             }else{
                 ManhuntGame manhuntgame = (ManhuntGame) game;

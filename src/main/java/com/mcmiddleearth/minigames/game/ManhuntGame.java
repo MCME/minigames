@@ -117,6 +117,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 player.getInventory().setChestplate(chest);
                 player.getInventory().setLeggings(legs);
                 player.getInventory().setBoots(boots);
+                player.getInventory().addItem(new ItemStack(Material.CARROT));
             }
         }
         for(Player player : getOnlinePlayers()) {
@@ -186,18 +187,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         this.seeking = false;
         this.hiding = false;
-
-        for(OfflinePlayer player:seeker){
-            Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
-            if(onlinePlayer!=null) {
-                onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
-                onlinePlayer.removePotionEffect(PotionEffectType.JUMP);
-                onlinePlayer.getInventory().setHelmet(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
-            }
-        }
         ((ManhuntGameScoreboard)this.getBoard()).stop();
     }
 
@@ -241,6 +230,15 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         if(seeker.contains(player)) {
             seeker.remove(player);
+            Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+            if(onlinePlayer != null){
+                onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
+                onlinePlayer.removePotionEffect(PotionEffectType.JUMP);
+                onlinePlayer.getInventory().setHelmet(new ItemStack(Material.AIR));
+                onlinePlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
+                onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
+                onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
+            }
             if(seeker.isEmpty()){
                 stop();
             }
@@ -325,9 +323,12 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(!seeker.contains(event.getDamager())) {
             return;
         }
-        Player player = (Player) event.getEntity();
-        if(seeking && hiddenPlayers.contains(player)) {
-            this.revealPlayer(player);
+        ItemStack carrot = new ItemStack(Material.CARROT);
+        if(((Player) event.getDamager()).getItemInHand() == carrot){
+            Player player = (Player) event.getEntity();
+            if(seeking && hiddenPlayers.contains(player)) {
+                this.revealPlayer(player);
+            }
         }
     }
 

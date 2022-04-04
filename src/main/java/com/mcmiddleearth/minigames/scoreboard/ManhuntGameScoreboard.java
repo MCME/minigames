@@ -23,25 +23,22 @@ public class ManhuntGameScoreboard extends GameScoreboard{
 
     private BukkitRunnable timerTask;
 
-    private BossBar bar;
-
     public ManhuntGameScoreboard(){
-        super(playerCountTitle+"?");
+        super(playerCountTitle);
         hidingObjective = scoreboard.registerNewObjective("HidingTime", "dummy");
-        hidingObjective.setDisplayName(title+"?");
+        hidingObjective.setDisplayName(title);
         hidingTimeScore = hidingObjective.getScore(ChatColor.YELLOW+"hiding time remaining: ");
 
         seekingObjective = scoreboard.registerNewObjective("SeekingTime", "dummy");
-        seekingObjective.setDisplayName(title+"?");
+        seekingObjective.setDisplayName(title);
         seekingTimeScore = seekingObjective.getScore(ChatColor.YELLOW+"seeking time remaining: ");
         hiddenPlayerScore = seekingObjective.getScore(ChatColor.RED+"hidden Players: ");
         locatedPlayerScore = seekingObjective.getScore(ChatColor.GREEN+"located Players: ");
     }
 
     public void startHiding(String seeker, int hidingTime,BossBar bar) {
-        this.bar = bar;
-        hidingObjective.setDisplayName(title+seeker);
-        seekingObjective.setDisplayName(title+seeker);
+        hidingObjective.setDisplayName("Seeker: "+seeker);
+        seekingObjective.setDisplayName("Seeker: "+seeker);
         hidingTimeScore.setScore(hidingTime);
         hidingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         double progress = 1.0 / hidingTime;
@@ -63,7 +60,6 @@ public class ManhuntGameScoreboard extends GameScoreboard{
     }
 
     public void startSeeking(int seekingTime,BossBar bar) {
-        this.bar = bar;
         seekingTimeScore.setScore(seekingTime);
         hiddenPlayerScore.setScore(getPlayerCount()-1);
         locatedPlayerScore.setScore(0);
