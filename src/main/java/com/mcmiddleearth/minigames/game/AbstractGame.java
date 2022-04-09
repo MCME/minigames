@@ -340,6 +340,10 @@ public abstract class AbstractGame {
         }
     }
 
+    public void playerInteract(PlayerInteractEntityEvent event){
+        event.setCancelled(true);
+    }
+
     public void playerDamaged(EntityDamageByEntityEvent event) {
         event.setCancelled(true);
     }

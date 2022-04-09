@@ -21,10 +21,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
@@ -107,8 +104,13 @@ public class ManhuntGame extends AbstractGame implements Listener {
         meta_boots.setColor(Color.WHITE);
         boots.setItemMeta(meta_boots);
 
-        for(OfflinePlayer OP:seeker) {
-            Player player = Bukkit.getPlayer(OP.getUniqueId());
+        for(Player player : getOnlinePlayers()) {
+            if(!seeker.contains(player)) {
+                hidePlayer(player);
+            }
+        }
+
+        for(Player player: hiddenPlayers) {
             if (player != null) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3));
@@ -118,11 +120,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 player.getInventory().setLeggings(legs);
                 player.getInventory().setBoots(boots);
                 player.getInventory().addItem(new ItemStack(Material.CARROT));
-            }
-        }
-        for(Player player : getOnlinePlayers()) {
-            if(!seeker.contains(player)) {
-                hidePlayer(player);
             }
         }
 
@@ -323,12 +320,22 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(!seeker.contains(event.getDamager())) {
             return;
         }
-        ItemStack carrot = new ItemStack(Material.CARROT);
         event.getDamager().sendMessage("Test");
-        if(((Player) event.getDamager()).getItemInHand() == carrot){
             Player player = (Player) event.getEntity();
             if(seeking && hiddenPlayers.contains(player)) {
+                sendPlayerFoundMessage(player);
                 this.revealPlayer(player);
+            }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerEntityInteract(PlayerInteractEntityEvent event){
+        Player player = event.getPlayer();
+        if(event.getRightClicked() instanceof Player){
+            Player hidden = (Player) event.getRightClicked();
+            if(seeker.contains(player) && hiddenPlayers.contains(hidden)){
+                sendPlayerFoundMessage(hidden);
+                this.revealPlayer(hidden);
             }
         }
     }
