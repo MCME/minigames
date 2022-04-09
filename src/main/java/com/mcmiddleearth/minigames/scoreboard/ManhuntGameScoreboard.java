@@ -89,6 +89,11 @@ public class ManhuntGameScoreboard extends GameScoreboard{
             timerTask.cancel();
         }
         timerTask = null;
+        title = "Seeker: ";
+        playerCountTitle = "Next Seeker: ";
+        hidingObjective.setDisplayName("Test");
+        seekingObjective.setDisplayName("Test2");
+        getPlayerCountObjective().setDisplayName("Test3");
     }
 
     public void locatePlayer() {
