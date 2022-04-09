@@ -7,6 +7,7 @@ package com.mcmiddleearth.minigames.listener;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
+import com.mcmiddleearth.minigames.game.CatchGame;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.entity.Player;
@@ -28,6 +29,14 @@ public class PlayerListener implements Listener{
         if(PluginData.isInGame(event.getPlayer())) {
             AbstractGame game = PluginData.getGame(event.getPlayer());
             game.playerMove(event);
+        }
+    }
+
+    @EventHandler
+    public void playerInteract(PlayerInteractEntityEvent event){
+        if(PluginData.isInGame(event.getPlayer())){
+            AbstractGame game = PluginData.getGame(event.getPlayer());
+            game.playerInteract(event);
         }
     }
 
