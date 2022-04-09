@@ -63,6 +63,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(true);
+        seeker.clear();
         announceGame();
 
         BossBar bar = Bukkit.createBossBar(ChatColor.GREEN+"Manhunt", BarColor.WHITE, BarStyle.SOLID);
@@ -227,18 +228,18 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         if(seeker.contains(player)) {
             seeker.remove(player);
-            Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
-            if(onlinePlayer != null){
-                onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
-                onlinePlayer.removePotionEffect(PotionEffectType.JUMP);
-                onlinePlayer.getInventory().setHelmet(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
-                onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
-            }
             if(seeker.isEmpty()){
                 stop();
             }
+        }
+        Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+        if(onlinePlayer != null){
+            onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
+            onlinePlayer.removePotionEffect(PotionEffectType.JUMP);
+            onlinePlayer.getInventory().setHelmet(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
         }
     }
 
