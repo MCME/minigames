@@ -226,12 +226,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
             player_on.setGlowing(false);
             bar.removePlayer(player_on);
         }
-        if(seeker.contains(player)) {
-            seeker.remove(player);
-            if(seeker.isEmpty()){
-                stop();
-            }
-        }
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
         if(onlinePlayer != null){
             onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
@@ -241,11 +235,21 @@ public class ManhuntGame extends AbstractGame implements Listener {
             onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
             onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
         }
+        if(seeker.contains(player)) {
+            seeker.remove(player);
+            if(seeker.isEmpty()){
+                stop();
+            }
+        }
     }
 
     public void setSeeker(OfflinePlayer player) {
-        seeker.add(player);
-        ((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
+        if(seeker.contains(player)){
+            sendPlayerAlreadySeeker((Player) player);
+        }else{
+            seeker.add(player);
+            ((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
+        }
     }
 
     private boolean isHidden(Player player) {
@@ -565,6 +569,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private void sendPlayerNotOnline(Player player) {
         PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
+    }
+
+    private void sendPlayerAlreadySeeker(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"This player is already a seeker.");
     }
 }
 
