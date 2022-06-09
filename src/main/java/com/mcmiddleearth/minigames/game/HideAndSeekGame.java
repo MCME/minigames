@@ -130,6 +130,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         for(Player p : getOnlinePlayers()){
             bar.addPlayer(p);
         }
+        hiddenPlayers.forEach(player->player.setSilent(true));
         ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime,bar);
 
         sendStartSeekingMessage();
@@ -181,6 +182,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         Team team = player.getScoreboard().getTeam("noCollision");
         team.removeEntry(player.getName());
         DynmapUtil.show(player);
+        player.setSilent(false);
         player.setGlowing(false);
     }
     
