@@ -78,12 +78,12 @@ public class GeoGuessrGameScoreboard extends GameScoreboard{
 
     public void score(String player){
         Score score = geoObjective.getScore(player);
-        score.setScore(score.getScore()+1);
+        score.setScore(score.getScore()+10);
     }
 
     public void firstScore(String player){
         Score score = geoObjective.getScore(player);
-        score.setScore(score.getScore()+2);
+        score.setScore(score.getScore()+12);
     }
 
     public int getScore(String playerName) {

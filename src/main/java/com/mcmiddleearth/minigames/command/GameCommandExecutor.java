@@ -97,6 +97,8 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("radius",new HaSGameRadius(Permissions.MANAGER));
         //addCommandHandler("catcher",new CatchGameCatcher(Permissions.MANAGER));
         //addCommandHandler("catch",new CatchGameCatch(Permissions.MANAGER));
+        addCommandHandler("manhunt_start",new ManhuntStart(Permissions.MANAGER));
+        addCommandHandler("manhunt_seeker",new ManhuntSeeker(Permissions.MANAGER));
     }
     
     @Override

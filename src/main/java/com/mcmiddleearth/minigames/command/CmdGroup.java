@@ -29,7 +29,9 @@ public enum CmdGroup {
     LORE_QUIZ       ("Quiz"),
     GOLF            ("Golf"),
     PVP             ("PvP"),
-    GEO_GUESSR      ("GEO");
+    GEO_GUESSR      ("GEO"),
+    CATCH           ("Catch"),
+    MANHUNT         ("Manhunt");
 
     private final String name;
 

@@ -16,7 +16,7 @@ public class HaSGameGlow extends AbstractGameCommand{
     public HaSGameGlow(String... permissionNodes) {
         super(1, true, permissionNodes);
         cmdGroup = CmdGroup.HIDE_AND_SEEK;
-        setShortDescription("Lets all people glow");
+        setShortDescription(": Lets all people glow");
         setUsageDescription(" /game glow all. Lets all people glow, to get more spice into the last seconds of a Hide and Seek Game.");
     }
 

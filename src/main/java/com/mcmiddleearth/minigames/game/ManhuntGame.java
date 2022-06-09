@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.scoreboard.HideAndSeekGameScoreboard;
+import com.mcmiddleearth.minigames.scoreboard.ManhuntGameScoreboard;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.DynmapUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
@@ -17,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,11 +21,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,34 +32,30 @@ import org.bukkit.scoreboard.Team;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Eriol_Eandur
- */
-public class HideAndSeekGame extends AbstractGame implements Listener {
+public class ManhuntGame extends AbstractGame implements Listener {
 
-    private final int seekerCageRadius = 5; 
+    private final int seekerCageRadius = 5;
     private final int defaultRadius = 10;
     private final int defaultHideTimeSeconds = 60;
     private final int defaultSeekTimeSeconds = 300;
     private final int revealDistance = 1;
-    
+
     private int seekTime = defaultSeekTimeSeconds;
     private int hideTime = defaultHideTimeSeconds;
     private int radius;
-    
+
     private boolean seeking = false;
     private boolean hiding = false;
-    
-    public OfflinePlayer seeker;
+
+    public final List<OfflinePlayer> seeker = new ArrayList<>();
     public final List<Player> hiddenPlayers = new ArrayList<>();
-    
+
     private BukkitRunnable seekTask, stopTask;
 
     private BossBar bar;
-    
-    public HideAndSeekGame(Player manager, String name) {
-        super(manager, name, GameType.HIDE_AND_SEEK, new HideAndSeekGameScoreboard());
+
+    public ManhuntGame(Player manager, String name){
+        super(manager,name,GameType.MANHUNT,new ManhuntGameScoreboard());
 
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
 
@@ -73,16 +63,15 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(true);
+        seeker.clear();
         announceGame();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
+        BossBar bar = Bukkit.createBossBar(ChatColor.GREEN+"Manhunt", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
     }
 
-
-    
     public void hiding(int radius) {
         if(radius>0) {
             this.radius = radius;
@@ -93,26 +82,61 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         this.hiding = true;
         this.seeking = false;
 
-        bar.setTitle(ChatColor.YELLOW+"Hide and Seek: Hiding");
+        bar.setTitle(ChatColor.YELLOW+"Manhunt: Hiding");
         bar.setProgress(1.0);
 
-        if(seeker == null || PlayerUtil.getOnlinePlayer(seeker)==null) {
-            seeker = getOnlinePlayers().get(new Double(Math.floor(Math.random()*(getPlayers().size()))).intValue());
-        }
-        final PotionEffect effect = new PotionEffect(PotionEffectType.SPEED, 
-                                                    (hideTime+seekTime)*20, 3, false, true);
-        ((Player)seeker).addPotionEffect(effect);
+        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
+        LeatherArmorMeta meta_helmet = (LeatherArmorMeta) helmet.getItemMeta();
+        meta_helmet.setColor(Color.WHITE);
+        helmet.setItemMeta(meta_helmet);
+
+        ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
+        LeatherArmorMeta meta_chest =  (LeatherArmorMeta) chest.getItemMeta();
+        meta_chest.setColor(Color.WHITE);
+        chest.setItemMeta(meta_chest);
+
+        ItemStack legs = new ItemStack(Material.LEATHER_LEGGINGS);
+        LeatherArmorMeta meta_legs =  (LeatherArmorMeta) legs.getItemMeta();
+        meta_legs.setColor(Color.WHITE);
+        legs.setItemMeta(meta_legs);
+
+        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
+        LeatherArmorMeta meta_boots =  (LeatherArmorMeta) boots.getItemMeta();
+        meta_boots.setColor(Color.WHITE);
+        boots.setItemMeta(meta_boots);
+
         for(Player player : getOnlinePlayers()) {
-            if(!PlayerUtil.isSame(player,seeker)) {
+            if(!seeker.contains(player)) {
                 hidePlayer(player);
             }
         }
-        ((HideAndSeekGameScoreboard)this.getBoard()).startHiding(seeker.getName(), hideTime,bar);
+
+        for(Player player: hiddenPlayers) {
+            if (player != null) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3));
+
+                player.getInventory().setHelmet(helmet);
+                player.getInventory().setChestplate(chest);
+                player.getInventory().setLeggings(legs);
+                player.getInventory().setBoots(boots);
+                player.getInventory().addItem(new ItemStack(Material.CARROT));
+            }
+        }
+
+        String seeker_string = "";
+        for(OfflinePlayer op:seeker){
+            seeker_string = seeker_string + op.getName() + ", ";
+        }
+
+        ((ManhuntGameScoreboard)this.getBoard()).startHiding(seeker_string, hideTime,bar);
         sendStartHideMessage();
         sendRadiusMessage();
         Location loc = getWarp().clone();
         loc.setPitch(80);
-        forceTeleport((Player) seeker,loc);
+        for(OfflinePlayer op:seeker){
+            forceTeleport((Player) op,loc);
+        }
         seekTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -120,18 +144,17 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             }};
         seekTask.runTaskLater(MiniGamesPlugin.getPluginInstance(), hideTime*20);
     }
-    
+
     public void seeking() {
         this.hiding = false;
         this.seeking = true;
 
-        bar.setTitle(ChatColor.YELLOW+"Hide and Seek: Seeking");
+        bar.setTitle(ChatColor.YELLOW+"Manhunt: Seeking");
         bar.setProgress(1.0);
         for(Player p : getOnlinePlayers()){
             bar.addPlayer(p);
         }
-        hiddenPlayers.forEach(player->player.setSilent(true));
-        ((HideAndSeekGameScoreboard)this.getBoard()).startSeeking(seekTime,bar);
+        ((ManhuntGameScoreboard)this.getBoard()).startSeeking(seekTime,bar);
 
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
@@ -141,7 +164,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             }};
         stopTask.runTaskLater(MiniGamesPlugin.getPluginInstance(),seekTime*20);
     }
-    
+
     public void stop() {
         if(seekTask!=null) {
             seekTask.cancel();
@@ -162,46 +185,40 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         this.seeking = false;
         this.hiding = false;
-        Player onlinePlayer = Bukkit.getPlayer(seeker.getUniqueId());
-        if(onlinePlayer!=null) {
-            onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
-        }
-        seeker = null;
-        ((HideAndSeekGameScoreboard)this.getBoard()).stop();
+        ((ManhuntGameScoreboard)this.getBoard()).stop();
     }
-    
+
     private void hidePlayer(Player player) {
         hiddenPlayers.add(player);
         DynmapUtil.hide(player);
         Team team = player.getScoreboard().getTeam("noCollision");
         team.addEntry(player.getName());
     }
-    
+
     private void unhidePlayer(Player player) {
         hiddenPlayers.remove(player);
         Team team = player.getScoreboard().getTeam("noCollision");
         team.removeEntry(player.getName());
         DynmapUtil.show(player);
-        player.setSilent(false);
         player.setGlowing(false);
     }
-    
+
     private void revealPlayer(Player player) {
         unhidePlayer(player);
-        ((HideAndSeekGameScoreboard)this.getBoard()).locatePlayer();
+        ((ManhuntGameScoreboard)this.getBoard()).locatePlayer();
         if(hiddenPlayers.isEmpty()) {
             stop();
         }
     }
-    
+
     @Override
     public void addPlayer(Player player) {
         super.addPlayer(player);
         forceTeleport(player,getWarp());
         bar.addPlayer(player);
     }
-    
-    @Override 
+
+    @Override
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
         if(player.isOnline()){
@@ -209,16 +226,32 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             player_on.setGlowing(false);
             bar.removePlayer(player_on);
         }
-        if(seeker != null && PlayerUtil.isSame(player,seeker)) {
-            stop();
+        Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+        if(onlinePlayer != null){
+            onlinePlayer.removePotionEffect(PotionEffectType.SPEED);
+            onlinePlayer.removePotionEffect(PotionEffectType.JUMP);
+            onlinePlayer.getInventory().setHelmet(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setChestplate(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setLeggings(new ItemStack(Material.AIR));
+            onlinePlayer.getInventory().setBoots(new ItemStack(Material.AIR));
+        }
+        if(seeker.contains(player)) {
+            seeker.remove(player);
+            if(seeker.isEmpty()){
+                stop();
+            }
         }
     }
-    
+
     public void setSeeker(OfflinePlayer player) {
-        seeker = player;
-        ((HideAndSeekGameScoreboard)getBoard()).setSeeker(seeker.getName());
+        if(seeker.contains(player)){
+            sendPlayerAlreadySeeker((Player) player);
+        }else{
+            seeker.add(player);
+            ((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
+        }
     }
-    
+
     private boolean isHidden(Player player) {
         for(Player search : hiddenPlayers) {
             if(PlayerUtil.isSame(search,player)) {
@@ -227,7 +260,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         return false;
     }
-    
+
     @Override
     public void playerLeaveServer(PlayerQuitEvent event) {
         super.playerLeaveServer(event);
@@ -235,18 +268,21 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         if(isHidden(player)) {
             revealPlayer(player);
         }
-        if(PlayerUtil.isSame(player,seeker)) {
-            sendSeekerLeavingMessage(player);
-            stop();
+        if(seeker.contains(player)) {
+            seeker.remove(player);
+            if(seeker.isEmpty()){
+                sendSeekerLeavingMessage(player);
+                stop();
+            }
         }
     }
-    
+
     @Override
     public int allowedRadius(Player player) {
         if(seeking) {
             return Math.abs(radius);
         }
-        if(hiding && seeker != null && PlayerUtil.isSame(seeker,player)) {
+        if(hiding && seeker.contains(player)) {
             return Math.abs(seekerCageRadius);
         }
         if(hiding) {
@@ -258,7 +294,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     @Override
     public void playerMove(PlayerMoveEvent event) {
         super.playerMove(event);
-        if(hiding && PlayerUtil.isSame(event.getPlayer(), seeker)) {
+        if(hiding && seeker.contains(event.getPlayer())) {
             if(event.getTo().getPitch()<70) {
                 Location to = event.getTo().clone();
                 to.setPitch(80);
@@ -267,7 +303,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
             }
         }
         if(seeking) {
-            if(!PlayerUtil.isSame(event.getPlayer(),seeker)) {
+            if(!seeker.contains(event.getPlayer())) {
                 //event.getPlayer().setSneaking(true);
             } else {
                 Player[] myList = hiddenPlayers.toArray(new Player[0]);
@@ -275,34 +311,48 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                     if(event.getTo().distance(hidden.getLocation())<revealDistance) {
                         sendPlayerFoundMessage(hidden);
                         revealPlayer(hidden);
-                   }
+                    }
                 }
             }
         }
     }
-    
+
     @Override
     public void playerDamaged(EntityDamageByEntityEvent event) {
         if(!(event.getDamager() instanceof Player)) {
             return;
         }
-        if(!PlayerUtil.isSame(seeker, (Player) event.getDamager())) {
+        if(!seeker.contains(event.getDamager())) {
             return;
         }
-        Player player = (Player) event.getEntity();
-        if(seeking && hiddenPlayers.contains(player)) {
-            this.revealPlayer(player);
+        event.getDamager().sendMessage("Test");
+            Player player = (Player) event.getEntity();
+            if(seeking && hiddenPlayers.contains(player)) {
+                sendPlayerFoundMessage(player);
+                this.revealPlayer(player);
+            }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerEntityInteract(PlayerInteractEntityEvent event){
+        Player player = event.getPlayer();
+        if(event.getRightClicked() instanceof Player){
+            Player hidden = (Player) event.getRightClicked();
+            if(seeker.contains(player) && hiddenPlayers.contains(hidden)){
+                sendPlayerFoundMessage(hidden);
+                this.revealPlayer(hidden);
+            }
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
-        if (!hiddenPlayers.isEmpty() && seeker != null) {
-            if (hiddenPlayers.contains(event.getPlayer()) || seeker.equals(event.getPlayer())) {
+        if (!hiddenPlayers.isEmpty()) {
+            if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
                 if (action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK) || action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
                     if (itemInHand.getType().equals(Material.GHAST_TEAR)) {
                         event.setCancelled(true);
@@ -317,7 +367,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         List<Block> blocks = new ArrayList<>();
 
         if (!hiddenPlayers.isEmpty() && seeker != null) {
-            if (hiddenPlayers.contains(event.getPlayer()) || seeker.equals(event.getPlayer())) {
+            if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
                 for (int x = getWarp().getBlockX() - radius; x <= getWarp().getBlockX() + radius; x++) {
                     for (int y = getWarp().getBlockY() - radius; y <= getWarp().getBlockY() + radius; y++) {
                         for (int z = getWarp().getBlockZ() - radius; z <= getWarp().getBlockZ() + radius; z++) {
@@ -341,7 +391,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         List<Location> locations = new ArrayList<>();
 
         if (!hiddenPlayers.isEmpty() && seeker != null) {
-            if (hiddenPlayers.contains(event.getPlayer()) || seeker.equals(event.getPlayer())) {
+            if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
                 for (int x = getWarp().getBlockX() - radius; x <= getWarp().getBlockX() + radius; x++) {
                     for (int y = getWarp().getBlockY() - radius; y <= getWarp().getBlockY() + radius; y++) {
                         for (int z = getWarp().getBlockZ() - radius; z <= getWarp().getBlockZ() + radius; z++) {
@@ -363,7 +413,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     @EventHandler (priority = EventPriority.HIGHEST)
     public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         if (!hiddenPlayers.isEmpty() && seeker != null) {
-            if (hiddenPlayers.contains(event.getPlayer()) || seeker.equals(event.getPlayer())) {
+            if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
                 if (event.getMessage().startsWith("/up") || event.getMessage().startsWith("//up")) {
                     event.setCancelled(true);
                 }
@@ -375,16 +425,18 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     public boolean joinAllowed() {
         return isAnnounced() && !(hiding || seeking);
     }
-    
+
     @Override
     public String getGameChatTag(Player player) {
-        if(PlayerUtil.isSame(player,seeker)) {
+        if(seeker.contains(player)) {
             return ChatColor.GOLD + "<Seeker ";
         }
         else {
             return super.getGameChatTag(player);
         }
     }
+
+    /*
 
     public boolean teleportToManager(Player manager, OfflinePlayer player) {
         if (PlayerUtil.getOnlinePlayer(player) != null) {
@@ -405,12 +457,11 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         player.teleport(getWarp(), TeleportCause_FORCE);
     }
 
+     */
+
     private void sendStartHideMessage() {
-        TitleUtil.showTitle((Player) seeker, ChatColor.BLUE+" FREEZE!!!"," Wait for other players to hide.");
         for(Player player : getOnlinePlayers()) {
-            if(!PlayerUtil.isSame(player,seeker)) {
-                TitleUtil.showTitle(player, ChatColor.YELLOW+" HIDE!!!"," ");
-            }
+                TitleUtil.showTitle(player, ChatColor.YELLOW+" RUN!!!"," ");
         }
     }
 
@@ -421,50 +472,52 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     }
 
     private void sendStartSeekingMessage() {
-        TitleUtil.showTitle((Player) seeker, ChatColor.YELLOW+" SEEK!!!"," Try to find the other players.");
         for(Player player : getOnlinePlayers()) {
-            if(!PlayerUtil.isSame(player, seeker)) {
-                TitleUtil.showTitle(player, ChatColor.BLUE+" FREEZE!!!",seeker.getName() + " is seeking you.");
+            if(!seeker.contains(player)) {
+                TitleUtil.showTitle(player, ChatColor.BLUE+" RUN!!!","The hunters are hunting.");
+            }else{
+                TitleUtil.showTitle(player, ChatColor.YELLOW+" HUNT!!!"," Try to find the other players.");
             }
         }
     }
 
     private void sendStopSeekingMessage() {
         if(hiddenPlayers.isEmpty()) {
-                TitleUtil.showTitle((Player) seeker, ChatColor.GOLD+"YOU WON", "You found all players.");
-                getWinHighscore().setSeekWin(seeker.getUniqueId());
+            for(OfflinePlayer OP:seeker){
+                TitleUtil.showTitle((Player) OP, ChatColor.GOLD+"YOU WON", "You found all players.");
             }
-            else {
-               TitleUtil.showTitle((Player) seeker, ChatColor.BLUE+"GAME OVER", "You found not all players.");
-            }
+        }
+        else {
+            TitleUtil.showTitle((Player) seeker, ChatColor.BLUE+"GAME OVER", "You found not all players.");
+        }
         for(Player player : getOnlinePlayers()) {
-            if(!PlayerUtil.isSame(player,seeker)) {
+            if(!seeker.contains(player)) {
                 if(hiddenPlayers.isEmpty()) {
-                    TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", seeker.getName()+" found all players.");
+                    TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", "All players were hunted down.");
                 }
                 else if (isHidden(player)) {
-                    TitleUtil.showTitle(player, ChatColor.GOLD+"YOU WON", seeker.getName()+" found you not.");
-                    getWinHighscore().setHideWin(player.getUniqueId());
+                    TitleUtil.showTitle(player, ChatColor.GOLD+"YOU WON", "The Hunters didn´t find you.");
                 }
                 else {
-                    TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", seeker.getName()+" found you but not all players.");
+                    TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", "You were hunted, but not all players");
                 }
             }
         }
     }
 
     private void sendSeekerLeavingMessage(Player player) {
-        GameChatUtil.sendAllInfoMessage(player, this, "The seeker left.");
+        GameChatUtil.sendAllInfoMessage(player, this, "The hunters left.");
     }
 
     private void sendPlayerFoundMessage(Player hidden) {
-        Player seeker = (Player) this.seeker;
-        PluginData.getMessageUtil().sendInfoMessage(hidden, seeker.getName() +" found you.");
-        PluginData.getMessageUtil().sendInfoMessage(seeker, "You found "+ hidden.getName() + ".");
+        PluginData.getMessageUtil().sendInfoMessage(hidden, "You were found.");
         hidden.playEffect(hidden.getLocation(),Effect.BLAZE_SHOOT,0);
-        seeker.playEffect(seeker.getLocation(),Effect.CLICK2,0);
+        for(OfflinePlayer OP:seeker){
+            PluginData.getMessageUtil().sendInfoMessage((CommandSender) OP, "You found "+ hidden.getName() + ".");
+        }
     }
 
+    /*
     public void sendHiddenList(Player player){
         List<String> hiddenPlayers = new ArrayList<>();
         for(Player hidden : this.hiddenPlayers){
@@ -480,6 +533,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
+     */
     public void setSeekTime(int seekTime) {
         this.seekTime = seekTime;
     }
@@ -498,6 +552,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         return hiding;
     }
 
+    /*
     public OfflinePlayer getSeeker() {
         return seeker;
     }
@@ -506,6 +561,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         return hiddenPlayers;
     }
 
+     */
+
     private void sendPlayerNotInGame(Player player) {
         PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not part of your game.");
     }
@@ -513,4 +570,9 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
     private void sendPlayerNotOnline(Player player) {
         PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
     }
+
+    private void sendPlayerAlreadySeeker(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"This player is already a seeker.");
+    }
 }
+
