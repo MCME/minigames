@@ -78,6 +78,15 @@ public class GameDeny extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
+            else if(args[0].equalsIgnoreCase("points")){
+                if(game instanceof GeoGuessrGame){
+                    GeoGuessrGame geogame = (GeoGuessrGame) game;
+                    geogame.setPoints(false);
+                    sendPoints(cs);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -120,6 +129,10 @@ public class GameDeny extends AbstractGameCommand{
 
     private void sendSigns(CommandSender cs){
         PluginData.getMessageUtil().sendInfoMessage(cs,"You switched signs in GeoGuessr off.");
+    }
+
+    private void sendPoints(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You switched points in GeoGuessr to equal.");
     }
 
     private void sendNotPossibleMessage(CommandSender cs) {
