@@ -45,6 +45,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean first = false;
 
+    private boolean points_bool = true;
+
     private final List<String> guidebook = new ArrayList<>();
     public final List<Player> hiddenPlayer = new ArrayList<>();
     private final List<UUID> leaveMessaged = new ArrayList<>();
@@ -58,6 +60,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private int roundNumber = defaultRoundNumber;
 
     private int row = roundNumber - 1;
+
+    private int points = 10;
+    private int first_points = 12;
 
     private final String defaultArea = "a";
     private String area = defaultArea;
@@ -388,13 +393,13 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void incrementScore(Player player){
-        ((GeoGuessrGameScoreboard)getBoard()).score(player.getName());
+        ((GeoGuessrGameScoreboard)getBoard()).score(player.getName(),points);
     }
 
     public boolean incrementFirstScore(Player player){
         if(!first){
             first = true;
-            ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName());
+            ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName(),first_points);
             sendFirst(player);
             return true;
         }
@@ -415,6 +420,19 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void setSigns(boolean bool){
         if(!started){
             this.signHide = bool;
+        }
+    }
+
+    public void setPoints(boolean bool){
+        if(!started){
+            this.points_bool = bool;
+            if(!bool){
+                this.points = 1;
+                this.first_points = 1;
+            }else{
+                this.points = 10;
+                this.first_points = 12;
+            }
         }
     }
 
