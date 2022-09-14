@@ -20,7 +20,8 @@ public enum GameType{
     PVP             ("PvP"),
     GEO_GUESSR      ("Geo"),
     CATCH           ("Catch"),
-    MANHUNT         ("Manhunt");
+    MANHUNT         ("Manhunt"),
+    WEREWOLF        ("Werewolf");
 
     private final String name;
 
@@ -48,6 +49,7 @@ public enum GameType{
             case GEO_GUESSR: return "GeoGuessr";
             case CATCH: return "Catch";
             case MANHUNT: return "Manhunt";
+            case WEREWOLF: return "Werewolf";
         }
         return "Illegal type";
     }
@@ -63,6 +65,7 @@ public enum GameType{
                 case GEO_GUESSR: return Class.forName("com.mcmiddleearth.minigames.game.GeoGuessrGame");
                 case CATCH: return Class.forName("com.mcmiddleearth.minigames.game.CatchGame");
                 case MANHUNT: return Class.forName("com.mcmiddleearth.minigames.game.ManhuntGame");
+                case WEREWOLF: return Class.forName("com.mcmiddleearth.minigames.game.WerewolfGame");
             }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GameType.class.getName()).log(Level.SEVERE, null, ex);

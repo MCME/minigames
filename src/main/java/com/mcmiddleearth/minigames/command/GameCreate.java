@@ -87,6 +87,14 @@ public class GameCreate extends AbstractGameCommand{
                     sendPlayerJoinMessage(cs, game);
                     break;
                      */
+                case WEREWOLF:
+                    PluginData.stopSpectating((Player)cs);
+                    game = new WerewolfGame((Player)cs,args[1]);
+                    //sendWerewolfGameCreateMessage(cs);
+                    game.addPlayer((Player)cs);
+                    PluginData.setGameChat((Player)cs,true);
+                    sendPlayerJoinMessage(cs,game);
+                    break;
                 case MANHUNT:
                     if(String.valueOf(uuid).equalsIgnoreCase("4a4a85b0-0d8f-425b-ae25-4900f017ac89")
                             || String.valueOf(uuid).equalsIgnoreCase("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")
@@ -146,6 +154,10 @@ public class GameCreate extends AbstractGameCommand{
 
     private void sendGeoGuessrGameCreateMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new GeoGuessr game.");
+    }
+
+    private void sendWerewolfGameCreateMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs, "You created a new Werewolf game.");
     }
 
     private void sendCurrentlyDeactivaed(CommandSender cs, String name){
