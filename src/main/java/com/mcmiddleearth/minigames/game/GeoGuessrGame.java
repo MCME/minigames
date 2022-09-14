@@ -4,6 +4,7 @@ import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.conversation.geoguessr.GeoGuessrConversation;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrAreas;
+import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrBlacklist;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrSigns;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrWarps;
 import com.mcmiddleearth.minigames.scoreboard.GeoGuessrGameScoreboard;
@@ -162,13 +163,15 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         do{
             Random generator = new Random();
             warp = generator.nextInt(warp_list.length);
-            if(!warp_rows.contains(warp)){
-                warp_rows.add(warp);
-                x_warps[i][0] = warp_list[warp][0];
-                x_warps[i][1] = warp_list[warp][1];
-                x_warps[i][2] = warp_list[warp][2];
-                x_warps[i][3] = warp_list[warp][3];
-                i++;
+            if(checkBlacklist(warp_list[warp][0],warp_list.length)) {
+                if (!warp_rows.contains(warp)) {
+                    warp_rows.add(warp);
+                    x_warps[i][0] = warp_list[warp][0];
+                    x_warps[i][1] = warp_list[warp][1];
+                    x_warps[i][2] = warp_list[warp][2];
+                    x_warps[i][3] = warp_list[warp][3];
+                    i++;
+                }
             }
         }while(i <= row);
         this.warp_list = x_warps;
@@ -436,6 +439,19 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
     }
 
+    private boolean checkBlacklist(String warp,Integer length){
+        GeoGuessrBlacklist Blacklist = new GeoGuessrBlacklist();
+        Map <String,Object> blacklist = Blacklist.show();
+        if((length - blacklist.size()) < roundNumber){
+            return true;
+        }
+        if(blacklist.containsValue(warp)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public void GeoGameWinner(Player player){
         AbstractGame game = getGame(player);
         GeoGuessrGame geogame = (GeoGuessrGame) game;
@@ -452,6 +468,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Switch signtext on with /game allow signs.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Switch equal points on with /game allow points.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }
 
