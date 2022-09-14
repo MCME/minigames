@@ -54,6 +54,8 @@ public class PluginData {
                                                     + File.separator + "Races");
     private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
     private static final File geoGuessrDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessr");
+
+    private static final File geoGuessrBlacklist = new File(geoGuessrDir,"blacklist.yml");
     private static final File geoGuessrRestoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessrRestore");
     private static final File golfDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder()
             + File.separator + "Courses");
@@ -100,6 +102,14 @@ public class PluginData {
                 restore.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+
+        if(!geoGuessrBlacklist.exists()){
+            try {
+                geoGuessrBlacklist.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
