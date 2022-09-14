@@ -16,8 +16,8 @@ public class GeoGameBlacklist extends AbstractGameCommand{
     public GeoGameBlacklist(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.GEO_GUESSR;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("Deactivates Warps in GeoGuessr");
+        setUsageDescription("/game blacklist show; /game blacklist add <warpname>; /game blacklist delete <number in list> (seeable through show)");
     }
 
     @Override
