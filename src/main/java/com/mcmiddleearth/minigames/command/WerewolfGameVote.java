@@ -8,13 +8,15 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Jubo
  */
 
 public class WerewolfGameVote extends AbstractGameCommand{
-
     public WerewolfGameVote(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
@@ -40,7 +42,7 @@ public class WerewolfGameVote extends AbstractGameCommand{
                         werewolf.putUpVote((Player)player);
                         sendPutUpForVoteMessage(player);
                     }else{
-                        werewolf.suggest((Player)player);
+                        werewolf.suggest(cs,(Player)player);
                         sendSuggestionMessage(player,cs);
                     }
                 }else{
