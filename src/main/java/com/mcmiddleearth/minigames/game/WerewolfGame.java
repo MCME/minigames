@@ -25,13 +25,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private BossBar bar;
 
     private Player votee;
+    private static Player manager;
 
     private  List<Player> eliminated = new ArrayList<>();
     private List<Player> voted = new ArrayList<>();
 
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
-
+        this.manager = manager;
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
 
         setTeleportAllowed(false);
@@ -68,15 +69,19 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     public void suggest(CommandSender cs, Player player){
-        if(eliminated.contains(player)){
-            sendAlreadyEliminatedMessage(cs);
-        }else{
-            if(!voted.contains(((Player)cs))){
-                ((WerewolfGameScoreboard)getBoard()).suggest(player.getName());
-                voted.add((Player)cs);
-            }else {
-                sendAlreadyVotedMessage(cs);
+        if(manager != player) {
+            if (eliminated.contains(player)) {
+                sendAlreadyEliminatedMessage(cs);
+            } else {
+                if (!voted.contains(((Player) cs))) {
+                    ((WerewolfGameScoreboard) getBoard()).suggest(player.getName());
+                    voted.add((Player) cs);
+                } else {
+                    sendAlreadyVotedMessage(cs);
+                }
             }
+        }else{
+            sendVoteManager(cs);
         }
     }
 
@@ -94,16 +99,17 @@ public class WerewolfGame extends AbstractGame implements Listener {
     @Override
     public void addPlayer(Player player){
         bar.addPlayer(player);
-        /*
+
         super.addPlayer(player);
         player.setSneaking(true);
         forceTeleport(player,getWarp());
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
 
-         */
 
+
+        /*
         if((player == getManager().getPlayer())){
-            //getBoard().incrementPlayer();
+            getBoard().incrementPlayer();
             player.setScoreboard((this.getBoard()).getScoreboard());
         }else{
             super.addPlayer(player);
@@ -111,6 +117,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
             forceTeleport(player,getWarp());
             ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
         }
+
+         */
 
 
     }
@@ -147,6 +155,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendAlreadyVotedMessage(CommandSender cs){
         PluginData.getMessageUtil().sendErrorMessage(cs,"You already voted on this one.");
+    }
+
+    private void sendVoteManager(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You can´t suggest the manager.");
     }
 
     private void sendAlreadyEliminatedMessage(CommandSender cs){
