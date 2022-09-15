@@ -16,13 +16,18 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author Jubo
+ */
 public class WerewolfGame extends AbstractGame implements Listener {
 
     private BossBar bar;
 
     private Player votee;
 
-    private final List<Player> eliminated = new ArrayList<>();
+    private  List<Player> eliminated = new ArrayList<>();
+    private List<Player> voted = new ArrayList<>();
 
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
@@ -49,6 +54,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public void eliminate(Player player){
         if(player == votee){
             ((WerewolfGameScoreboard)getBoard()).reset(player.getName());
+            voted.clear();
         }
         removePlayer(player);
         player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
@@ -65,12 +71,22 @@ public class WerewolfGame extends AbstractGame implements Listener {
         if(eliminated.contains(player)){
             sendAlreadyEliminatedMessage(cs);
         }else{
-            ((WerewolfGameScoreboard)getBoard()).suggest(player.getName());
+            if(!voted.contains(((Player)cs))){
+                ((WerewolfGameScoreboard)getBoard()).suggest(player.getName());
+                voted.add((Player)cs);
+            }else {
+                sendAlreadyVotedMessage(cs);
+            }
         }
     }
 
-    public void vote(boolean bool){
-        ((WerewolfGameScoreboard)getBoard()).vote(bool);
+    public void vote(CommandSender cs,boolean bool){
+        if(!voted.contains(((Player)cs))) {
+            ((WerewolfGameScoreboard) getBoard()).vote(bool);
+            voted.add((Player) cs);
+        } else{
+            sendAlreadyVotedMessage(cs);
+        }
     }
 
 
@@ -127,6 +143,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendGameStartMessage(){
         PluginData.getMessageUtil().sendBroadcastMessage("The game was started.");
+    }
+
+    private void sendAlreadyVotedMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You already voted on this one.");
     }
 
     private void sendAlreadyEliminatedMessage(CommandSender cs){

@@ -18,8 +18,8 @@ public class WerewolfGameEliminate extends AbstractGameCommand{
     public WerewolfGameEliminate(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("Elimintas a player");
+        setUsageDescription("/game eliminate playername");
     }
 
     @Override

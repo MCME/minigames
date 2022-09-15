@@ -20,8 +20,8 @@ public class WerewolfGameVote extends AbstractGameCommand{
     public WerewolfGameVote(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("/game vote playername/yay/nay");
+        setUsageDescription("As Manager: /game vote playername to nominate; As Player: /game vote playername to suggest and /game vote yay/nay");
     }
 
     @Override
@@ -30,10 +30,10 @@ public class WerewolfGameVote extends AbstractGameCommand{
         if(game != null && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)){
             WerewolfGame werewolf = (WerewolfGame) game;
             if(args[0].equals("yay")){
-                werewolf.vote(true);
+                werewolf.vote(cs,true);
                 sendVoteMessage(true,(Player)cs);
             }else if(args[0].equals("nay")){
-                werewolf.vote(false);
+                werewolf.vote(cs,false);
                 sendVoteMessage(false,(Player)cs);
             }else {
                 OfflinePlayer player = game.getPlayer(args[0]);
