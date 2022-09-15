@@ -33,9 +33,6 @@ public class WerewolfGameScoreboard extends GameScoreboard{
 
         suggestObjective = scoreboard.registerNewObjective("Game starting","dummy");
         suggestObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        players.add("Jubo2");
-        players.add("Jubo1");
-        players.add("Jubo0");
     }
     public void start(){
         suggestObjective.setDisplayName("Game running");

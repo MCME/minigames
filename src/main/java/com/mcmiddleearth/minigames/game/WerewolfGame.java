@@ -87,7 +87,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
          */
 
         if((player == getManager().getPlayer())){
-            getBoard().incrementPlayer();
+            //getBoard().incrementPlayer();
             player.setScoreboard((this.getBoard()).getScoreboard());
         }else{
             super.addPlayer(player);
