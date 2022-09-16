@@ -50,7 +50,7 @@ public class WerewolfGameScoreboard extends GameScoreboard{
     }
 
     public void suggest(String player){
-        Score score = voteObjective.getScore(player);
+        Score score = suggestObjective.getScore(player);
         score.setScore(score.getScore()+1);
     }
 

@@ -98,7 +98,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("blacklist",new GeoGameBlacklist(Permissions.MANAGER));
         //addCommandHandler("catcher",new CatchGameCatcher(Permissions.MANAGER));
         //addCommandHandler("catch",new CatchGameCatch(Permissions.MANAGER));
-        addCommandHandler("eliminate",new WerewolfGameEliminate(Permissions.STAFF));
+        addCommandHandler("eliminate",new WerewolfGameEliminate(Permissions.MANAGER));
         addCommandHandler("vote",new WerewolfGameVote(Permissions.USER));
         addCommandHandler("manhunt_start",new ManhuntStart(Permissions.MANAGER));
         addCommandHandler("manhunt_seeker",new ManhuntSeeker(Permissions.MANAGER));
