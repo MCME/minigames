@@ -71,7 +71,7 @@ public class WerewolfGameScoreboard extends GameScoreboard{
         voteObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
     }
 
-    public void reset(String player){
+    public void reset(){
         //players.remove(player);
         for(String p : players){
             Score score = suggestObjective.getScore(p);
