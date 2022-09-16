@@ -119,6 +119,10 @@ public class GameStart extends AbstractGameCommand{
                     }
 
                     break;
+                case WEREWOLF:
+                    WerewolfGame werewolf = (WerewolfGame) game;
+                    werewolf.start();
+                    break;
                 default:
                     sendInvalidGameTypeErrorMessage(cs);
             }
