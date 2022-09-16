@@ -60,6 +60,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         removePlayer(player);
         player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
         addSpectator(player);
+        player.setSilent(false);
         eliminated.add(player);
     }
 
@@ -103,6 +104,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         super.addPlayer(player);
         player.setSneaking(true);
         forceTeleport(player,getWarp());
+        player.setSilent(true)
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
 
 
@@ -146,6 +148,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         super.end(sender);
         for(Player player: getOnlinePlayers()){
             bar.removePlayer(player);
+            player.setSilent(false)
         }
     }
 
