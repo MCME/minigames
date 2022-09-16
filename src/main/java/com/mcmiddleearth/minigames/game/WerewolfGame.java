@@ -27,6 +27,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private Player votee;
     private static Player manager;
 
+    private boolean upForVote = false;
+
     private  List<Player> eliminated = new ArrayList<>();
     private List<Player> voted = new ArrayList<>();
 
@@ -56,6 +58,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         if(player == votee){
             ((WerewolfGameScoreboard)getBoard()).reset(player.getName());
             voted.clear();
+            upForVote = false;
         }
         removePlayer(player);
         player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
@@ -66,6 +69,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     public void putUpVote(Player player){
         votee=player;
+        upForVote = true;
         ((WerewolfGameScoreboard)getBoard()).putUpForVote(player.getName());
     }
 
@@ -87,11 +91,15 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     public void vote(CommandSender cs,boolean bool){
-        if(!voted.contains(((Player)cs))) {
-            ((WerewolfGameScoreboard) getBoard()).vote(bool);
-            voted.add((Player) cs);
+        if(upForVote) {
+            if (!voted.contains(((Player) cs))) {
+                ((WerewolfGameScoreboard) getBoard()).vote(bool);
+                voted.add((Player) cs);
+            } else {
+                sendAlreadyVotedMessage(cs);
+            }
         } else{
-            sendAlreadyVotedMessage(cs);
+            sendYouCantDoThisMessage(cs);
         }
     }
 
@@ -166,5 +174,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendAlreadyEliminatedMessage(CommandSender cs){
         PluginData.getMessageUtil().sendErrorMessage(cs,"This player was already eliminated.");
+    }
+
+    private void sendYouCantDoThisMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You can´t do this right now.");
     }
 }
