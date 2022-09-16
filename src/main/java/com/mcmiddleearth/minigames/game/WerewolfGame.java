@@ -104,7 +104,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         super.addPlayer(player);
         player.setSneaking(true);
         forceTeleport(player,getWarp());
-        player.setSilent(true)
+        player.setSilent(true);
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
 
 
@@ -148,7 +148,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         super.end(sender);
         for(Player player: getOnlinePlayers()){
             bar.removePlayer(player);
-            player.setSilent(false)
+            player.setSilent(false);
         }
     }
 
