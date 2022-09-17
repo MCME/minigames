@@ -44,7 +44,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
 
         setTeleportAllowed(false);
-        setFlightAllowed(false);
+        setFlightAllowed(true);
         setGm2Forced(false);
         setCollision(true);
         announceGame();
@@ -67,12 +67,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
             voted.clear();
             upForVote = false;
         }
-        //removePlayer(player);
         player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
         player.setSilent(false);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
         eliminated.add(player);
         alive.remove(player);
+        sendPlayerEliminated(player);
     }
 
     public void pardon(Player player){
@@ -165,7 +165,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public void addPlayer(Player player){
         super.addPlayer(player);
         bar.addPlayer(player);
-        //player.setSneaking(true);
         forceTeleport(player,getWarp());
         player.setSilent(true);
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
@@ -207,7 +206,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
             Player player_on = player.getPlayer();
             bar.removePlayer(player_on);
             player_on.setSilent(false);
-            //player_on.setSneaking(false);
             player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
             alive.remove(player_on);
             eliminated.add(player_on);
@@ -217,7 +215,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendGameStartMessage(){
         for(Player p: getOnlinePlayers()){
-            //PluginData.getMessageUtil().sendBroadcastMessage("The game was started.");
             PluginData.getMessageUtil().sendInfoMessage(p,"The game was started.");
         }
     }
@@ -243,12 +240,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
             for(Player p: getOnlinePlayers()){
                 PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" voted yay.");
             }
-            //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted yay.");
         } else {
             for(Player p: getOnlinePlayers()){
                 PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" voted nay.");
             }
-            //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted nay.");
         }
     }
 
@@ -256,14 +251,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         for(Player p: getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
         }
-        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
     }
 
     private void sendSuggestionMessage(Player player,CommandSender cs){
         for(Player p: getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+ " was suggested by "+cs.getName());
         }
-        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+ " was suggested by "+cs.getName());
     }
 
     private void sendVoteYourselfMessage(CommandSender cs){
@@ -278,6 +271,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
         for(Player p: getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was pardoned.");
         }
-        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was pardoned.");
+    }
+
+    private void sendPlayerEliminated(Player player){
+        for(Player p:getOnlinePlayers()){
+            PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was eliminated from the game.");
+        }
     }
 }

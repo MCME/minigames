@@ -31,16 +31,11 @@ public class WerewolfGameEliminate extends AbstractGameCommand{
                 sendPlayerNotFoundErrorMessage(cs);
             }else{
                 werewolf.eliminate((Player)player);
-                sendPlayerEliminated(player);
             }
         }
     }
+
     private void sendPlayerNotFoundErrorMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Player not found.");
     }
-
-    private void sendPlayerEliminated(OfflinePlayer player){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was eliminated from the game.");
-    }
-
 }
