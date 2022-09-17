@@ -8,17 +8,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author Jubo
- */
-public class WerewolfGameEliminate extends AbstractGameCommand{
+public class WerewolfGamePardon extends AbstractGameCommand{
 
-    public WerewolfGameEliminate(String... permissionNodes){
+    public WerewolfGamePardon(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("Elimintas a player");
-        setUsageDescription("/game eliminate playername");
+        setShortDescription("");
+        setUsageDescription("");
     }
 
     @Override
@@ -27,20 +23,18 @@ public class WerewolfGameEliminate extends AbstractGameCommand{
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)){
             WerewolfGame werewolf = (WerewolfGame) game;
             OfflinePlayer player = game.getPlayer(args[0]);
-            if(player == null){
+            if(player == null) {
                 sendPlayerNotFoundErrorMessage(cs);
             }else{
-                werewolf.eliminate((Player)player);
-                sendPlayerEliminated(player);
+                werewolf.pardon();
+                sendPlayerPardoned(player);
             }
         }
     }
     private void sendPlayerNotFoundErrorMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Player not found.");
     }
-
-    private void sendPlayerEliminated(OfflinePlayer player){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was eliminated from the game.");
+    private void sendPlayerPardoned(OfflinePlayer player){
+        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was pardoned.");
     }
-
 }

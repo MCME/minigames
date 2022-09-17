@@ -8,14 +8,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author Jubo
  */
-
 public class WerewolfGameVote extends AbstractGameCommand{
     public WerewolfGameVote(String... permissionNodes){
         super(1,true,permissionNodes);
@@ -31,20 +27,12 @@ public class WerewolfGameVote extends AbstractGameCommand{
             WerewolfGame werewolf = (WerewolfGame) game;
             if(args[0].equals("yay")){
                 werewolf.vote(cs,true);
-                sendVoteMessage(true,(Player)cs);
             }else if(args[0].equals("nay")){
                 werewolf.vote(cs,false);
-                sendVoteMessage(false,(Player)cs);
             }else {
                 OfflinePlayer player = game.getPlayer(args[0]);
                 if(player != null){
-                    if(isManager((Player)cs,game)){
-                        werewolf.putUpVote((Player)player);
-                        sendPutUpForVoteMessage(player);
-                    }else{
-                        werewolf.suggest(cs,(Player)player);
-                        sendSuggestionMessage(player,cs);
-                    }
+                    werewolf.suggest(cs,(Player)player);
                 }else{
                     sendPlayerNotFoundErrorMessage(cs);
                 }
@@ -56,19 +44,4 @@ public class WerewolfGameVote extends AbstractGameCommand{
         PluginData.getMessageUtil().sendErrorMessage(cs, "Player not found.");
     }
 
-    private void sendVoteMessage(boolean bool,Player player){
-        if(bool){
-            PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted yay.");
-        } else {
-            PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted nay.");
-        }
-    }
-
-    private void sendPutUpForVoteMessage(OfflinePlayer player){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was put up for voting.");
-    }
-
-    private void sendSuggestionMessage(OfflinePlayer player,CommandSender cs){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+ " was suggested by "+cs.getName());
-    }
 }
