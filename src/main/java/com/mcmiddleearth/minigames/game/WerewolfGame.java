@@ -75,11 +75,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         alive.remove(player);
     }
 
-    public void pardon(){
+    public void pardon(Player player){
         ((WerewolfGameScoreboard)getBoard()).reset();
         voted.clear();
         upForVote = false;
         votee = null;
+        sendPlayerPardoned(player);
     }
 
 
@@ -215,7 +216,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     private void sendGameStartMessage(){
-        PluginData.getMessageUtil().sendBroadcastMessage("The game was started.");
+        for(Player p: getOnlinePlayers()){
+            //PluginData.getMessageUtil().sendBroadcastMessage("The game was started.");
+            PluginData.getMessageUtil().sendInfoMessage(p,"The game was started.");
+        }
     }
 
     private void sendAlreadyVotedMessage(CommandSender cs){
@@ -236,18 +240,30 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendVoteMessage(boolean bool,Player player){
         if(bool){
-            PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted yay.");
+            for(Player p: getOnlinePlayers()){
+                PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" voted yay.");
+            }
+            //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted yay.");
         } else {
-            PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted nay.");
+            for(Player p: getOnlinePlayers()){
+                PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" voted nay.");
+            }
+            //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" voted nay.");
         }
     }
 
     private void sendPutUpForVoteMessage(Player player){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
+        for(Player p: getOnlinePlayers()){
+            PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
+        }
+        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
     }
 
     private void sendSuggestionMessage(Player player,CommandSender cs){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+ " was suggested by "+cs.getName());
+        for(Player p: getOnlinePlayers()){
+            PluginData.getMessageUtil().sendInfoMessage(cs,player.getName()+ " was suggested by "+cs.getName());
+        }
+        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+ " was suggested by "+cs.getName());
     }
 
     private void sendVoteYourselfMessage(CommandSender cs){
@@ -256,5 +272,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendYouAreDead(CommandSender cs){
         PluginData.getMessageUtil().sendErrorMessage(cs,"You are dead.");
+    }
+
+    private void sendPlayerPardoned(Player player){
+        for(Player p: getOnlinePlayers()){
+            PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was pardoned.");
+        }
+        //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was pardoned.");
     }
 }
