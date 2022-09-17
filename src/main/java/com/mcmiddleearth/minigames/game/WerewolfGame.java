@@ -113,6 +113,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
                     sendVoteManager(cs);
                 }
             }
+        }else{
+            sendYouAreDead(cs);
         }
     }
 
@@ -133,6 +135,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
             } else {
                 sendVoteYourselfMessage(cs);
             }
+        }else{
+            sendYouAreDead(cs);
         }
     }
 
@@ -248,5 +252,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendVoteYourselfMessage(CommandSender cs){
         PluginData.getMessageUtil().sendErrorMessage(cs,"You can´t for for yourself.");
+    }
+
+    private void sendYouAreDead(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You are dead.");
     }
 }
