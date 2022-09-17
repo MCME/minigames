@@ -67,9 +67,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
             voted.clear();
             upForVote = false;
         }
-        removePlayer(player);
+        //removePlayer(player);
         player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
-        addSpectator(player);
         player.setSilent(false);
         player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
         eliminated.add(player);
@@ -94,42 +93,50 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     public void suggest(CommandSender cs, Player player){
-        if((Player)cs == manager){
-            putUpVote(player);
-        } else {
-            if (manager != player) {
-                if (eliminated.contains(player)) {
-                    sendAlreadyEliminatedMessage(cs);
-                } else {
-                    if (!voted.contains(((Player) cs))) {
-                        ((WerewolfGameScoreboard) getBoard()).suggest(player.getName());
-                        voted.add((Player) cs);
-                        sendSuggestionMessage(player, cs);
-                    } else {
-                        sendAlreadyVotedMessage(cs);
-                    }
-                }
+        if(!(eliminated.contains((Player)cs))) {
+            if ((Player) cs == manager) {
+                putUpVote(player);
             } else {
-                sendVoteManager(cs);
+                if (manager != player) {
+                    if (eliminated.contains(player)) {
+                        sendAlreadyEliminatedMessage(cs);
+                    } else {
+                        if (!voted.contains(((Player) cs))) {
+                            ((WerewolfGameScoreboard) getBoard()).suggest(player.getName());
+                            voted.add((Player) cs);
+                            sendSuggestionMessage(player, cs);
+                        } else {
+                            sendAlreadyVotedMessage(cs);
+                        }
+                    }
+                } else {
+                    sendVoteManager(cs);
+                }
             }
+        }else{
+            sendYouAreDead(cs);
         }
     }
 
     public void vote(CommandSender cs,boolean bool){
-        if(votee == (Player)cs) {
-            if (upForVote) {
-                if (!voted.contains(((Player) cs))) {
-                    ((WerewolfGameScoreboard) getBoard()).vote(bool);
-                    voted.add((Player) cs);
-                    sendVoteMessage(bool, (Player) cs);
+        if(!(eliminated.contains((Player)cs))) {
+            if (votee != (Player) cs) {
+                if (upForVote) {
+                    if (!voted.contains(((Player) cs))) {
+                        ((WerewolfGameScoreboard) getBoard()).vote(bool);
+                        voted.add((Player) cs);
+                        sendVoteMessage(bool, (Player) cs);
+                    } else {
+                        sendAlreadyVotedMessage(cs);
+                    }
                 } else {
-                    sendAlreadyVotedMessage(cs);
+                    sendYouCantDoThisMessage(cs);
                 }
             } else {
-                sendYouCantDoThisMessage(cs);
+                sendVoteYourselfMessage(cs);
             }
-        } else{
-            sendVoteYourselfMessage(cs);
+        }else{
+            sendYouAreDead(cs);
         }
     }
 
@@ -157,7 +164,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public void addPlayer(Player player){
         super.addPlayer(player);
         bar.addPlayer(player);
-        player.setSneaking(true);
+        //player.setSneaking(true);
         forceTeleport(player,getWarp());
         player.setSilent(true);
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
@@ -199,9 +206,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
             Player player_on = player.getPlayer();
             bar.removePlayer(player_on);
             player_on.setSilent(false);
-            player_on.setSneaking(false);
+            //player_on.setSneaking(false);
+            player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
             alive.remove(player_on);
             eliminated.add(player_on);
+
         }
     }
 
@@ -243,5 +252,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendVoteYourselfMessage(CommandSender cs){
         PluginData.getMessageUtil().sendErrorMessage(cs,"You can´t for for yourself.");
+    }
+
+    private void sendYouAreDead(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You are dead.");
     }
 }
