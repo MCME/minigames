@@ -93,7 +93,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     public void suggest(CommandSender cs, Player player){
-        if(eliminated.contains((Player)cs)) {
+        if(!(eliminated.contains((Player)cs))) {
             if ((Player) cs == manager) {
                 putUpVote(player);
             } else {
@@ -117,7 +117,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     public void vote(CommandSender cs,boolean bool){
-        if(eliminated.contains((Player)cs)) {
+        if(!(eliminated.contains((Player)cs))) {
             if (votee != (Player) cs) {
                 if (upForVote) {
                     if (!voted.contains(((Player) cs))) {
