@@ -134,9 +134,23 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
 
-    public void list(CommandSender cs){
-
+    public void sendAliveList(CommandSender cs){
+        List<String> aliveString = new ArrayList<>();
+        for(Player p_alive : this.alive){
+            aliveString.add(p_alive.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.GREEN+"Alive players:");
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+aliveString.toString());
     }
+
+    public void sendEliminatedList(CommandSender cs){
+        List<String> eliminatedString = new ArrayList<>();
+        for(Player p_eliminated : this.eliminated){
+            eliminatedString.add(p_eliminated.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.RED+"Eliminated players:");
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+eliminatedString.toString());
+     }
 
 
     @Override
@@ -202,6 +216,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
         if(player.isOnline()){
             Player player_on = player.getPlayer();
             bar.removePlayer(player_on);
+            player_on.setSilent(false);
+            player_on.setSneaking(false);
+            alive.remove(player_on);
+            eliminated.add(player_on);
         }
     }
 

@@ -28,8 +28,9 @@ public class WerewolfGameScoreboard extends GameScoreboard{
         super("Game starting");
         voteObjective = scoreboard.registerNewObjective("Suggest","dummy");
         //voteObjective.setDisplayName(voteTitle+"?");
-        yayScore = voteObjective.getScore(ChatColor.RED+"yay: ");
-        nayScore = voteObjective.getScore(ChatColor.GREEN+"nay: ");
+        nayScore = voteObjective.getScore("nay: ");
+        yayScore = voteObjective.getScore("yay: ");
+
 
         suggestObjective = scoreboard.registerNewObjective("Game starting","dummy");
         suggestObjective.setDisplaySlot(DisplaySlot.SIDEBAR);

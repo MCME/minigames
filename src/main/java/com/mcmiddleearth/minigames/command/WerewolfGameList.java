@@ -20,7 +20,8 @@ public class WerewolfGameList extends AbstractGameCommand{
         AbstractGame game = getGame((Player)cs);
         if(game != null && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)){
             WerewolfGame werewolf = (WerewolfGame) game;
-            werewolf.list(cs);
+            werewolf.sendAliveList(cs);
+            werewolf.sendEliminatedList(cs);
         }
     }
 }
