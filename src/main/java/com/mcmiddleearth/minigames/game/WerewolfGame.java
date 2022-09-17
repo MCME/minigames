@@ -27,7 +27,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private BossBar bar;
 
     private Player votee;
-    private static Player manager;
+    private final Player manager;
 
     private boolean upForVote = false;
 
@@ -155,9 +155,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     @Override
     public void addPlayer(Player player){
-        bar.addPlayer(player);
-
         super.addPlayer(player);
+        bar.addPlayer(player);
         player.setSneaking(true);
         forceTeleport(player,getWarp());
         player.setSilent(true);
@@ -166,21 +165,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
             player.setGameMode(GameMode.ADVENTURE);
             alive.add(player);
         }
-
-        /*
-        if((player == getManager().getPlayer())){
-            getBoard().incrementPlayer();
-            player.setScoreboard((this.getBoard()).getScoreboard());
-        }else{
-            super.addPlayer(player);
-            player.setSneaking(true);
-            forceTeleport(player,getWarp());
-            ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
-        }
-
-         */
-
-
     }
 
     @Override
@@ -193,8 +177,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public boolean joinAllowed() {
         return super.joinAllowed() && !started;
     }
-
-    //public void teleportToWarp(Player player){player.teleport(getWarp(),TeleportCause_FORCE);}
 
     @Override
     public int allowedRadius(Player player){

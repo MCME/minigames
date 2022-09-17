@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
  *
  * @author Jubo
  */
-
 public class WerewolfGameEliminate extends AbstractGameCommand{
 
     public WerewolfGameEliminate(String... permissionNodes){

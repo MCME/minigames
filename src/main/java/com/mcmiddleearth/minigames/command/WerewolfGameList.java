@@ -6,13 +6,17 @@ import com.mcmiddleearth.minigames.game.WerewolfGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
 public class WerewolfGameList extends AbstractGameCommand{
 
     public WerewolfGameList(String... permissionNodes){
         super(0,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("list of players in werewolf");
+        setUsageDescription("/game list; Gives a list of eliminated and alive players in werewolf");
     }
 
     @Override
