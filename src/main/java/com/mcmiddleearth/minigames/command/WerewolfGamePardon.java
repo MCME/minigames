@@ -26,15 +26,12 @@ public class WerewolfGamePardon extends AbstractGameCommand{
             if(player == null) {
                 sendPlayerNotFoundErrorMessage(cs);
             }else{
-                werewolf.pardon();
-                sendPlayerPardoned(player);
+                werewolf.pardon((Player) player);
             }
         }
     }
+
     private void sendPlayerNotFoundErrorMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Player not found.");
-    }
-    private void sendPlayerPardoned(OfflinePlayer player){
-        PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+" was pardoned.");
     }
 }
