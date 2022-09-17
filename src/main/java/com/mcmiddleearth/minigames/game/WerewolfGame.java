@@ -261,7 +261,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendSuggestionMessage(Player player,CommandSender cs){
         for(Player p: getOnlinePlayers()){
-            PluginData.getMessageUtil().sendInfoMessage(cs,player.getName()+ " was suggested by "+cs.getName());
+            PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+ " was suggested by "+cs.getName());
         }
         //PluginData.getMessageUtil().sendBroadcastMessage(player.getName()+ " was suggested by "+cs.getName());
     }
