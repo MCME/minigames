@@ -82,7 +82,7 @@ public abstract class AbstractGame {
             if(type != GameType.GEO_GUESSR) {
                 warp = manager.getLocation();
             }
-            if(type == GameType.HIDE_AND_SEEK){
+            if(type == GameType.HIDE_AND_SEEK || type == GameType.WEREWOLF){
                 team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
             }
             gameWinHighscore winHighscore = new gameWinHighscore();

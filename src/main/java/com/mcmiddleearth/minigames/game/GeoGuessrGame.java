@@ -4,6 +4,7 @@ import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.conversation.geoguessr.GeoGuessrConversation;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrAreas;
+import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrBlacklist;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrSigns;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrWarps;
 import com.mcmiddleearth.minigames.scoreboard.GeoGuessrGameScoreboard;
@@ -45,6 +46,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean first = false;
 
+    private boolean points_bool = true;
+
     private final List<String> guidebook = new ArrayList<>();
     public final List<Player> hiddenPlayer = new ArrayList<>();
     private final List<UUID> leaveMessaged = new ArrayList<>();
@@ -58,6 +61,9 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     private int roundNumber = defaultRoundNumber;
 
     private int row = roundNumber - 1;
+
+    private int points = 10;
+    private int first_points = 12;
 
     private final String defaultArea = "a";
     private String area = defaultArea;
@@ -157,13 +163,15 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         do{
             Random generator = new Random();
             warp = generator.nextInt(warp_list.length);
-            if(!warp_rows.contains(warp)){
-                warp_rows.add(warp);
-                x_warps[i][0] = warp_list[warp][0];
-                x_warps[i][1] = warp_list[warp][1];
-                x_warps[i][2] = warp_list[warp][2];
-                x_warps[i][3] = warp_list[warp][3];
-                i++;
+            if(checkBlacklist(warp_list[warp][0],warp_list.length)) {
+                if (!warp_rows.contains(warp)) {
+                    warp_rows.add(warp);
+                    x_warps[i][0] = warp_list[warp][0];
+                    x_warps[i][1] = warp_list[warp][1];
+                    x_warps[i][2] = warp_list[warp][2];
+                    x_warps[i][3] = warp_list[warp][3];
+                    i++;
+                }
             }
         }while(i <= row);
         this.warp_list = x_warps;
@@ -388,13 +396,13 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     }
 
     public void incrementScore(Player player){
-        ((GeoGuessrGameScoreboard)getBoard()).score(player.getName());
+        ((GeoGuessrGameScoreboard)getBoard()).score(player.getName(),points);
     }
 
     public boolean incrementFirstScore(Player player){
         if(!first){
             first = true;
-            ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName());
+            ((GeoGuessrGameScoreboard)getBoard()).firstScore(player.getName(),first_points);
             sendFirst(player);
             return true;
         }
@@ -418,6 +426,32 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
     }
 
+    public void setPoints(boolean bool){
+        if(!started){
+            this.points_bool = bool;
+            if(!bool){
+                this.points = 1;
+                this.first_points = 1;
+            }else{
+                this.points = 10;
+                this.first_points = 12;
+            }
+        }
+    }
+
+    private boolean checkBlacklist(String warp,Integer length){
+        GeoGuessrBlacklist Blacklist = new GeoGuessrBlacklist();
+        Map <String,Object> blacklist = Blacklist.show();
+        if((length - blacklist.size()) < roundNumber){
+            return true;
+        }
+        if(blacklist.containsValue(warp)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public void GeoGameWinner(Player player){
         AbstractGame game = getGame(player);
         GeoGuessrGame geogame = (GeoGuessrGame) game;
@@ -434,6 +468,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Switch signtext on with /game allow signs.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Switch equal points on with /game allow points.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }
 

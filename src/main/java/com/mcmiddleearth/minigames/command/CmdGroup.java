@@ -31,7 +31,8 @@ public enum CmdGroup {
     PVP             ("PvP"),
     GEO_GUESSR      ("GEO"),
     CATCH           ("Catch"),
-    MANHUNT         ("Manhunt");
+    MANHUNT         ("Manhunt"),
+    WEREWOLF        ("Werewolf");
 
     private final String name;
 
