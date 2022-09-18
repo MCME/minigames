@@ -33,8 +33,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private  List<Player> eliminated = new ArrayList<>();
-    private  List<Player> alive = new ArrayList<>();
+    private  List<OfflinePlayer> eliminated = new ArrayList<>();
+    private  List<OfflinePlayer> alive = new ArrayList<>();
 
     private List<Player> voted = new ArrayList<>();
 
@@ -168,10 +168,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
         forceTeleport(player,getWarp());
         player.setSilent(true);
         ((WerewolfGameScoreboard)getBoard()).addPlayer(player.getName());
-        if(!(player == getManager().getPlayer())){
+        if(!((Player)player == getManager().getPlayer())){
             player.setGameMode(GameMode.ADVENTURE);
-            alive.add(player);
+            alive.add((Player)player);
         }
+        DynmapUtil.hide(player);
     }
 
     @Override
@@ -202,14 +203,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
     @Override
     public void removePlayer(OfflinePlayer player){
         super.removePlayer(player);
+        alive.remove(player);
+        eliminated.remove(player);
         if(player.isOnline()){
             Player player_on = player.getPlayer();
             bar.removePlayer(player_on);
             player_on.setSilent(false);
             player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
-            alive.remove(player_on);
-            eliminated.add(player_on);
-
+            DynmapUtil.hide(player_on);
         }
     }
 
