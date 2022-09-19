@@ -429,7 +429,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void setPoints(boolean bool){
         if(!started){
             this.points_bool = bool;
-            if(!bool){
+            if(!points_bool){
                 this.points = 1;
                 this.first_points = 1;
             }else{

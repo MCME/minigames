@@ -3,20 +3,31 @@ package com.mcmiddleearth.minigames.game;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.scoreboard.WerewolfGameScoreboard;
+import com.mcmiddleearth.minigames.werewolf.WerewolfRoles;
+import com.mcmiddleearth.pluginutil.DynmapUtil;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,6 +49,16 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private List<Player> voted = new ArrayList<>();
 
+    private WerewolfRoles roles;
+
+    private Integer heads;
+
+    private ItemStack headCount;
+
+    //Map<ItemStack,Integer> Slot = new HashMap<>();
+    Map<String,Integer> RoleCount = new HashMap<>();
+    Map<Player,String> assignedRole = new HashMap<>();
+
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
         this.manager = manager;
@@ -48,6 +69,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
         setGm2Forced(false);
         setCollision(true);
         announceGame();
+
+        this.roles = new WerewolfRoles();
+        configSetup();
 
         BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Werewolf", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
@@ -73,6 +97,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         eliminated.add(player);
         alive.remove(player);
         sendPlayerEliminated(player);
+    }
+
+    public void Revive(Player player){
+        eliminated.remove((OfflinePlayer) player);
+        addPlayer(player);
+        sendPlayerRevived(manager,player);
     }
 
     public void pardon(Player player){
@@ -142,23 +172,145 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
 
-    public void sendAliveList(CommandSender cs){
-        List<String> aliveString = new ArrayList<>();
-        for(Player p_alive : this.alive){
-            aliveString.add(p_alive.getName());
+    private void configSetup(){
+        Map<String,Object> role = new HashMap<>();
+        role = roles.getRoles();
+        for(String roleName: role.keySet()){
+            RoleCount.put(roleName,0);
         }
-        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.GREEN+"Alive players:");
-        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+aliveString.toString());
+        heads = getOnlinePlayers().size();
+        //
+        heads = 18;
+        ItemStack headCount = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta headMeta = headCount.getItemMeta();
+        headMeta.setDisplayName("Players without roles");
+        headCount.setItemMeta(headMeta);
+        this.headCount = headCount;
+        //
     }
 
-    public void sendEliminatedList(CommandSender cs){
-        List<String> eliminatedString = new ArrayList<>();
-        for(Player p_eliminated : this.eliminated){
-            eliminatedString.add(p_eliminated.getName());
-        }
-        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.RED+"Eliminated players:");
-        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+eliminatedString.toString());
+
+     public void Configuration(Player player){
+        openGUI(player);
      }
+
+
+    private void openGUI(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 54, "Configuration");
+
+        ItemStack confirm = new ItemStack(Material.SLIME_BALL);
+        ItemMeta confirmMeta = confirm.getItemMeta();
+        confirmMeta.setDisplayName("confirm");
+        confirm.setItemMeta(confirmMeta);
+        inv.setItem(48,confirm);
+
+        headCount.setAmount(heads);
+        inv.setItem(50,headCount);
+
+        Map<String,Object> role = new HashMap<>();
+        role = roles.getRoles();
+
+        int i = 0;
+        for(String roleName: role.keySet()) {
+                if (RoleCount.get(roleName) == 0) {
+                    ItemStack book = new ItemStack(Material.BOOK);
+                    ItemMeta meta = book.getItemMeta();
+                    meta.setDisplayName(roleName);
+                    book.setItemMeta(meta);
+                    inv.setItem(i, book);
+                } else if (RoleCount.get(roleName) == 1) {
+                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                    ItemMeta meta = book.getItemMeta();
+                    meta.setDisplayName(roleName);
+                    book.setItemMeta(meta);
+                    inv.setItem(i, book);
+                } else if (RoleCount.get(roleName) > 1) {
+                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK, RoleCount.get(roleName));
+                    ItemMeta meta = book.getItemMeta();
+                    meta.setDisplayName(roleName);
+                    book.setItemMeta(meta);
+                    inv.setItem(i, book);
+                }
+            i = i + 2;
+            if(i > 45) break;
+        }
+        if(heads == 0){
+            ItemStack Skeleton = new ItemStack(Material.SKELETON_SKULL);
+            ItemMeta headMeta = Skeleton.getItemMeta();
+            headMeta.setDisplayName("Players without roles");
+            Skeleton.setItemMeta(headMeta);
+            inv.setItem(50,Skeleton);
+        }
+        //Bukkit.getPlayer("Jubo").sendMessage(Slot.toString());
+        player.openInventory(inv);
+    }
+
+    @Override
+    public void onClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        ItemStack current = event.getCurrentItem();
+        Inventory currentInv = event.getInventory();
+        ClickType click = event.getClick();
+        ItemStack currentHead = currentInv.getItem(50);
+
+        if (current == null) return;
+        String itemName = current.getItemMeta().getDisplayName();
+        event.setCancelled(true);
+
+        if (current.getType() == Material.BOOK && click == ClickType.LEFT) {
+            current.setType(Material.WRITTEN_BOOK);
+            RoleCount.replace(itemName, RoleCount.get(itemName)+1);
+            currentHead.setAmount(--heads);
+        } else if (current.getType() == Material.WRITTEN_BOOK && click == ClickType.LEFT) {
+            current.setAmount(current.getAmount() + 1);
+            RoleCount.replace(itemName, RoleCount.get(itemName) + 1);
+            currentHead.setAmount(--heads);
+        } else if (current.getType() == Material.WRITTEN_BOOK && click == ClickType.RIGHT) {
+            if(current.getAmount() > 1){
+                current.setAmount(current.getAmount()-1);
+                RoleCount.replace(itemName, RoleCount.get(itemName)-1);
+            }else{
+                current.setType(Material.BOOK);
+                RoleCount.replace(itemName, RoleCount.get(itemName)-1);
+            }
+            currentHead.setAmount(++heads);
+        } else if(current.getType() == Material.SLIME_BALL){
+            player.closeInventory();
+            Bukkit.getPlayer("Jubo").sendMessage(RoleCount.toString());
+            Map<String,Object> role = new HashMap<>();
+            role = roles.getRoles();
+            for(String name: role.keySet()){
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta bookMeta = (BookMeta) book.getItemMeta();
+                bookMeta.setTitle(name);
+                bookMeta.addPage(String.valueOf(role.get(name)).replaceAll("<br>", "\n"));
+                bookMeta.setAuthor("Stoog_Gaming");
+                book.setItemMeta(bookMeta);
+                Bukkit.getPlayer("Jubo").getInventory().addItem(book);
+                Bukkit.getPlayer("Jubo").sendMessage(name);
+            }
+        }
+        if(heads == 0){
+            ItemStack Skeleton = new ItemStack(Material.SKELETON_SKULL);
+            ItemMeta headMeta = Skeleton.getItemMeta();
+            headMeta.setDisplayName("Players without roles");
+            Skeleton.setItemMeta(headMeta);
+            currentInv.setItem(50,Skeleton);
+        }else if(heads > 0 && currentHead.getType() == Material.SKELETON_SKULL){
+            currentHead.setType(Material.PLAYER_HEAD);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -210,8 +362,26 @@ public class WerewolfGame extends AbstractGame implements Listener {
             bar.removePlayer(player_on);
             player_on.setSilent(false);
             player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
-            DynmapUtil.hide(player_on);
+            DynmapUtil.show(player_on);
         }
+    }
+
+    public void sendAliveList(CommandSender cs){
+        List<String> aliveString = new ArrayList<>();
+        for(OfflinePlayer p_alive : this.alive){
+            aliveString.add(p_alive.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.GREEN+"Alive players:");
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+"["+alive.size()+"]: "+aliveString.toString());
+    }
+
+    public void sendEliminatedList(CommandSender cs){
+        List<String> eliminatedString = new ArrayList<>();
+        for(OfflinePlayer p_eliminated : this.eliminated){
+            eliminatedString.add(p_eliminated.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.RED+"Eliminated players:");
+        PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+"["+eliminated.size()+"]: "+eliminatedString.toString());
     }
 
     private void sendGameStartMessage(){
@@ -278,5 +448,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
         for(Player p:getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was eliminated from the game.");
         }
+    }
+
+    private void sendPlayerRevived(CommandSender cs,Player player){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You revived "+player.getName()+".");
     }
 }

@@ -10,8 +10,10 @@ import com.mcmiddleearth.minigames.game.AbstractGame;
 //import com.mcmiddleearth.minigames.game.CatchGame;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
 /**
@@ -32,6 +34,16 @@ public class PlayerListener implements Listener{
         if(PluginData.isInGame(event.getPlayer())){
             AbstractGame game = PluginData.getGame(event.getPlayer());
             game.playerInteract(event);
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        if(PluginData.isInGame((Player)event.getWhoClicked())){
+            if(event.getView().getTitle() == "Configuration"){
+                AbstractGame game = PluginData.getGame((Player)event.getWhoClicked());
+                game.onClick(event);
+            }
         }
     }
 

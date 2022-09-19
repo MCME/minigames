@@ -54,6 +54,7 @@ public class PluginData {
                                                     + File.separator + "Races");
     private static final File highscoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Highscore");
     private static final File geoGuessrDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessr");
+    private static final File werewolfDir = new File (MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "Werewolf");
 
     private static final File geoGuessrBlacklist = new File(geoGuessrDir,"blacklist.yml");
     private static final File geoGuessrRestoreDir = new File(MiniGamesPlugin.getPluginInstance().getDataFolder() + File.separator + "GeoGuessrRestore");
@@ -93,6 +94,16 @@ public class PluginData {
 
         if(!loadoutDirectory.exists()) {
             loadoutDirectory.mkdirs();
+        }
+
+        if(!werewolfDir.exists()){
+            werewolfDir.mkdirs();
+            File werewolfConfig = new File(werewolfDir,"werewolfConfig.yml");
+            try {
+                werewolfConfig.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if(!geoGuessrRestoreDir.exists()){
@@ -291,6 +302,10 @@ public class PluginData {
 
     public static File getQuestionDir() {
         return questionDir;
+    }
+
+    public static File getWerewolfDir(){
+        return werewolfDir;
     }
 
     public static File getQuestionDataTable() {
