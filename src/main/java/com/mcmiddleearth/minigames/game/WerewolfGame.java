@@ -23,11 +23,9 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.checkerframework.checker.units.qual.A;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -54,6 +52,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private Integer heads;
 
     private ItemStack headCount;
+
+    private final List<String> categoryList = Arrays.asList("Wolf","Village","Other");
+
+    private List<String> rolesByCat = new ArrayList();
 
     //Map<ItemStack,Integer> Slot = new HashMap<>();
     Map<String,Integer> RoleCount = new HashMap<>();
@@ -202,69 +204,147 @@ public class WerewolfGame extends AbstractGame implements Listener {
         ItemMeta confirmMeta = confirm.getItemMeta();
         confirmMeta.setDisplayName("confirm");
         confirm.setItemMeta(confirmMeta);
-        inv.setItem(48,confirm);
+        inv.setItem(50,confirm);
 
         headCount.setAmount(heads);
-        inv.setItem(50,headCount);
+        inv.setItem(49,headCount);
 
-        Map<String,Object> role = new HashMap<>();
-        role = roles.getRoles();
-
-        int i = 0;
-        for(String roleName: role.keySet()) {
-                if (RoleCount.get(roleName) == 0) {
-                    ItemStack book = new ItemStack(Material.BOOK);
-                    ItemMeta meta = book.getItemMeta();
-                    meta.setDisplayName(roleName);
-                    book.setItemMeta(meta);
-                    inv.setItem(i, book);
-                } else if (RoleCount.get(roleName) == 1) {
-                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-                    ItemMeta meta = book.getItemMeta();
-                    meta.setDisplayName(roleName);
-                    book.setItemMeta(meta);
-                    inv.setItem(i, book);
-                } else if (RoleCount.get(roleName) > 1) {
-                    ItemStack book = new ItemStack(Material.WRITTEN_BOOK, RoleCount.get(roleName));
-                    ItemMeta meta = book.getItemMeta();
-                    meta.setDisplayName(roleName);
-                    book.setItemMeta(meta);
-                    inv.setItem(i, book);
-                }
-            i = i + 2;
-            if(i > 45) break;
-        }
-        if(heads == 0){
+        if(heads <= 0){
             ItemStack Skeleton = new ItemStack(Material.SKELETON_SKULL);
             ItemMeta headMeta = Skeleton.getItemMeta();
             headMeta.setDisplayName("Players without roles");
             Skeleton.setItemMeta(headMeta);
-            inv.setItem(50,Skeleton);
+            inv.setItem(49,Skeleton);
+        }
+
+        int i = 20;
+        for(String category: categoryList){
+            ItemStack book = new ItemStack(Material.PAPER);
+            ItemMeta meta = book.getItemMeta();
+            meta.setDisplayName(category);
+            book.setItemMeta(meta);
+            inv.setItem(i, book);
+            i = i + 2;
         }
         //Bukkit.getPlayer("Jubo").sendMessage(Slot.toString());
         player.openInventory(inv);
     }
 
+    private void openGUI_Category(Player player,String category){
+        List<String> rolesByCat = roles.getbyCategorySorted(category);
+        //player.sendMessage(String.valueOf(rolesByCat.size()));
+        this.rolesByCat = rolesByCat;
+        openGUI_Category(player,false);
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCat.size()));
+    }
+
+    private void openGUI_Category(Player player, boolean secondPage){
+        Inventory inv = Bukkit.createInventory(null,54,"Configuration");
+
+        //player.sendMessage("Test");
+        //Map<String,Object> role = new HashMap<>();
+        //role = roles.getRoles();
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCat));
+
+        if(secondPage){
+            player.sendMessage(String.valueOf(rolesByCat.size()));
+            for(int j = 0; j < 23; j++){
+                rolesByCat.remove(j);  // DOESNT WORK WHY???????
+            }
+            player.sendMessage(String.valueOf(rolesByCat.size()));
+        }
+
+        int i = 0;
+        for(String roleName: rolesByCat) {
+            if (RoleCount.get(roleName) == 0) {
+                ItemStack book = new ItemStack(Material.BOOK);
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            } else if (RoleCount.get(roleName) == 1) {
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            } else if (RoleCount.get(roleName) > 1) {
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK, RoleCount.get(roleName));
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            }
+            i = i + 2;
+            if(i > 45) break;
+            //Bukkit.getPlayer("Jubo").sendMessage(roleName);
+        }
+
+        ItemStack lastPage = new ItemStack(Material.NAME_TAG);
+        ItemMeta lastPageMeta = lastPage.getItemMeta();
+        lastPageMeta.setDisplayName("last Page");
+        lastPage.setItemMeta(lastPageMeta);
+        inv.setItem(45,lastPage);
+
+        ItemStack nextPage = new ItemStack(Material.NAME_TAG);
+        ItemMeta nextPageMeta = nextPage.getItemMeta();
+        nextPageMeta.setDisplayName("next Page");
+        nextPage.setItemMeta(nextPageMeta);
+        inv.setItem(53,nextPage);
+
+        ItemStack confirm = new ItemStack(Material.SLIME_BALL);
+        ItemMeta confirmMeta = confirm.getItemMeta();
+        confirmMeta.setDisplayName("confirm");
+        confirm.setItemMeta(confirmMeta);
+        inv.setItem(50,confirm);
+
+        ItemStack back = new ItemStack(Material.MAGMA_CREAM);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName("back");
+        back.setItemMeta(backMeta);
+        inv.setItem(48,back);
+
+        headCount.setAmount(heads);
+        inv.setItem(49,headCount);
+
+        player.openInventory(inv);
+    }
+
     @Override
     public void onClick(InventoryClickEvent event) {
+        if(event.getView().getTitle() != "Configuration") return;
+
         Player player = (Player) event.getWhoClicked();
         ItemStack current = event.getCurrentItem();
         Inventory currentInv = event.getInventory();
         ClickType click = event.getClick();
-        ItemStack currentHead = currentInv.getItem(50);
+        ItemStack currentHead = currentInv.getItem(49);
+        if(currentHead == null) return;
 
         if (current == null) return;
         String itemName = current.getItemMeta().getDisplayName();
         event.setCancelled(true);
 
+
+
+
+        if(categoryList.contains(current.getItemMeta().getDisplayName()) && current.getType() == Material.PAPER && click == ClickType.LEFT){
+            //Bukkit.getPlayer("Jubo").sendMessage("Test");
+            openGUI_Category(player,current.getItemMeta().getDisplayName());
+        }
+
         if (current.getType() == Material.BOOK && click == ClickType.LEFT) {
             current.setType(Material.WRITTEN_BOOK);
             RoleCount.replace(itemName, RoleCount.get(itemName)+1);
-            currentHead.setAmount(--heads);
+            if(currentHead.getType() == Material.SKELETON_SKULL){
+                heads--;
+            }else if(currentHead.getType() == Material.PLAYER_HEAD) currentHead.setAmount(--heads);
         } else if (current.getType() == Material.WRITTEN_BOOK && click == ClickType.LEFT) {
             current.setAmount(current.getAmount() + 1);
             RoleCount.replace(itemName, RoleCount.get(itemName) + 1);
-            currentHead.setAmount(--heads);
+            if(currentHead.getType() == Material.SKELETON_SKULL){
+                heads--;
+            }else if(currentHead.getType() == Material.PLAYER_HEAD) currentHead.setAmount(--heads);
         } else if (current.getType() == Material.WRITTEN_BOOK && click == ClickType.RIGHT) {
             if(current.getAmount() > 1){
                 current.setAmount(current.getAmount()-1);
@@ -273,12 +353,15 @@ public class WerewolfGame extends AbstractGame implements Listener {
                 current.setType(Material.BOOK);
                 RoleCount.replace(itemName, RoleCount.get(itemName)-1);
             }
-            currentHead.setAmount(++heads);
+            if(currentHead.getType() == Material.SKELETON_SKULL){
+                heads++;
+            }else if(currentHead.getType() == Material.PLAYER_HEAD) currentHead.setAmount(++heads);
         } else if(current.getType() == Material.SLIME_BALL){
             player.closeInventory();
             Bukkit.getPlayer("Jubo").sendMessage(RoleCount.toString());
             Map<String,Object> role = new HashMap<>();
             role = roles.getRoles();
+            /*
             for(String name: role.keySet()){
                 ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
                 BookMeta bookMeta = (BookMeta) book.getItemMeta();
@@ -289,7 +372,23 @@ public class WerewolfGame extends AbstractGame implements Listener {
                 Bukkit.getPlayer("Jubo").getInventory().addItem(book);
                 Bukkit.getPlayer("Jubo").sendMessage(name);
             }
+             */
+        }else if(current.getType() == Material.MAGMA_CREAM){
+            Bukkit.getPlayer("Jubo").sendMessage("Test");
+            openGUI(player);
+        }else if(current.getType() == Material.NAME_TAG){
+            player.sendMessage("Test");
+            openGUI_Category(player,true);
         }
+        /*
+        else if(current.getType() == Material.NAME_TAG){ //&& current.getItemMeta().getDisplayName().equalsIgnoreCase("next Page")){
+            player.sendMessage("Test");
+            //openGUI_Category(player);
+        }
+
+         */
+
+
         if(heads == 0){
             ItemStack Skeleton = new ItemStack(Material.SKELETON_SKULL);
             ItemMeta headMeta = Skeleton.getItemMeta();
@@ -300,9 +399,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
             currentHead.setType(Material.PLAYER_HEAD);
         }
     }
-
-
-
 
 
 

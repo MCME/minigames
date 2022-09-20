@@ -2,12 +2,12 @@ package com.mcmiddleearth.minigames.werewolf;
 
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrBlacklist;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -38,6 +38,24 @@ public class WerewolfRoles {
             }
         }
         return roles;
+    }
+
+    public List<String> getbyCategorySorted(String category){
+        List<String> rolesByCategory = new ArrayList<>();
+
+        for(int i = 0; i <= Integer.MAX_VALUE; i++){
+            if(config.contains(String.valueOf(i))){
+                //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("category")));
+                if(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("category")).equalsIgnoreCase(category)){
+                    rolesByCategory.add(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("name")));
+                }
+                //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCategory));
+            }else{
+                break;
+            }
+        }
+        java.util.Collections.sort(rolesByCategory);
+        return rolesByCategory;
     }
 
 }

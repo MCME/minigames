@@ -40,10 +40,8 @@ public class PlayerListener implements Listener{
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         if(PluginData.isInGame((Player)event.getWhoClicked())){
-            if(event.getView().getTitle() == "Configuration"){
-                AbstractGame game = PluginData.getGame((Player)event.getWhoClicked());
-                game.onClick(event);
-            }
+            AbstractGame game = PluginData.getGame((Player)event.getWhoClicked());
+            game.onClick(event);
         }
     }
 
