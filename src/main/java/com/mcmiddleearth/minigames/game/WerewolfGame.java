@@ -84,6 +84,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public void start(){
         ((WerewolfGameScoreboard)this.getBoard()).start();
         this.started = true;
+        assignPlayerToRole();
         sendGameStartMessage();
     }
 
@@ -170,6 +171,40 @@ public class WerewolfGame extends AbstractGame implements Listener {
             }
         }else{
             sendYouAreDead(cs);
+        }
+    }
+
+    private void assignPlayerToRole(){
+        //Map<Player,String> assignedRoles = new HashMap<>();
+        List<OfflinePlayer> players = alive;
+        for(OfflinePlayer player : alive){
+            assignedRole.put((Player)player,null);
+        }
+        int i = 0;
+        for(String roleName : RoleCount.keySet()) {
+            if (RoleCount.get(roleName) != 0) {
+                // i -> random
+                assignedRole.replace((Player)alive.get(i),roleName);
+            }
+        }
+    }
+
+    private void givePlayerBook(){
+        Map<String,Object> role = roles.getRoles();
+        for(Player player: assignedRole.keySet()){
+            ItemStack roleBook = new ItemStack(Material.WRITTEN_BOOK);
+            BookMeta roleBookMeta = (BookMeta) roleBook.getItemMeta();
+            roleBookMeta.setTitle(assignedRole.get(player));
+            roleBookMeta.addPage(String.valueOf(role.get(assignedRole.get(player))));
+            roleBookMeta.setAuthor("Stoog_Gaming");
+            roleBook.setItemMeta(roleBookMeta);
+            player.getInventory().addItem(roleBook);
+
+            ItemStack willBook = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta willBookMeta = willBook.getItemMeta();
+            willBookMeta.setDisplayName("Will");
+            willBook.setItemMeta(willBookMeta);
+            player.getInventory().addItem(willBook);
         }
     }
 
