@@ -6,10 +6,7 @@
 package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.game.GeoGuessrGame;
-import com.mcmiddleearth.minigames.game.HideAndSeekGame;
-import com.mcmiddleearth.minigames.game.RaceGame;
+import com.mcmiddleearth.minigames.game.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -93,6 +90,14 @@ public class GameAllow extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
+            else if(args[0].equalsIgnoreCase("throwables")){
+                if(game instanceof WerewolfGame){
+                    WerewolfGame werewolf = (WerewolfGame) game;
+                    werewolf.switchThrowable(true);
+                }else{
+                    sendNotPossibleMessage(cs);
+                }
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -147,6 +152,10 @@ public class GameAllow extends AbstractGameCommand{
 
     private void sendPoints(CommandSender cs){
         PluginData.getMessageUtil().sendInfoMessage(cs,"You switched points in GeoGuessr to more for the first.");
+    }
+
+    private void sendThrowable(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You enabled throwables.");
     }
 
     private void sendNotPossibleMessage(CommandSender cs) {

@@ -429,7 +429,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     public void setPoints(boolean bool){
         if(!started){
             this.points_bool = bool;
-            if(!bool){
+            if(!points_bool){
                 this.points = 1;
                 this.first_points = 1;
             }else{
@@ -468,7 +468,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the number of rounds [/game setrounds x] . Default is 5.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Don´t forget to set the area of warps [/game setarea x] . Default is a = all.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Switch signtext on with /game allow signs.");
-        PluginData.getMessageUtil().sendInfoMessage(player,"Switch equal points on with /game allow points.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Switch equal points on with /game deny points.");
         PluginData.getMessageUtil().sendInfoMessage(player,"Do /game ready when you are done or have nothing done.");
     }
 
