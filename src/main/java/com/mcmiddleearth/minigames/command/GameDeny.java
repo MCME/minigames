@@ -9,6 +9,7 @@ import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.minigames.game.RaceGame;
+import com.mcmiddleearth.minigames.game.WerewolfGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,62 +29,62 @@ public class GameDeny extends AbstractGameCommand{
     protected void execute(CommandSender cs, String... args) {
         AbstractGame game = getGame((Player) cs);
         if(game!=null && isManager((Player) cs, game)) {
-            if(args[0].equalsIgnoreCase("warp")) {
+            if (args[0].equalsIgnoreCase("warp")) {
                 game.setWarpAllowed(false);
                 sendWarpAllowedMessage(cs);
-            } 
-            else if(args[0].equalsIgnoreCase("join")) {
+            } else if (args[0].equalsIgnoreCase("join")) {
                 game.setPrivat(true);
                 sendJoinAllowedMessage(cs);
-            } 
-            else if(args[0].equalsIgnoreCase("spectate")) {
+            } else if (args[0].equalsIgnoreCase("spectate")) {
                 game.setSpectateAllowed(false);
                 sendSpectateAllowedMessage(cs);
-            }
-            else if(args[0].equalsIgnoreCase("flight")) {
+            } else if (args[0].equalsIgnoreCase("flight")) {
                 game.setFlightAllowed(false);
                 sendFlightAllowedMessage(cs);
-            } 
-            else if(args[0].equalsIgnoreCase("teleport")) {
+            } else if (args[0].equalsIgnoreCase("teleport")) {
                 game.setTeleportAllowed(false);
                 sendTeleportAllowedMessage(cs);
-            }
-            else if(args[0].equalsIgnoreCase("Collision")) {
+            } else if (args[0].equalsIgnoreCase("Collision")) {
                 game.setCollision(false);
                 sendCollisionMessage(cs);
-            }
-            else if(args[0].equalsIgnoreCase("save")){
-                if(game instanceof RaceGame){
+            } else if (args[0].equalsIgnoreCase("save")) {
+                if (game instanceof RaceGame) {
                     RaceGame racegame = (RaceGame) game;
                     racegame.setSave(false);
                     sendSaveMessage(cs);
-                }else{
+                } else {
                     sendNotPossibleMessage(cs);
                 }
-            }else if(args[0].equalsIgnoreCase("invisible")){
-                if(game instanceof RaceGame){
+            } else if (args[0].equalsIgnoreCase("invisible")) {
+                if (game instanceof RaceGame) {
                     RaceGame racegame = (RaceGame) game;
                     racegame.setInvisbile(false);
                     sendInvisibleMessage(cs);
-                }else{
+                } else {
                     sendNotPossibleMessage(cs);
                 }
-            }
-            else if(args[0].equalsIgnoreCase("signs")){
-                if(game instanceof GeoGuessrGame){
+            } else if (args[0].equalsIgnoreCase("signs")) {
+                if (game instanceof GeoGuessrGame) {
                     GeoGuessrGame geogame = (GeoGuessrGame) game;
                     geogame.setSigns(true);
                     sendSigns(cs);
-                }else{
+                } else {
                     sendNotPossibleMessage(cs);
                 }
-            }
-            else if(args[0].equalsIgnoreCase("points")){
-                if(game instanceof GeoGuessrGame){
+            } else if (args[0].equalsIgnoreCase("points")) {
+                if (game instanceof GeoGuessrGame) {
                     GeoGuessrGame geogame = (GeoGuessrGame) game;
                     geogame.setPoints(false);
                     sendPoints(cs);
-                }else{
+                } else {
+                    sendNotPossibleMessage(cs);
+                }
+            } else if (args[0].equalsIgnoreCase("throwable")) {
+                if (game instanceof WerewolfGame) {
+                    WerewolfGame werewolf = (WerewolfGame) game;
+                    werewolf.switchThrowable(false);
+                    sendThrowable(cs);
+                } else {
                     sendNotPossibleMessage(cs);
                 }
             }
@@ -133,6 +134,10 @@ public class GameDeny extends AbstractGameCommand{
 
     private void sendPoints(CommandSender cs){
         PluginData.getMessageUtil().sendInfoMessage(cs,"You switched points in GeoGuessr to equal.");
+    }
+
+    private void sendThrowable(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You disabled throwables.");
     }
 
     private void sendNotPossibleMessage(CommandSender cs) {
