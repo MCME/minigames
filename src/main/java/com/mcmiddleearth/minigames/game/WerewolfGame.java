@@ -228,7 +228,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
             ItemStack roleBook = new ItemStack(Material.WRITTEN_BOOK);
             BookMeta roleBookMeta = (BookMeta) roleBook.getItemMeta();
             roleBookMeta.setTitle(assignedRole.get(player));
-            roleBookMeta.addPage(String.valueOf(role.get(assignedRole.get(player))));
+            roleBookMeta.addPage(String.valueOf(role.get(assignedRole.get(player))).replaceAll("<br>", "\n"));
             roleBookMeta.setAuthor("Stoog_Gaming");
             roleBook.setItemMeta(roleBookMeta);
             player.getInventory().addItem(roleBook);
@@ -365,8 +365,18 @@ public class WerewolfGame extends AbstractGame implements Listener {
         back.setItemMeta(backMeta);
         inv.setItem(48,back);
 
-        headCount.setAmount(heads);
-        inv.setItem(49,headCount);
+        if(heads <= 0){
+            ItemStack Skeleton = new ItemStack(playerCountZeroButton);
+            ItemMeta headMeta = Skeleton.getItemMeta();
+            headMeta.setDisplayName("Players without roles");
+            Skeleton.setItemMeta(headMeta);
+            inv.setItem(49,Skeleton);
+        }else{
+            headCount.setAmount(heads);
+            inv.setItem(49,headCount);
+        }
+
+
 
         player.openInventory(inv);
     }
@@ -427,8 +437,16 @@ public class WerewolfGame extends AbstractGame implements Listener {
         back.setItemMeta(backMeta);
         inv.setItem(48,back);
 
-        headCount.setAmount(heads);
-        inv.setItem(49,headCount);
+        if(heads <= 0){
+            ItemStack Skeleton = new ItemStack(playerCountZeroButton);
+            ItemMeta headMeta = Skeleton.getItemMeta();
+            headMeta.setDisplayName("Players without roles");
+            Skeleton.setItemMeta(headMeta);
+            inv.setItem(49,Skeleton);
+        }else{
+            headCount.setAmount(heads);
+            inv.setItem(49,headCount);
+        }
 
         player.openInventory(inv);
     }
@@ -489,6 +507,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
             }
              */
             assignPlayerToRole();
+            sendAssignmentConfirmed(player);
             /*
             for(String name: role.keySet()){
                 ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
@@ -694,5 +713,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private void sendPlayerRevived(CommandSender cs,Player player){
         PluginData.getMessageUtil().sendInfoMessage(cs,"You revived "+player.getName()+".");
+    }
+
+    private void sendAssignmentConfirmed(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"The players were assigned a role. Type /game start to start the game and give them their role-book.");
     }
 }
