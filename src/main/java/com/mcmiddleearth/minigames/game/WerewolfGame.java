@@ -478,11 +478,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
     public void checkThrow(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Material material = event.getMaterial();
-        event.setCancelled(true);
-        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && throwable){
+        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !throwable){
             player.getInventory().remove(material);
             sendYouCantDoThisMessage(player);
-        }
+            event.setCancelled(true);
+        }else event.setCancelled(false);
     }
 
 
