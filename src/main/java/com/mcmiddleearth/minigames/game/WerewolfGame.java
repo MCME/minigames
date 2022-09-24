@@ -212,15 +212,25 @@ public class WerewolfGame extends AbstractGame implements Listener {
         int i = 0;
         for(String roleName : RoleCount.keySet()) {
             if (RoleCount.get(roleName) != 0) {
-                Random generator = new Random();
-                i = generator.nextInt(alive.size());
-                if(assignedRole.get((Player)alive.get(i)) == null) {
-                    assignedRole.replace((Player) alive.get(i), roleName);
+                for(int j = 0; j < RoleCount.get(roleName) ; j++){
+                    do {
+                        Random generator = new Random();
+                        i = generator.nextInt(alive.size());
+                        if (assignedRole.get((Player) alive.get(i)) == null) {
+                            assignedRole.replace((Player) alive.get(i), roleName);
+                        }
+                    }while(assignedRole.get((Player)alive.get(i)) == null);
                 }
+                    /*
+                    if(RoleCount.get(roleName) > 1) {
+                        RoleCount.replace(roleName, RoleCount.get(roleName) - 1);
+                    }
+
+                     */
             }
         }
-        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(assignedRole));
     }
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(assignedRole));
 
     private void givePlayerBook(){
         Map<String,Object> role = roles.getRoles();
