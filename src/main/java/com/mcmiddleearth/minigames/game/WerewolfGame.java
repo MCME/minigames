@@ -90,10 +90,13 @@ public class WerewolfGame extends AbstractGame implements Listener {
         setCollision(true);
         announceGame();
 
+        /*
         alive.add((OfflinePlayer) Bukkit.getPlayer(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")));
         alive.add((OfflinePlayer) Bukkit.getPlayer(UUID.fromString("975c816e-ebb3-4cd5-bec1-394e0976b6f7")));
         alive.add((OfflinePlayer) Bukkit.getPlayer(UUID.fromString("08ded767-ace9-421c-9776-b37c28bf2020")));
         alive.add((OfflinePlayer) Bukkit.getPlayer(UUID.fromString("5614724c-33f2-464c-9e9f-1c593b416bd8")));
+
+         */
 
         this.roles = new WerewolfRoles();
         configSetup();
@@ -102,7 +105,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
-        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(alive));
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(alive));
     }
 
     public void start(){
@@ -216,7 +219,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
                 }
             }
         }
-        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(assignedRole));
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(assignedRole));
     }
 
     private void givePlayerBook(){
@@ -247,7 +250,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
         //heads = getOnlinePlayers().size();
         //
-        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(alive.size()));
+        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(alive.size()));
         heads = alive.size();
         ItemStack headCount = new ItemStack(playerCountButton);
         ItemMeta headMeta = headCount.getItemMeta();
@@ -300,11 +303,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
         List<String> rolesByCat = roles.getbyCategorySorted(category);
         //player.sendMessage(String.valueOf(rolesByCat.size()));
         this.rolesByCat = rolesByCat;
-        openGUI_Category(player,false);
+        openGUI_Category_FirstPage(player);
         //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCat.size()));
     }
 
-    private void openGUI_Category(Player player, boolean secondPage){
+    private void openGUI_Category_FirstPage(Player player){
         Inventory inv = Bukkit.createInventory(null,invSize,invName);
 
         //player.sendMessage("Test");
@@ -312,13 +315,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         //role = roles.getRoles();
         //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCat));
 
-        if(secondPage){
-            player.sendMessage(String.valueOf(rolesByCat.size()));
-            for(int j = 0; j < 23; j++){
-                rolesByCat.remove(j);  // DOESNT WORK WHY???????
-            }
-            player.sendMessage(String.valueOf(rolesByCat.size()));
-        }
+
 
         int i = 0;
         for(String roleName: rolesByCat) {
@@ -343,23 +340,80 @@ public class WerewolfGame extends AbstractGame implements Listener {
             }
             //i = i + 2;
             i++;
-            if(i > 45) break;
+            if(i == 45) break;
             //Bukkit.getPlayer("Jubo").sendMessage(roleName);
         }
 
-        if(secondPage) {
-            ItemStack lastPage = new ItemStack(lastPageButton);
-            ItemMeta lastPageMeta = lastPage.getItemMeta();
-            lastPageMeta.setDisplayName("last Page");
-            lastPage.setItemMeta(lastPageMeta);
-            inv.setItem(45, lastPage);
+
+        if(rolesByCat.size() > 45) {
+            ItemStack nextPage = new ItemStack(nextPageButton);
+            ItemMeta nextPageMeta = nextPage.getItemMeta();
+            nextPageMeta.setDisplayName("next Page");
+            nextPage.setItemMeta(nextPageMeta);
+            inv.setItem(53, nextPage);
         }
 
-        ItemStack nextPage = new ItemStack(nextPageButton);
-        ItemMeta nextPageMeta = nextPage.getItemMeta();
-        nextPageMeta.setDisplayName("next Page");
-        nextPage.setItemMeta(nextPageMeta);
-        inv.setItem(53,nextPage);
+        ItemStack confirm = new ItemStack(confirmButton);
+        ItemMeta confirmMeta = confirm.getItemMeta();
+        confirmMeta.setDisplayName("confirm");
+        confirm.setItemMeta(confirmMeta);
+        inv.setItem(50,confirm);
+
+        ItemStack back = new ItemStack(backButton);
+        ItemMeta backMeta = back.getItemMeta();
+        backMeta.setDisplayName("back");
+        back.setItemMeta(backMeta);
+        inv.setItem(48,back);
+
+        headCount.setAmount(heads);
+        inv.setItem(49,headCount);
+
+        player.openInventory(inv);
+    }
+
+    private void openGUI_category_SecondPage(Player player){
+        Inventory inv = Bukkit.createInventory(null,invSize,invName);
+
+        //player.sendMessage(String.valueOf(rolesByCat.size()));
+        List<String> rolesByCat_2 = new ArrayList<>();
+        for(int j = 45; j < rolesByCat.size(); j++){
+            rolesByCat_2.add(rolesByCat.get(j));
+        }
+        //player.sendMessage(String.valueOf(rolesByCat));
+        //if(true) return;
+
+        int i = 0;
+        for(String roleName: rolesByCat_2) {
+            if (RoleCount.get(roleName) == 0) {
+                ItemStack book = new ItemStack(RoleCountZeroButton);
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            } else if (RoleCount.get(roleName) == 1) {
+                ItemStack book = new ItemStack(RoleCountButton);
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            } else if (RoleCount.get(roleName) > 1) {
+                ItemStack book = new ItemStack(RoleCountButton, RoleCount.get(roleName));
+                ItemMeta meta = book.getItemMeta();
+                meta.setDisplayName(roleName);
+                book.setItemMeta(meta);
+                inv.setItem(i, book);
+            }
+            //i = i + 2;
+            i++;
+            if(i >= 45) break;
+            //Bukkit.getPlayer("Jubo").sendMessage(roleName);
+        }
+
+        ItemStack lastPage = new ItemStack(lastPageButton);
+        ItemMeta lastPageMeta = lastPage.getItemMeta();
+        lastPageMeta.setDisplayName("last Page");
+        lastPage.setItemMeta(lastPageMeta);
+        inv.setItem(45, lastPage);
 
         ItemStack confirm = new ItemStack(confirmButton);
         ItemMeta confirmMeta = confirm.getItemMeta();
@@ -427,11 +481,13 @@ public class WerewolfGame extends AbstractGame implements Listener {
             }else if(currentHead.getType() == playerCountButton) currentHead.setAmount(++heads);
         } else if(current.getType() == confirmButton){
             player.closeInventory();
+            /*
             for(String roleName: RoleCount.keySet()){
                 if(RoleCount.get(roleName) != 0){
                     Bukkit.getPlayer("Jubo").sendMessage(roleName+"="+String.valueOf(RoleCount.get(roleName)));
                 }
             }
+             */
             assignPlayerToRole();
             /*
             for(String name: role.keySet()){
@@ -446,11 +502,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
             }
              */
         }else if(current.getType() == backButton){
-            Bukkit.getPlayer("Jubo").sendMessage("Test");
+            //Bukkit.getPlayer("Jubo").sendMessage("Test");
             openGUI(player);
-        }else if(current.getType() == nextPageButton || current.getType() == lastPageButton){
-            player.sendMessage("Test");
-            openGUI_Category(player,true);
+        }else if(current.getType() == nextPageButton && "next Page".equals(current.getItemMeta().getDisplayName())){
+            //Bukkit.getPlayer("Jubo").sendMessage("Test1");
+            openGUI_category_SecondPage(player);
+        }else if(current.getType() == lastPageButton && "last Page".equals(current.getItemMeta().getDisplayName())){
+            //Bukkit.getPlayer("Jubo").sendMessage("Test2");
+            openGUI_Category_FirstPage(player);
         }
         /*
         else if(current.getType() == Material.NAME_TAG){ //&& current.getItemMeta().getDisplayName().equalsIgnoreCase("next Page")){
