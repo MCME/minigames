@@ -90,10 +90,11 @@ public class GameAllow extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
-            else if(args[0].equalsIgnoreCase("throwables")){
+            else if(args[0].equalsIgnoreCase("throwable")){
                 if(game instanceof WerewolfGame){
                     WerewolfGame werewolf = (WerewolfGame) game;
                     werewolf.switchThrowable(true);
+                    sendThrowable(cs);
                 }else{
                     sendNotPossibleMessage(cs);
                 }
