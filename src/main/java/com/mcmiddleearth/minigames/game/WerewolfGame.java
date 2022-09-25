@@ -272,6 +272,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
 
      public void Configuration(Player player){
+        this.started = true;
         openGUI(player);
      }
 
@@ -653,6 +654,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
         PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.RED+"Eliminated players:");
         PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+"["+eliminated.size()+"]: "+eliminatedString.toString());
+    }
+
+    public void sendRoleList(CommandSender cs){
+        if((Player)cs == manager){
+            PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+"Assigned Roles:");
+            PluginData.getMessageUtil().sendInfoMessage(cs,ChatColor.WHITE+String.valueOf(assignedRole));
+
+        }
     }
 
     private void sendGameStartMessage(){

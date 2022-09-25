@@ -26,6 +26,7 @@ public class WerewolfGameList extends AbstractGameCommand{
             WerewolfGame werewolf = (WerewolfGame) game;
             werewolf.sendAliveList(cs);
             werewolf.sendEliminatedList(cs);
+            werewolf.sendRoleList(cs);
         }
     }
 }
