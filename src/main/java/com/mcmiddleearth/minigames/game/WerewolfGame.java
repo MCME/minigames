@@ -233,13 +233,17 @@ public class WerewolfGame extends AbstractGame implements Listener {
             roleBookMeta.addPage(String.valueOf(role.get(assignedRole.get(player))).replaceAll("<br>", "\n"));
             roleBookMeta.setAuthor("Minigame");
             roleBook.setItemMeta(roleBookMeta);
-            player.getInventory().addItem(roleBook);
+            //player.getInventory().addItem(roleBook);
+            player.getInventory().setItem(5,roleBook);
 
             ItemStack willBook = new ItemStack(Material.WRITABLE_BOOK);
             ItemMeta willBookMeta = willBook.getItemMeta();
             willBookMeta.setDisplayName("Will");
             willBook.setItemMeta(willBookMeta);
-            player.getInventory().addItem(willBook);
+            //player.getInventory().addItem(willBook);
+            player.getInventory().setItem(6,willBook);
+
+            sendGivingBooksMessage(player,assignedRole.get(player));
         }
     }
 
@@ -470,6 +474,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
         event.setCancelled(true);
 
 
+        if(heads < 0){
+            sendTooManyRoles(player);
+        }
+
 
 
         if(categoryList.contains(current.getItemMeta().getDisplayName()) && current.getType() == categoryButton && click == ClickType.LEFT){
@@ -500,7 +508,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
             if(currentHead.getType() == playerCountZeroButton){
                 heads++;
             }else if(currentHead.getType() == playerCountButton) currentHead.setAmount(++heads);
-        } else if(current.getType() == confirmButton){
+        } else if(current.getType() == confirmButton && heads >= 0){
             player.closeInventory();
             /*
             for(String roleName: RoleCount.keySet()){
@@ -654,6 +662,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
     }
 
+    private void sendGivingBooksMessage(CommandSender cs,String role){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"The game has begun! Your role is "+ChatColor.WHITE+role+
+                ". Check your inventory for a book stating your role. Do not tell anyone your role unless the host tells you otherwise");
+    }
+
     private void sendGameStartMessage(){
         for(Player p: getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,"The game was started.");
@@ -692,6 +705,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
         for(Player p: getOnlinePlayers()){
             PluginData.getMessageUtil().sendInfoMessage(p,player.getName()+" was put up for voting. You can vote yay to see "+player.getName()+" dead, or nay to pardon them.");
         }
+    }
+
+    private void sendTooManyRoles(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"You chose to many roles. Please reduce them!");
     }
 
     private void sendSuggestionMessage(Player player,CommandSender cs){
