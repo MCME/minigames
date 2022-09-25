@@ -1,8 +1,6 @@
 package com.mcmiddleearth.minigames.werewolf;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.geoGuessr.GeoGuessrBlacklist;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -45,11 +43,9 @@ public class WerewolfRoles {
 
         for(int i = 0; i <= Integer.MAX_VALUE; i++){
             if(config.contains(String.valueOf(i))){
-                //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("category")));
                 if(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("category")).equalsIgnoreCase(category)){
                     rolesByCategory.add(String.valueOf(config.getConfigurationSection(String.valueOf(i)).get("name")));
                 }
-                //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(rolesByCategory));
             }else{
                 break;
             }

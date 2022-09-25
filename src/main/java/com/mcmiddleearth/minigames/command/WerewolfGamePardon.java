@@ -8,13 +8,17 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
 public class WerewolfGamePardon extends AbstractGameCommand{
 
     public WerewolfGamePardon(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("/game pardon playername ");
+        setUsageDescription("Lets the game manager pardon a player when he was put up for vote.");
     }
 
     @Override
