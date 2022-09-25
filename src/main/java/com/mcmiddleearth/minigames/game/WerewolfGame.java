@@ -110,7 +110,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     public void start(){
         ((WerewolfGameScoreboard)this.getBoard()).start();
-        this.started = true;
+        //this.started = true;
         //assignPlayerToRole();
         givePlayerBook();
         sendGameStartMessage();
@@ -202,35 +202,27 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
     }
 
-    private void assignPlayerToRole(){
-        //Map<Player,String> assignedRoles = new HashMap<>();
-        //List<OfflinePlayer> players = alive;
-
-        for(OfflinePlayer player : alive){
-            assignedRole.put((Player)player,null);
+    private void assignPlayerToRole() {
+        for (OfflinePlayer player : alive) {
+            assignedRole.put((Player) player, null);
         }
         int i = 0;
-        for(String roleName : RoleCount.keySet()) {
+        for (String roleName : RoleCount.keySet()) {
             if (RoleCount.get(roleName) != 0) {
-                for(int j = 0; j < RoleCount.get(roleName) ; j++){
+                for (int j = 0; j < RoleCount.get(roleName); j++) {
                     do {
                         Random generator = new Random();
                         i = generator.nextInt(alive.size());
                         if (assignedRole.get((Player) alive.get(i)) == null) {
                             assignedRole.replace((Player) alive.get(i), roleName);
+                            break;
                         }
-                    }while(assignedRole.get((Player)alive.get(i)) == null);
+                    } while (true);
                 }
-                    /*
-                    if(RoleCount.get(roleName) > 1) {
-                        RoleCount.replace(roleName, RoleCount.get(roleName) - 1);
-                    }
-
-                     */
             }
         }
     }
-        //Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(assignedRole));
+
 
     private void givePlayerBook(){
         Map<String,Object> role = roles.getRoles();
@@ -239,7 +231,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
             BookMeta roleBookMeta = (BookMeta) roleBook.getItemMeta();
             roleBookMeta.setTitle(assignedRole.get(player));
             roleBookMeta.addPage(String.valueOf(role.get(assignedRole.get(player))).replaceAll("<br>", "\n"));
-            roleBookMeta.setAuthor("Stoog_Gaming");
+            roleBookMeta.setAuthor("Minigame");
             roleBook.setItemMeta(roleBookMeta);
             player.getInventory().addItem(roleBook);
 
@@ -548,8 +540,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
 
          */
-
-
         if(heads == 0){
             ItemStack Skeleton = new ItemStack(Material.SKELETON_SKULL);
             ItemMeta headMeta = Skeleton.getItemMeta();
