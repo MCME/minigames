@@ -26,17 +26,25 @@ public class GeoGameBlacklist extends AbstractGameCommand{
         if(args[0].equals("show")){
             Map<String,Object> blacklist = Blacklist.show();
             sendWarpList(cs,blacklist);
-        }else if(args[0].equals("add")){
-            Blacklist.add(args[1]);
-            sendAddedMessage(cs);
-        }else if(args[0].equals("delete")){
-            if(Blacklist.delete(args[1])){
-                sendDeletedMessage(cs);
-            }else{
-                sendDeletedErrorMessage(cs);
+        }
+        if(args.length > 1) {
+            String argsAdded = "";
+            for(int i = 1; i < args.length; i++){
+                argsAdded = argsAdded + " " + args[i];
             }
-        }else{
-            sendWrongCommandMessage(cs);
+            argsAdded = argsAdded.substring(1);
+            if (args[0].equals("add")) {
+                Blacklist.add(argsAdded);
+                sendAddedMessage(cs);
+            } else if (args[0].equals("delete")) {
+                if (Blacklist.delete(argsAdded)) {
+                    sendDeletedMessage(cs);
+                } else {
+                    sendDeletedErrorMessage(cs);
+                }
+            } else {
+                sendWrongCommandMessage(cs);
+            }
         }
     }
 

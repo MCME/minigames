@@ -10,23 +10,20 @@ import org.bukkit.entity.Player;
  *
  * @author Jubo
  */
-public class WerewolfGameList extends AbstractGameCommand{
+public class WerewolfGameConfiguration extends AbstractGameCommand{
 
-    public WerewolfGameList(String... permissionNodes){
+    public WerewolfGameConfiguration(String... permissionNodes){
         super(0,true,permissionNodes);
-        cmdGroup = CmdGroup.WEREWOLF;
-        setShortDescription("list of players in werewolf");
-        setUsageDescription("/game list; Gives a list of eliminated and alive players in werewolf");
+        setShortDescription("/game config ");
+        setUsageDescription("Lets the game manager configurate the roles for the werewolf game.");
     }
 
     @Override
     protected void execute(CommandSender cs, String... args){
         AbstractGame game = getGame((Player)cs);
-        if(game != null && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)){
+        if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)) {
             WerewolfGame werewolf = (WerewolfGame) game;
-            werewolf.sendAliveList(cs);
-            werewolf.sendEliminatedList(cs);
-            werewolf.sendRoleList(cs);
+            werewolf.Configuration((Player) cs);
         }
     }
 }

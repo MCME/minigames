@@ -18,6 +18,7 @@ import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.Plugin;
@@ -343,6 +344,10 @@ public abstract class AbstractGame {
     public void playerInteract(PlayerInteractEntityEvent event){
         event.setCancelled(true);
     }
+
+    public void onClick(InventoryClickEvent event){ event.setCancelled(false); }
+
+    public void checkThrow(PlayerInteractEvent event) { event.setCancelled(false); }
 
     public void playerDamaged(EntityDamageByEntityEvent event) {
         event.setCancelled(true);
