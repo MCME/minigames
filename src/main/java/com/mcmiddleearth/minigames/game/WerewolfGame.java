@@ -573,7 +573,20 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
 
-
+    public boolean sendRoleBook(Player player,String roleName){
+        Map<String,Object> role = roles.getRoles();
+       if(role.containsKey(roleName)){
+           ItemStack roleBook = new ItemStack(Material.WRITTEN_BOOK);
+           BookMeta roleBookMeta = (BookMeta) roleBook.getItemMeta();
+           roleBookMeta.setTitle("Info: "+roleName);
+           roleBookMeta.addPage(String.valueOf(role.get(roleName)).replaceAll("<br>", "\n"));
+           roleBookMeta.setAuthor("Minigame");
+           roleBook.setItemMeta(roleBookMeta);
+           player.getInventory().addItem(roleBook);
+           return true;
+       }
+        return false;
+    }
 
 
     public void switchThrowable(boolean bool){
