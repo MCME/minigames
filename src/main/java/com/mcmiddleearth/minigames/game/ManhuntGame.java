@@ -154,7 +154,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         for(Player p : getOnlinePlayers()){
             bar.addPlayer(p);
         }
-        ((ManhuntGameScoreboard)this.getBoard()).startSeeking(seekTime,bar);
+        ((ManhuntGameScoreboard)this.getBoard()).startSeeking(seekTime,bar,seeker.size());
 
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
@@ -172,7 +172,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(stopTask!=null) {
             stopTask.cancel();
         }
-        bar.setTitle(ChatColor.YELLOW+"Hide and Seek");
+        bar.setTitle(ChatColor.YELLOW+"Manhunt");
         sendStopSeekingMessage();
         for(Player player : getOnlinePlayers()) {
             if(hiddenPlayers.contains(player)) {
@@ -460,7 +460,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
      */
 
     private void sendStartHideMessage() {
-        for(Player player : getOnlinePlayers()) {
+        for(Player player : hiddenPlayers) {
                 TitleUtil.showTitle(player, ChatColor.YELLOW+" RUN!!!"," ");
         }
     }
@@ -473,7 +473,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private void sendStartSeekingMessage() {
         for(Player player : getOnlinePlayers()) {
-            if(!seeker.contains(player)) {
+            if(!seeker.contains((Player) player)) {
                 TitleUtil.showTitle(player, ChatColor.BLUE+" RUN!!!","The hunters are hunting.");
             }else{
                 TitleUtil.showTitle(player, ChatColor.YELLOW+" HUNT!!!"," Try to find the other players.");
@@ -488,7 +488,9 @@ public class ManhuntGame extends AbstractGame implements Listener {
             }
         }
         else {
-            TitleUtil.showTitle((Player) seeker, ChatColor.BLUE+"GAME OVER", "You found not all players.");
+            for(OfflinePlayer OP:seeker) {
+                TitleUtil.showTitle((Player) OP, ChatColor.BLUE + "GAME OVER", "You found not all players.");
+            }
         }
         for(Player player : getOnlinePlayers()) {
             if(!seeker.contains(player)) {
