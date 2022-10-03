@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class TabComplete implements TabCompleter {
 
@@ -33,6 +34,11 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsUserQuiz = Arrays.asList("showCategories", "submitquestion");
     final List<String> commandsUserRace = Arrays.asList("tpcp", "racestats");
     final List<String> commandsUserWerewolf = Arrays.asList("vote", "list", "roleinfo");
+    final List<String> commandsAllowDeny = Arrays.asList("flight","teleport","join","warp","spectate","collision","invisible"
+            ,"signs","points","throwable");
+
+    final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
+            ,"tphere","seeker","manhunt_seeker","eliminate","pardon");
 
 
 
@@ -41,42 +47,62 @@ public class TabComplete implements TabCompleter {
         String input = args[0].toLowerCase();
         List<String> completions = null;
         AbstractGame game = PluginData.getGame((Player)sender);
-        if(game == null){
-            commands.addAll(commandsUser);
-            commands.addAll(commandsManager);
-        }
-        if(PluginData.isManager((Player)sender)){
-            commands.addAll(commandsManagerGame);
-            if(game instanceof GeoGuessrGame){
-                commands.addAll(commandsManagerGeo);
-            } else if (game instanceof HideAndSeekGame) {
-                commands.addAll(commandsManagerHide);
-            }else if(game instanceof ManhuntGame){
-                commands.addAll(commandsManagerManhunt);
-            }else if(game instanceof QuizGame){
-                commands.addAll(commandsManagerQuiz);
-            }else if(game instanceof RaceGame){
-                commands.addAll(commandsManagerRace);
-            }else if(game instanceof WerewolfGame){
-                commands.addAll(commandsManagerWerewolf);
-            }
-        }else{
-            commands.addAll(commandsUserGame);
-            if(game instanceof GeoGuessrGame){
-                commands.addAll(commandsUserGeo);
-            } else if (game instanceof HideAndSeekGame) {
-                commands.addAll(commandsUserHide);
-            }else if(game instanceof ManhuntGame){
-                commands.addAll(commandsUserManhunt);
-            }else if(game instanceof QuizGame){
-                commands.addAll(commandsUserQuiz);
-            }else if(game instanceof RaceGame){
-                commands.addAll(commandsUserRace);
-            }else if(game instanceof WerewolfGame){
-                commands.addAll(commandsUserWerewolf);
-            }
-        }
 
+        if(input.startsWith("deny") || input.startsWith("allow")){
+            commands.addAll(commandsAllowDeny);
+        }else if(commandsPlayer.contains(input)){
+            if(game != null){
+                for(Player player :game.getOnlinePlayers()){
+                    commands.add(player.getName());
+                }
+                if(input.startsWith("vote")){
+                    commands.add("yay");
+                    commands.add("nay");
+                }
+            }
+        }else if(input.startsWith("roleinfo")){
+            if(game != null) {
+                WerewolfGame werewolf = (WerewolfGame) game;
+                Set<String> roleNames = werewolf.getRoleNames();
+                commands.addAll(roleNames);
+            }
+        } else {
+            if (game == null) {
+                commands.addAll(commandsUser);
+                commands.addAll(commandsManager);
+            } else {
+                if (PluginData.isManager((Player) sender)) {
+                    commands.addAll(commandsManagerGame);
+                    if (game instanceof GeoGuessrGame) {
+                        commands.addAll(commandsManagerGeo);
+                    } else if (game instanceof HideAndSeekGame) {
+                        commands.addAll(commandsManagerHide);
+                    } else if (game instanceof ManhuntGame) {
+                        commands.addAll(commandsManagerManhunt);
+                    } else if (game instanceof QuizGame) {
+                        commands.addAll(commandsManagerQuiz);
+                    } else if (game instanceof RaceGame) {
+                        commands.addAll(commandsManagerRace);
+                    } else if (game instanceof WerewolfGame) {
+                        commands.addAll(commandsManagerWerewolf);
+                    }
+                }
+                commands.addAll(commandsUserGame);
+                if (game instanceof GeoGuessrGame) {
+                    commands.addAll(commandsUserGeo);
+                } else if (game instanceof HideAndSeekGame) {
+                    commands.addAll(commandsUserHide);
+                } else if (game instanceof ManhuntGame) {
+                    commands.addAll(commandsUserManhunt);
+                } else if (game instanceof QuizGame) {
+                    commands.addAll(commandsUserQuiz);
+                } else if (game instanceof RaceGame) {
+                    commands.addAll(commandsUserRace);
+                } else if (game instanceof WerewolfGame) {
+                    commands.addAll(commandsUserWerewolf);
+                }
+            }
+        }
         for(String s : commands){
             if(s.startsWith(input)){
                 if(completions == null){
@@ -87,10 +113,9 @@ public class TabComplete implements TabCompleter {
         }
         if(completions != null ){
             java.util.Collections.sort(completions);
-        }else{
+        }else {
             completions = commands;
         }
-
         return completions;
     }
 }
