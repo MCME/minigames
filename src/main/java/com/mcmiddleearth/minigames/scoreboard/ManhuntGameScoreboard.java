@@ -59,9 +59,9 @@ public class ManhuntGameScoreboard extends GameScoreboard{
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);
     }
 
-    public void startSeeking(int seekingTime,BossBar bar) {
+    public void startSeeking(int seekingTime,BossBar bar, int seekerCount) {
         seekingTimeScore.setScore(seekingTime);
-        hiddenPlayerScore.setScore(getPlayerCount()-1);
+        hiddenPlayerScore.setScore(getPlayerCount()-seekerCount);
         locatedPlayerScore.setScore(0);
         seekingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         double progress = 1.0 / seekingTime;
@@ -93,7 +93,7 @@ public class ManhuntGameScoreboard extends GameScoreboard{
         playerCountTitle = "Next Seeker: ";
         hidingObjective.setDisplayName("Test");
         seekingObjective.setDisplayName("Test2");
-        getPlayerCountObjective().setDisplayName("Test3");
+        getPlayerCountObjective().setDisplayName("Game finished");
     }
 
     public void locatePlayer() {
