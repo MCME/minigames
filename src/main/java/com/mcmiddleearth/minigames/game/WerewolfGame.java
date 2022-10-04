@@ -565,6 +565,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
     }
 
+    public Set<String> getRoleNames(){
+        return RoleCount.keySet();
+    }
+
     public void sendAliveList(CommandSender cs){
         List<String> aliveString = new ArrayList<>();
         for(OfflinePlayer p_alive : this.alive){
