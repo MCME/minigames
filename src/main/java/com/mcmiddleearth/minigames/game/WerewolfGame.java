@@ -480,7 +480,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
         }
     }
 
-    /*
     @Override
     public void checkThrow(PlayerInteractEvent event){
         Player player = event.getPlayer();
@@ -489,9 +488,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
             player.getInventory().remove(material);
             sendYouCantDoThisMessage(player);
             event.setCancelled(true);
-        }else event.setCancelled(false);
+        }
     }
-     */
 
     public boolean sendRoleBook(Player player,String roleName){
         Map<String,Object> role = roles.getRoles();

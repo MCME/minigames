@@ -39,6 +39,7 @@ public class TabComplete implements TabCompleter {
             ,"signs","points","throwable");
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
             ,"tphere","seeker","manhunt_seeker","eliminate","pardon");
+    final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz");
 
 
 
@@ -66,6 +67,10 @@ public class TabComplete implements TabCompleter {
                 WerewolfGame werewolf = (WerewolfGame) game;
                 Set<String> roleNames = werewolf.getRoleNames();
                 commands.addAll(roleNames);
+            }
+        } else if(input.startsWith("create")){
+            if(game == null){
+                commands.addAll(commandsGametypes);
             }
         } else {
             arg_1 = false;

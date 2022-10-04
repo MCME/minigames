@@ -45,7 +45,7 @@ public class PlayerListener implements Listener{
         }
     }
 
-    /*
+
     @EventHandler
     public void checkThrow(PlayerInteractEvent event){
         if(PluginData.isInGame(event.getPlayer())){
@@ -53,7 +53,7 @@ public class PlayerListener implements Listener{
             game.checkThrow(event);
         }
     }
-     */
+
 
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) {

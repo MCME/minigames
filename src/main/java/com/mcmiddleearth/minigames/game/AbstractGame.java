@@ -347,7 +347,7 @@ public abstract class AbstractGame {
 
     public void onClick(InventoryClickEvent event){ event.setCancelled(false); }
 
-    //public void checkThrow(PlayerInteractEvent event) { event.setCancelled(false); }
+    public void checkThrow(PlayerInteractEvent event) {}
 
     public void playerDamaged(EntityDamageByEntityEvent event) {
         event.setCancelled(true);
