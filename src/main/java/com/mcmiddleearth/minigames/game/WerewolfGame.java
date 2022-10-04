@@ -488,7 +488,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
             player.getInventory().remove(material);
             sendYouCantDoThisMessage(player);
             event.setCancelled(true);
-        }else event.setCancelled(false);
+        }
     }
 
     public boolean sendRoleBook(Player player,String roleName){
