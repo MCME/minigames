@@ -47,6 +47,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
     private boolean seeking = false;
     private boolean hiding = false;
 
+    private boolean started = false;
+
     public final List<OfflinePlayer> seeker = new ArrayList<>();
     public final List<Player> hiddenPlayers = new ArrayList<>();
 
@@ -81,6 +83,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         this.hiding = true;
         this.seeking = false;
+        this.started = true;
 
         bar.setTitle(ChatColor.YELLOW+"Manhunt: Hiding");
         bar.setProgress(1.0);
@@ -178,10 +181,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
             if(hiddenPlayers.contains(player)) {
                 unhidePlayer(player);
             }
+            seeker.remove((Player)player);
             player.setDisplayName(player.getName());
             player.setGlowing(false);
             forceTeleport(player,getWarp());
-            //bar.removePlayer(player);
         }
         this.seeking = false;
         this.hiding = false;
@@ -552,6 +555,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     public boolean isHiding() {
         return hiding;
+    }
+
+    public boolean isStarted(){
+        return started;
     }
 
     /*

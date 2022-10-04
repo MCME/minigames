@@ -13,7 +13,7 @@ public class ManhuntStart extends AbstractGameCommand{
     public ManhuntStart(String... permissionNodes){
         super(3,true,permissionNodes);
         cmdGroup = CmdGroup.MANHUNT;
-        setShortDescription("");
+        setShortDescription("Start a manhunt game");
         setUsageDescription("/game manhunt_start radius searchTime hideTime");
     }
 
@@ -25,18 +25,28 @@ public class ManhuntStart extends AbstractGameCommand{
                 sendNotEnoughPlayerErrorMessage(cs);
             }else{
                 ManhuntGame manhuntgame = (ManhuntGame) game;
-                int radius = StringUtil.parseInt(args[0]);
-                int searchTime = StringUtil.parseInt(args[1]);
-                int hideTime = StringUtil.parseInt(args[2]);
+                if(!manhuntgame.isStarted()) {
+                    int radius = StringUtil.parseInt(args[0]);
+                    int searchTime = StringUtil.parseInt(args[1]);
+                    int hideTime = StringUtil.parseInt(args[2]);
 
-                manhuntgame.setSeekTime(searchTime);
-                manhuntgame.setHideTime(hideTime);
-                manhuntgame.hiding(radius);
+                    manhuntgame.setSeekTime(searchTime);
+                    manhuntgame.setHideTime(hideTime);
+                    manhuntgame.hiding(radius);
+                } else {
+                    sendNeedToRestartErrorMessage(cs);
+                }
             }
         }
     }
+
     private void sendNotEnoughPlayerErrorMessage(CommandSender cs) {
         PluginData.getMessageUtil().sendErrorMessage(cs, "Not enough players in game. Minimum is two.");
+    }
+
+    private void sendNeedToRestartErrorMessage(CommandSender cs){
+        PluginData.getMessageUtil().sendErrorMessage(cs,"The game is already running. If you want to restart. " +
+                "You need to do create a new game.");
     }
 
 }

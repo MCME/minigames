@@ -14,8 +14,8 @@ public class ManhuntSeeker extends AbstractGameCommand{
     public ManhuntSeeker(String... permissionNodes){
         super(1,true,permissionNodes);
         cmdGroup = CmdGroup.MANHUNT;
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("Sets the seekers");
+        setUsageDescription("/game manhunt_seeker <playername> for every seeker");
     }
 
     @Override

@@ -34,9 +34,9 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsUserQuiz = Arrays.asList("showCategories", "submitquestion");
     final List<String> commandsUserRace = Arrays.asList("tpcp", "racestats");
     final List<String> commandsUserWerewolf = Arrays.asList("vote", "list", "roleinfo");
+
     final List<String> commandsAllowDeny = Arrays.asList("flight","teleport","join","warp","spectate","collision","invisible"
             ,"signs","points","throwable");
-
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
             ,"tphere","seeker","manhunt_seeker","eliminate","pardon");
 
@@ -47,6 +47,7 @@ public class TabComplete implements TabCompleter {
         String input = args[0].toLowerCase();
         List<String> completions = null;
         AbstractGame game = PluginData.getGame((Player)sender);
+        Boolean arg_1 = true;
 
         if(input.startsWith("deny") || input.startsWith("allow")){
             commands.addAll(commandsAllowDeny);
@@ -67,6 +68,7 @@ public class TabComplete implements TabCompleter {
                 commands.addAll(roleNames);
             }
         } else {
+            arg_1 = false;
             if (game == null) {
                 commands.addAll(commandsUser);
                 commands.addAll(commandsManager);
@@ -102,6 +104,9 @@ public class TabComplete implements TabCompleter {
                     commands.addAll(commandsUserWerewolf);
                 }
             }
+        }
+        if(args.length > 1 && arg_1){
+            input = args[1];
         }
         for(String s : commands){
             if(s.startsWith(input)){
