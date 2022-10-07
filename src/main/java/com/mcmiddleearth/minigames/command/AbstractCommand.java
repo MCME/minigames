@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
  *
  * @author Eriol_Eandur, Ivanpl
  */
+
 public abstract class AbstractCommand {
     
     private final String[] permissionNodes;
