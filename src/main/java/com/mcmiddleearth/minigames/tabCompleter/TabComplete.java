@@ -36,7 +36,7 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsUserWerewolf = Arrays.asList("vote", "list", "roleinfo");
 
     final List<String> commandsAllowDeny = Arrays.asList("flight","teleport","join","warp","spectate","collision","invisible"
-            ,"signs","points","throwable");
+            ,"signs","points","throwable","save");
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
             ,"tphere","seeker","manhunt_seeker","eliminate","pardon");
     final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz");

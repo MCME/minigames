@@ -59,8 +59,7 @@ public class GameAllow extends AbstractGameCommand{
             }
             else if(args[0].equalsIgnoreCase("save")) {
                 if(game instanceof RaceGame){
-                    RaceGame racegame = (RaceGame) game;
-                    racegame.setSave(true);
+                    game.setTPSave(true);
                     sendSaveMessage(cs);
                 }else{
                     sendNotPossibleMessage(cs);
@@ -68,8 +67,7 @@ public class GameAllow extends AbstractGameCommand{
             }
             else if(args[0].equalsIgnoreCase("invisible")){
                 if(game instanceof RaceGame){
-                    RaceGame racegame = (RaceGame) game;
-                    racegame.setInvisbile(true);
+                    game.setInvisible(true);
                     sendInvisibleMessage(cs);
                 }else{
                     sendNotPossibleMessage(cs);
@@ -77,8 +75,7 @@ public class GameAllow extends AbstractGameCommand{
             }
             else if(args[0].equalsIgnoreCase("signs")){
                 if(game instanceof GeoGuessrGame){
-                    GeoGuessrGame geogame = (GeoGuessrGame) game;
-                    geogame.setSigns(false);
+                    game.setSigns(false);
                     sendSigns(cs);
                 }else{
                     sendNotPossibleMessage(cs);
@@ -86,8 +83,7 @@ public class GameAllow extends AbstractGameCommand{
             }
             else if(args[0].equalsIgnoreCase("points")){
                 if(game instanceof GeoGuessrGame){
-                    GeoGuessrGame geogame = (GeoGuessrGame) game;
-                    geogame.setPoints(true);
+                    game.setPoints(true);
                     sendPoints(cs);
                 }else{
                     sendNotPossibleMessage(cs);
@@ -95,8 +91,7 @@ public class GameAllow extends AbstractGameCommand{
             }
             else if(args[0].equalsIgnoreCase("throwable")){
                 if(game instanceof WerewolfGame){
-                    WerewolfGame werewolf = (WerewolfGame) game;
-                    werewolf.switchThrowable(true);
+                    game.setThrowable(true);
                     sendThrowable(cs);
                 }else{
                     sendNotPossibleMessage(cs);

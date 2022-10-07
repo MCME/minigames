@@ -52,40 +52,35 @@ public class GameDeny extends AbstractGameCommand{
                 sendCollisionMessage(cs);
             } else if (args[0].equalsIgnoreCase("save")) {
                 if (game instanceof RaceGame) {
-                    RaceGame racegame = (RaceGame) game;
-                    racegame.setSave(false);
+                    game.setTPSave(false);
                     sendSaveMessage(cs);
                 } else {
                     sendNotPossibleMessage(cs);
                 }
             } else if (args[0].equalsIgnoreCase("invisible")) {
                 if (game instanceof RaceGame) {
-                    RaceGame racegame = (RaceGame) game;
-                    racegame.setInvisbile(false);
+                    game.setInvisible(false);
                     sendInvisibleMessage(cs);
                 } else {
                     sendNotPossibleMessage(cs);
                 }
             } else if (args[0].equalsIgnoreCase("signs")) {
                 if (game instanceof GeoGuessrGame) {
-                    GeoGuessrGame geogame = (GeoGuessrGame) game;
-                    geogame.setSigns(true);
+                    game.setSigns(true);
                     sendSigns(cs);
                 } else {
                     sendNotPossibleMessage(cs);
                 }
             } else if (args[0].equalsIgnoreCase("points")) {
                 if (game instanceof GeoGuessrGame) {
-                    GeoGuessrGame geogame = (GeoGuessrGame) game;
-                    geogame.setPoints(false);
+                    game.setPoints(false);
                     sendPoints(cs);
                 } else {
                     sendNotPossibleMessage(cs);
                 }
             } else if (args[0].equalsIgnoreCase("throwable")) {
                 if (game instanceof WerewolfGame) {
-                    WerewolfGame werewolf = (WerewolfGame) game;
-                    werewolf.switchThrowable(false);
+                    game.setThrowable(false);
                     sendThrowable(cs);
                 } else {
                     sendNotPossibleMessage(cs);
@@ -93,8 +88,7 @@ public class GameDeny extends AbstractGameCommand{
             }else if(args[0].equalsIgnoreCase("glow")){
                 game.setGlow(false);
                 sendGlow(cs);
-            }
-            else {
+            } else {
                 sendInvalidArgumentMessage(cs);
             }
         }

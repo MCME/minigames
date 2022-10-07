@@ -42,11 +42,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private boolean signHide = true;
+    //private boolean signHide = true;
 
     private boolean first = false;
 
-    private boolean points_bool = true;
+    //private boolean points_bool = true;
 
     private final List<String> guidebook = new ArrayList<>();
     public final List<Player> hiddenPlayer = new ArrayList<>();
@@ -213,6 +213,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             Player manager = Bukkit.getPlayer(getManager().getUniqueId());
             PluginData.getMessageUtil().sendInfoMessage(manager, "There are no more rounds. Please announce the winners, if not already done.");
         } else {
+            setPoints();
             this.started = true;
             this.first = false;
             if (this.radius <= 0) {
@@ -229,7 +230,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
             warp = new Location(world, x, y, z);
-            if(signHide){
+            if(getSigns()){
                 signs = new GeoGuessrSigns();
                 signs.removeSigns(warp,radius);
             }
@@ -367,7 +368,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
         bar.setProgress(1.0);
-        if(signHide){
+        if(getSigns()){
             signs.replaceSigns();
         }
         if (row < 0) {
@@ -412,7 +413,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     @Override
     public void end(Player sender){
         super.end(sender);
-        if(signHide){
+        if(getSigns()){
             signs.replaceSigns();
         }
         for(Player player : getOnlinePlayers()){
@@ -420,16 +421,18 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
     }
 
+    /*
     public void setSigns(boolean bool){
         if(!started){
             this.signHide = bool;
         }
     }
+     */
 
-    public void setPoints(boolean bool){
+
+    public void setPoints(){
         if(!started){
-            this.points_bool = bool;
-            if(!points_bool){
+            if(!getPoints()){
                 this.points = 1;
                 this.first_points = 1;
             }else{
