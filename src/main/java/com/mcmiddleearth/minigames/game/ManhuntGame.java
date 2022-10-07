@@ -56,6 +56,13 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private BossBar bar;
 
+    // TODO:
+    // Limit the scoreboard for seeker (might be problem for max seeker)
+    // jump height is too high
+    // restart
+    // random seeker?
+    // item which gives the hunters something like a jump boost
+
     public ManhuntGame(Player manager, String name){
         super(manager,name,GameType.MANHUNT,new ManhuntGameScoreboard());
 

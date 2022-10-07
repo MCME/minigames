@@ -108,6 +108,11 @@ public abstract class AbstractGame {
             cleanupTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 3000, 3000);
         }
     }
+
+    //TODO:
+    //config inv for allow/deny
+    //command for that
+    //rework glow command -> allow/deny
     
     public void end(Player sender) {
         sendGameEndMessage(sender);    
@@ -205,6 +210,7 @@ public abstract class AbstractGame {
                 if(!PlayerUtil.isSame(onlinePlayer,manager)) {
                     onlinePlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getMainScoreboard());
                 }
+                onlinePlayer.setGlowing(false);
                 if(gm2Forced) {
                     onlinePlayer.setGameMode(playerPreviousMode.get(onlinePlayer.getUniqueId()));
                     playerPreviousMode.remove(onlinePlayer.getUniqueId());
@@ -341,11 +347,19 @@ public abstract class AbstractGame {
         }
     }
 
+    public void setGlow(boolean allowed){
+        for(Player player: getOnlinePlayers()){
+            player.setGlowing(allowed);
+        }
+    }
+
     public void playerInteract(PlayerInteractEntityEvent event){
         event.setCancelled(true);
     }
 
-    public void onClick(InventoryClickEvent event){ event.setCancelled(false); }
+    public void onClick(InventoryClickEvent event){
+       // event.setCancelled(false);
+    }
 
     public void checkThrow(PlayerInteractEvent event) {}
 

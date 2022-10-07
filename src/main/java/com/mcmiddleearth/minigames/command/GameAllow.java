@@ -19,7 +19,10 @@ public class GameAllow extends AbstractGameCommand{
     public GameAllow(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Allows various actions for a game.");
-        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible|signs: 'flight'/'teleport' allows for players in the game to fly or teleport. 'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating.'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.'signs' allow signs fr GeoGuessr");
+        setUsageDescription(" flight|teleport|join|warp|spectate|collision|invisible|signs|glow: 'flight'/'teleport' allows for players in the game to fly or teleport. " +
+                "'join' allows players to join without invitation. 'warp' allows player to warp to game location. 'spectate' allows players to see scoreboard of the game without participating." +
+                "'collision' allows players to collide in games.'save' allows /game tpcp in races.'invisible' allows Invisibility in races.'signs' allow signs fr GeoGuessr" +
+                "/game glow to activate the glow effect on all players");
     }
     
     @Override
@@ -99,6 +102,10 @@ public class GameAllow extends AbstractGameCommand{
                     sendNotPossibleMessage(cs);
                 }
             }
+            else if(args[0].equalsIgnoreCase("glow")) {
+                game.setGlow(true);
+                sendGlow(cs);
+            }
             else {
                 sendInvalidArgumentMessage(cs);
             }
@@ -157,6 +164,10 @@ public class GameAllow extends AbstractGameCommand{
 
     private void sendThrowable(CommandSender cs){
         PluginData.getMessageUtil().sendInfoMessage(cs,"You enabled throwables.");
+    }
+
+    private void sendGlow(CommandSender cs){
+        PluginData.getMessageUtil().sendInfoMessage(cs,"You enabled the glow effect.");
     }
 
     private void sendNotPossibleMessage(CommandSender cs) {

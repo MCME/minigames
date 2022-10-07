@@ -88,7 +88,6 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("tpcp",new RaceGameTPCheckpoint(Permissions.USER));
         addCommandHandler("tphere",new HaSGameTPHere(Permissions.MANAGER));
         addCommandHandler("hiddenlist", new HaSHiddenList(Permissions.USER));
-        addCommandHandler("glow", new HaSGameGlow(Permissions.MANAGER));
         addCommandHandler("racestats",new RaceGameStats(Permissions.USER));
         addCommandHandler("resetscores",new RaceGameDeleteHighscore(Permissions.STAFF));
         addCommandHandler("stats",new GameStats(Permissions.USER));
