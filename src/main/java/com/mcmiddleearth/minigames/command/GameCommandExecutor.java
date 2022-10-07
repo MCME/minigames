@@ -106,6 +106,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("roleinfo",new WereWolfGameRoleInfo(Permissions.USER));
         addCommandHandler("manhunt_start",new ManhuntStart(Permissions.MANAGER));
         addCommandHandler("manhunt_seeker",new ManhuntSeeker(Permissions.MANAGER));
+        addCommandHandler("switchables",new GameSwitchables(Permissions.MANAGER));
     }
     
     @Override

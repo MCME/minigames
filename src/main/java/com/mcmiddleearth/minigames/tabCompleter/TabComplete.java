@@ -16,7 +16,7 @@ public class TabComplete implements TabCompleter {
 
     final List<String> commandsManager = Arrays.asList("create");
     final List<String> commandsManagerGame = Arrays.asList("ban","allow", "deny", "end",
-            "invite", "kick", "manager", "ready", "restart", "start", "unban","files");
+            "invite", "kick", "manager", "ready", "restart", "start", "unban","files","switchables");
     final List<String> commandsManagerGeo = Arrays.asList("winner", "round", "setrounds", "setarea", "blacklist");
     final List<String> commandsManagerHide = Arrays.asList("hide", "seeker", "tphere", "glow", "radius");
     final List<String> commandsManagerManhunt = Arrays.asList("manhunt_start", "manhunt_seeker");

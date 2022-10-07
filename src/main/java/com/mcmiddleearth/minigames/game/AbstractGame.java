@@ -18,9 +18,13 @@ import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -44,6 +48,8 @@ public abstract class AbstractGame {
     private boolean announced = false;
     
     private OfflinePlayer manager;
+
+    private String switchInvName = "Switchables";
 
     private final GameType type;
     
@@ -69,6 +75,7 @@ public abstract class AbstractGame {
     private final Team team;
 
     private static final Map<String,Boolean> toggleConfig = new HashMap<>();
+    private final List<String> allToggle = Arrays.asList("flight","teleport","privat","warp","spectate","glow","collision");
 
     //flight|teleport|join|warp|spectate|collision|invisible|signs|glow
     //flight|teleport|join|warp|save|collision|invisible|signs|glow
@@ -129,9 +136,9 @@ public abstract class AbstractGame {
     }
 
     //TODO:
-    //config inv for allow/deny
-    //command for that
-    //rework glow command -> allow/deny
+    //config inv for allow/deny x
+    //command for that x
+    //rework glow command -> allow/deny x
     
     public void end(Player sender) {
         sendGameEndMessage(sender);    
@@ -367,17 +374,76 @@ public abstract class AbstractGame {
     }
 
     public void setGlow(boolean allowed){
+        toggleConfig.replace("glow",allowed);
         for(Player player: getOnlinePlayers()){
             player.setGlowing(allowed);
         }
     }
 
-    public void playerInteract(PlayerInteractEntityEvent event){
-        event.setCancelled(true);
+    public void openGUI_Switchables(Player player){
+        int size = (toggleConfig.size() / 9) * 9 + 18;
+        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(size));
+        Inventory inv = Bukkit.createInventory(null,size,switchInvName);
+        int i = 0;
+        for(String switchString : toggleConfig.keySet()){
+            if((switchString.equalsIgnoreCase("throwable") && GameType.WEREWOLF == type)
+                    ^ (switchString.equalsIgnoreCase("points") && GameType.GEO_GUESSR == type)
+                    ^ (switchString.equalsIgnoreCase("signs") && GameType.GEO_GUESSR == type)
+                    ^ (switchString.equalsIgnoreCase("invisible") && GameType.RACE == type)
+                    ^ (switchString.equalsIgnoreCase("save") && GameType.RACE == type)
+                    || allToggle.contains(switchString) ){
+                ItemStack switchItem = new ItemStack(Material.BOOK);
+                if(toggleConfig.get(switchString)){
+                    switchItem.setType(Material.WRITTEN_BOOK);
+                }
+                ItemMeta meta = switchItem.getItemMeta();
+                meta.setDisplayName(switchString);
+                switchItem.setItemMeta(meta);
+                inv.setItem(i++,switchItem);
+            } else{
+                Bukkit.getPlayer("Jubo").sendMessage(switchString);
+            }
+        }
+        ItemStack close = new ItemStack(Material.SLIME_BALL);
+        ItemMeta meta = close.getItemMeta();
+        meta.setDisplayName("Close");
+        close.setItemMeta(meta);
+        inv.setItem(size-5,close);
+
+        player.openInventory(inv);
     }
 
     public void onClick(InventoryClickEvent event){
-       // event.setCancelled(false);
+        if(event.getView().getTitle() != switchInvName) return;
+        Bukkit.getPlayer("Jubo").sendMessage("Test");
+        Player player = (Player) event.getWhoClicked();
+        ItemStack current = event.getCurrentItem();
+        ClickType click = event.getClick();
+        if(current == null) return;
+        event.setCancelled(true);
+        if(click == ClickType.LEFT && current.getType() == Material.BOOK){
+            toggleConfig.replace(current.getItemMeta().getDisplayName(),true);
+            current.setType(Material.WRITTEN_BOOK);
+        }else if(click == ClickType.LEFT && current.getType() == Material.WRITTEN_BOOK){
+            toggleConfig.replace(current.getItemMeta().getDisplayName(),false);
+            current.setType(Material.BOOK);
+        }else if(click == ClickType.LEFT && current.getType() == Material.SLIME_BALL){
+            reloadSwitchables();
+            player.closeInventory();
+            sendSwitchesChangedMessage(player);
+        }
+    }
+
+    private void reloadSwitchables(){
+        setFlightAllowed(toggleConfig.get("flight"));
+        setTeleportAllowed(toggleConfig.get("teleport"));
+        setSpectateAllowed(toggleConfig.get("teleport"));
+        setCollision(toggleConfig.get("collision"));
+        setGlow(toggleConfig.get("glow"));
+    }
+
+    public void playerInteract(PlayerInteractEntityEvent event){
+        event.setCancelled(true);
     }
 
     public void checkThrow(PlayerInteractEvent event) {}
@@ -490,6 +556,10 @@ public abstract class AbstractGame {
     
     public void sendGameEndMessage(Player sender) {
         GameChatUtil.sendAllInfoMessage(sender, this, "The game "+ getName()+" ended.");
+    }
+
+    private void sendSwitchesChangedMessage(Player sender){
+        PluginData.getMessageUtil().sendInfoMessage(sender,"The game config was changed.");
     }
 
     private void sendLeaveNotAllowed(Player player) {
