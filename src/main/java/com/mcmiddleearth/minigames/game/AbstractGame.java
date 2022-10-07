@@ -62,14 +62,9 @@ public abstract class AbstractGame {
     public final Map<UUID,GameMode> playerPreviousMode = new HashMap<>();
     
     private Location warp = null;
-    //private boolean warpAllowed = true;
-    //private boolean spectateAllowed = true;
-    //private boolean privat = false;
-    //private boolean flightAllowed = true;
-    //private boolean teleportAllowed = true;
+
     private boolean gm3Allowed = false;
     private boolean gm2Forced = false;
-    //private boolean Collision = true;
     
     private final GameScoreboard board;
     private final Team team;
@@ -77,8 +72,6 @@ public abstract class AbstractGame {
     private static final Map<String,Boolean> toggleConfig = new HashMap<>();
     private final List<String> allToggle = Arrays.asList("flight","teleport","privat","warp","spectate","glow","collision");
 
-    //flight|teleport|join|warp|spectate|collision|invisible|signs|glow
-    //flight|teleport|join|warp|save|collision|invisible|signs|glow
     static {
         toggleConfig.put("flight",false);
         toggleConfig.put("teleport",false);
@@ -134,11 +127,6 @@ public abstract class AbstractGame {
             cleanupTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 3000, 3000);
         }
     }
-
-    //TODO:
-    //config inv for allow/deny x
-    //command for that x
-    //rework glow command -> allow/deny x
     
     public void end(Player sender) {
         sendGameEndMessage(sender);    
@@ -382,7 +370,6 @@ public abstract class AbstractGame {
 
     public void openGUI_Switchables(Player player){
         int size = (toggleConfig.size() / 9) * 9 + 18;
-        Bukkit.getPlayer("Jubo").sendMessage(String.valueOf(size));
         Inventory inv = Bukkit.createInventory(null,size,switchInvName);
         int i = 0;
         for(String switchString : toggleConfig.keySet()){
@@ -400,8 +387,6 @@ public abstract class AbstractGame {
                 meta.setDisplayName(switchString);
                 switchItem.setItemMeta(meta);
                 inv.setItem(i++,switchItem);
-            } else{
-                Bukkit.getPlayer("Jubo").sendMessage(switchString);
             }
         }
         ItemStack close = new ItemStack(Material.SLIME_BALL);
@@ -415,7 +400,6 @@ public abstract class AbstractGame {
 
     public void onClick(InventoryClickEvent event){
         if(event.getView().getTitle() != switchInvName) return;
-        Bukkit.getPlayer("Jubo").sendMessage("Test");
         Player player = (Player) event.getWhoClicked();
         ItemStack current = event.getCurrentItem();
         ClickType click = event.getClick();

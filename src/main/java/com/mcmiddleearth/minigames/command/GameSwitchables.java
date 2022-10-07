@@ -8,8 +8,8 @@ public class GameSwitchables extends AbstractGameCommand{
 
     public GameSwitchables(String... permissionNodes){
         super(0,true,permissionNodes);
-        setShortDescription("");
-        setUsageDescription("");
+        setShortDescription("GUI for allow/deny");
+        setUsageDescription("/game switchables. Written Books are enabled things and books are disabled things");
     }
 
     @Override
