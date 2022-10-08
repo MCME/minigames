@@ -8,20 +8,24 @@ import com.mcmiddleearth.pluginutil.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ManhuntStart extends AbstractGameCommand{
+/**
+ *
+ * @author Jubo
+ */
+public class ManhuntHunt extends AbstractGameCommand{
 
-    public ManhuntStart(String... permissionNodes){
+    public ManhuntHunt(String... permissionNodes){
         super(3,true,permissionNodes);
         cmdGroup = CmdGroup.MANHUNT;
         setShortDescription("Start a manhunt game");
-        setUsageDescription("/game manhunt_start radius searchTime hideTime");
+        setUsageDescription("/game hunt radius searchTime hideTime");
     }
 
     @Override
     protected void execute(CommandSender cs, String... args){
         AbstractGame game = getGame((Player)cs);
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.MANHUNT)){
-            if(game.countOnlinePlayer() < 2){
+            if(game.countOnlinePlayer() < 1){
                 sendNotEnoughPlayerErrorMessage(cs);
             }else{
                 ManhuntGame manhuntgame = (ManhuntGame) game;

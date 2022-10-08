@@ -7,6 +7,8 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.DynmapUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.TitleUtil;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BarColor;
@@ -15,7 +17,6 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -30,8 +31,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ *
+ * @author Jubo
+ */
 public class ManhuntGame extends AbstractGame implements Listener {
 
     private final int seekerCageRadius = 5;
@@ -39,6 +46,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
     private final int defaultHideTimeSeconds = 60;
     private final int defaultSeekTimeSeconds = 300;
     private final int revealDistance = 1;
+    private final int jumpCooldown = 15;
 
     private int seekTime = defaultSeekTimeSeconds;
     private int hideTime = defaultHideTimeSeconds;
@@ -49,19 +57,24 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    public final List<OfflinePlayer> seeker = new ArrayList<>();
-    public final List<Player> hiddenPlayers = new ArrayList<>();
+    private final Material jumpItem = Material.FEATHER;
+
+    private final List<OfflinePlayer> seeker = new ArrayList<>();
+    private final List<Player> hiddenPlayers = new ArrayList<>();
+
+    private final Map<Player,Boolean> jumpBoost = new HashMap<>();
+    private final Map<Player,BukkitRunnable> jumpRunnbales = new HashMap<>();
 
     private BukkitRunnable seekTask, stopTask;
 
     private BossBar bar;
 
-    // TODO:
-    // Limit the scoreboard for seeker (might be problem for max seeker)
-    // jump height is too high
-    // restart
+    //TODO:
+    // Limit the scoreboard for seeker (might be problem for max seeker) x
+    // jump height is too high -> set to 2 for now (needs testing)
+    // restart x
     // random seeker?
-    // item which gives the hunters something like a jump boost
+    // item which gives the hunters something like a jump boost x
 
     public ManhuntGame(Player manager, String name){
         super(manager,name,GameType.MANHUNT,new ManhuntGameScoreboard());
@@ -82,6 +95,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
     }
 
     public void hiding(int radius) {
+        if(seeker.isEmpty()) {
+            sendNoHunterAssignedMessage(getManager().getPlayer());
+            return;
+        }
         if(radius>0) {
             this.radius = radius;
         }
@@ -90,10 +107,11 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         this.hiding = true;
         this.seeking = false;
-        this.started = true;
 
         bar.setTitle(ChatColor.YELLOW+"Manhunt: Hiding");
         bar.setProgress(1.0);
+
+        setCollision(false);
 
         ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta meta_helmet = (LeatherArmorMeta) helmet.getItemMeta();
@@ -115,31 +133,24 @@ public class ManhuntGame extends AbstractGame implements Listener {
         meta_boots.setColor(Color.WHITE);
         boots.setItemMeta(meta_boots);
 
-        for(Player player : getOnlinePlayers()) {
-            if(!seeker.contains(player)) {
-                hidePlayer(player);
-            }
-        }
-
         for(Player player: hiddenPlayers) {
             if (player != null) {
+                hidePlayer(player);
+
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 3));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 2));
 
                 player.getInventory().setHelmet(helmet);
                 player.getInventory().setChestplate(chest);
                 player.getInventory().setLeggings(legs);
                 player.getInventory().setBoots(boots);
                 player.getInventory().addItem(new ItemStack(Material.CARROT));
+
+                sendSeekerList(player);
             }
         }
 
-        String seeker_string = "";
-        for(OfflinePlayer op:seeker){
-            seeker_string = seeker_string + op.getName() + ", ";
-        }
-
-        ((ManhuntGameScoreboard)this.getBoard()).startHiding(seeker_string, hideTime,bar);
+        ((ManhuntGameScoreboard)this.getBoard()).startHiding(hideTime,bar);
         sendStartHideMessage();
         sendRadiusMessage();
         Location loc = getWarp().clone();
@@ -159,12 +170,14 @@ public class ManhuntGame extends AbstractGame implements Listener {
         this.hiding = false;
         this.seeking = true;
 
-        bar.setTitle(ChatColor.YELLOW+"Manhunt: Seeking");
+        bar.setTitle(ChatColor.YELLOW+"Manhunt: Hunting");
         bar.setProgress(1.0);
         for(Player p : getOnlinePlayers()){
             bar.addPlayer(p);
         }
         ((ManhuntGameScoreboard)this.getBoard()).startSeeking(seekTime,bar,seeker.size());
+
+        setCollision(true);
 
         sendStartSeekingMessage();
         stopTask = new BukkitRunnable() {
@@ -181,6 +194,11 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
         if(stopTask!=null) {
             stopTask.cancel();
+        }
+        for(Player player:jumpRunnbales.keySet()){
+            if(jumpRunnbales.get(player)!=null) {
+                jumpRunnbales.get(player).cancel();
+            }
         }
         bar.setTitle(ChatColor.YELLOW+"Manhunt");
         sendStopSeekingMessage();
@@ -216,6 +234,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
     private void revealPlayer(Player player) {
         unhidePlayer(player);
         ((ManhuntGameScoreboard)this.getBoard()).locatePlayer();
+        player.getInventory().setHelmet(new ItemStack(Material.SKELETON_SKULL));
         if(hiddenPlayers.isEmpty()) {
             stop();
         }
@@ -224,6 +243,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
     @Override
     public void addPlayer(Player player) {
         super.addPlayer(player);
+        jumpBoost.put(player,false);
         forceTeleport(player,getWarp());
         bar.addPlayer(player);
     }
@@ -258,7 +278,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
             sendPlayerAlreadySeeker((Player) player);
         }else{
             seeker.add(player);
-            ((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
+            jumpBoost.replace((Player) player,true);
+            //((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
         }
     }
 
@@ -319,7 +340,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 Player[] myList = hiddenPlayers.toArray(new Player[0]);
                 for(Player hidden : myList) {
                     if(event.getTo().distance(hidden.getLocation())<revealDistance) {
-                        sendPlayerFoundMessage(hidden);
+                        sendPlayerFoundMessage(event.getPlayer(),hidden);
+                        setJumpCooldown(event.getPlayer(),true);
                         revealPlayer(hidden);
                     }
                 }
@@ -335,27 +357,27 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(!seeker.contains(event.getDamager())) {
             return;
         }
-        event.getDamager().sendMessage("Test");
             Player player = (Player) event.getEntity();
             if(seeking && hiddenPlayers.contains(player)) {
-                sendPlayerFoundMessage(player);
+                sendPlayerFoundMessage((Player)event.getDamager(),player);
                 this.revealPlayer(player);
             }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerEntityInteract(PlayerInteractEntityEvent event){
         Player player = event.getPlayer();
         if(event.getRightClicked() instanceof Player){
             Player hidden = (Player) event.getRightClicked();
             if(seeker.contains(player) && hiddenPlayers.contains(hidden)){
-                sendPlayerFoundMessage(hidden);
+                sendPlayerFoundMessage(player,hidden);
+                setJumpCooldown(player,true);
                 this.revealPlayer(hidden);
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
@@ -420,7 +442,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         if (!hiddenPlayers.isEmpty() && seeker != null) {
             if (hiddenPlayers.contains(event.getPlayer()) || seeker.contains(event.getPlayer())) {
@@ -429,6 +451,33 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 }
             }
         }
+    }
+
+    @Override
+    public void itemInteract(PlayerInteractEvent event){
+        Player player = event.getPlayer();
+        Action action = event.getAction();
+        Material material = event.getMaterial();
+        event.setCancelled(true);
+        if(jumpBoost.get(player) && material == jumpItem && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK)){
+            player.setVelocity(player.getLocation().getDirection().multiply(1.5).setY(1));
+            setCooldown(player);
+        }
+    }
+
+    private void setCooldown(Player player){
+        BukkitRunnable jumpCooldownTask;
+        setJumpCooldown(player,false);
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED+"Test"));
+        jumpCooldownTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                setJumpCooldown(player,true);
+                jumpRunnbales.remove(player);
+                sendJumpReadyMessage(player);
+            }};
+        jumpCooldownTask.runTaskLater(MiniGamesPlugin.getPluginInstance(), jumpCooldown*20);
+        jumpRunnbales.put(player,jumpCooldownTask);
     }
 
     @Override
@@ -469,10 +518,17 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
      */
 
+
+
     private void sendStartHideMessage() {
         for(Player player : hiddenPlayers) {
                 TitleUtil.showTitle(player, ChatColor.YELLOW+" RUN!!!"," ");
         }
+    }
+
+    private void sendJumpReadyMessage(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"Your jump is ready again.");
+        player.playEffect(player.getLocation(),Effect.CLICK1,0);
     }
 
     public void sendRadiusMessage(){
@@ -521,15 +577,23 @@ public class ManhuntGame extends AbstractGame implements Listener {
         GameChatUtil.sendAllInfoMessage(player, this, "The hunters left.");
     }
 
-    private void sendPlayerFoundMessage(Player hidden) {
+    private void sendPlayerFoundMessage(Player hidden,Player hunter) {
         PluginData.getMessageUtil().sendInfoMessage(hidden, "You were found.");
         hidden.playEffect(hidden.getLocation(),Effect.BLAZE_SHOOT,0);
         for(OfflinePlayer OP:seeker){
-            PluginData.getMessageUtil().sendInfoMessage((CommandSender) OP, "You found "+ hidden.getName() + ".");
+            PluginData.getMessageUtil().sendInfoMessage((CommandSender) OP, hunter.getName()+" found "+ hidden.getName() + ".");
         }
     }
 
-    /*
+    public void sendSeekerList(Player player){
+        List<String> seekingPlayers = new ArrayList<>();
+        for(OfflinePlayer seeker : this.seeker){
+            seekingPlayers.add(seeker.getName());
+        }
+        PluginData.getMessageUtil().sendInfoMessage(player,"These are the seekers:");
+        PluginData.getMessageUtil().sendInfoMessage(player,seekingPlayers.toString());
+    }
+
     public void sendHiddenList(Player player){
         List<String> hiddenPlayers = new ArrayList<>();
         for(Player hidden : this.hiddenPlayers){
@@ -539,13 +603,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
         PluginData.getMessageUtil().sendInfoMessage(player, hiddenPlayers.toString());
     }
 
-    public void setGlow(Player manager, boolean allowed){
-        for(Player player: getOnlinePlayers()){
-            player.setGlowing(allowed);
-        }
-    }
-
-     */
     public void setSeekTime(int seekTime) {
         this.seekTime = seekTime;
     }
@@ -554,6 +611,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     public void setHideTime(int hideTime) {
         this.hideTime = hideTime;
+    }
+
+    private void setJumpCooldown(Player player,boolean bool){
+        jumpBoost.replace(player,bool);
     }
 
     public boolean isSeeking() {
@@ -568,27 +629,12 @@ public class ManhuntGame extends AbstractGame implements Listener {
         return started;
     }
 
-    /*
-    public OfflinePlayer getSeeker() {
-        return seeker;
-    }
-
-    public List<Player> getHiddenPlayers() {
-        return hiddenPlayers;
-    }
-
-     */
-
-    private void sendPlayerNotInGame(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not part of your game.");
-    }
-
-    private void sendPlayerNotOnline(Player player) {
-        PluginData.getMessageUtil().sendInfoMessage(player, "You can´t teleport this player, he is not online.");
-    }
-
     private void sendPlayerAlreadySeeker(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"This player is already a seeker.");
+    }
+
+    private void sendNoHunterAssignedMessage(Player player){
+        PluginData.getMessageUtil().sendErrorMessage(player,"You haven´t assigned at least one hunter yet.");
     }
 }
 

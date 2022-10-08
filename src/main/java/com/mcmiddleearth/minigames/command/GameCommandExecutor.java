@@ -45,6 +45,8 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("hiddenlist", new GameHiddenList(Permissions.USER));
         addCommandHandler("hide", new HaSGameHide(Permissions.MANAGER));
         addCommandHandler("hunt",new ManhuntHunt(Permissions.MANAGER));
+        addCommandHandler("hunter",new GameSeeker(Permissions.MANAGER));
+        addCommandHandler("hunterlist",new ManhuntGameHunterList(Permissions.USER));
         addCommandHandler("info", new GameInfo(Permissions.USER));
         addCommandHandler("invite", new GameInvite(Permissions.MANAGER));
         addCommandHandler("join", new GameJoin(Permissions.USER));

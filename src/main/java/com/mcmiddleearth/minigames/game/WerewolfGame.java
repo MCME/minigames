@@ -481,7 +481,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     @Override
-    public void checkThrow(PlayerInteractEvent event){
+    public void itemInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Material material = event.getMaterial();
         if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !getThrowable()){

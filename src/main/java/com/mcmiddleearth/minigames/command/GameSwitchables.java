@@ -4,6 +4,10 @@ import com.mcmiddleearth.minigames.game.AbstractGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
 public class GameSwitchables extends AbstractGameCommand{
 
     public GameSwitchables(String... permissionNodes){
