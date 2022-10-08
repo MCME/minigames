@@ -20,6 +20,7 @@ public class CatchGameCatcher extends AbstractGameCommand{
 
     @Override
     protected void execute(CommandSender cs, String... args){
+        /*
         AbstractGame game = getGame((Player)cs);
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.CATCH)){
             OfflinePlayer catcher = game.getPlayer(args[0]);
@@ -31,6 +32,8 @@ public class CatchGameCatcher extends AbstractGameCommand{
                 sendCatcherSetMessage(cs,catcher);
             }
         }
+
+         */
     }
 
     private void sendPlayerNotFoundErrorMessage(CommandSender cs) {
