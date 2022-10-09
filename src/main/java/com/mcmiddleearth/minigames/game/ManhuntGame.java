@@ -65,6 +65,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
     private final Map<Player,Boolean> jumpBoost = new HashMap<>();
     private final Map<Player,BukkitRunnable> jumpRunnbales = new HashMap<>();
 
+    private final Player manager;
+
     private BukkitRunnable seekTask, stopTask;
 
     private BossBar bar;
@@ -78,6 +80,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     public ManhuntGame(Player manager, String name){
         super(manager,name,GameType.MANHUNT,new ManhuntGameScoreboard());
+
+        this.manager = manager;
 
         Bukkit.getServer().getPluginManager().registerEvents(this, MiniGamesPlugin.getPluginInstance());
 
@@ -96,7 +100,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     public void hiding(int radius) {
         if(seeker.isEmpty()) {
-            selectRandomHunter(3);
+            if(!selectRandomHunter(3)) return;;
         }
         if(radius>0) {
             this.radius = radius;
@@ -283,7 +287,11 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
     }
 
-    public void selectRandomHunter(Integer number){
+    public boolean selectRandomHunter(Integer number){
+        if(number >= getOnlinePlayers().size()){
+            sendNotPossible(manager);
+            return false;
+        }
         for(int i = 0; i < number;i++) {
             while(true){
                 Player hunter = getOnlinePlayers().get(new Double(Math.floor(Math.random() * (getPlayers().size()))).intValue());
@@ -293,6 +301,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 }
             }
         }
+        return true;
     }
 
     private boolean isHidden(Player player) {
@@ -507,30 +516,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
     }
 
-    /*
-
-    public boolean teleportToManager(Player manager, OfflinePlayer player) {
-        if (PlayerUtil.getOnlinePlayer(player) != null) {
-            if (getOnlinePlayers().contains((Player) player)) {
-                forceTeleport((Player) player, manager.getLocation());
-                return true;
-            } else {
-                sendPlayerNotInGame(manager);
-                return false;
-            }
-        } else {
-            sendPlayerNotOnline(manager);
-            return false;
-        }
-    }
-
-    public void teleportToWarp(Player player) {
-        player.teleport(getWarp(), TeleportCause_FORCE);
-    }
-
-     */
-
-
     private void sendSeekerAssignedMessage(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"You are assigned to be one of the next seeker.");
     }
@@ -646,6 +631,10 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private void sendPlayerAlreadySeeker(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"This player is already a seeker.");
+    }
+
+    private void sendNotPossible(Player player){
+        PluginData.getMessageUtil().sendErrorMessage(player,"There needs to be at least 1 hunted player.");
     }
 }
 
