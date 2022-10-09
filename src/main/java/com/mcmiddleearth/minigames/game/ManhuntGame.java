@@ -152,6 +152,9 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 sendSeekerList(player);
             }
         }
+        for(OfflinePlayer player: seeker){
+            player.getPlayer().getInventory().setItem(2,new ItemStack(Material.FEATHER));
+        }
 
         ((ManhuntGameScoreboard)this.getBoard()).startHiding(hideTime,bar);
         sendStartHideMessage();
@@ -551,6 +554,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         if(hiddenPlayers.isEmpty()) {
             for(OfflinePlayer OP:seeker){
                 TitleUtil.showTitle((Player) OP, ChatColor.GOLD+"YOU WON", "You found all players.");
+                getWinHighscore().setHuntWin(OP.getUniqueId());
             }
         }
         else {
@@ -565,6 +569,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
                 }
                 else if (isHidden(player)) {
                     TitleUtil.showTitle(player, ChatColor.GOLD+"YOU WON", "The Hunters didn´t find you.");
+                    getWinHighscore().setManhuntHide(player.getUniqueId());
                 }
                 else {
                     TitleUtil.showTitle(player, ChatColor.BLUE+"GAME OVER", "You were hunted, but not all players");

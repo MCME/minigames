@@ -27,7 +27,7 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsManagerWerewolf = Arrays.asList("eliminate", "revive", "pardon", "config");
 
     final List<String> commandsUser = Arrays.asList("stats", "check", "info", "join", "spectate", "warp", "leaderboard");
-    final List<String> commandsUserGame = Arrays.asList("leave", "help");
+    final List<String> commandsUserGame = Arrays.asList("leave", "help", "leaderboard","stats");
     final List<String> commandsUserGeo = new ArrayList<>();
     final List<String> commandsUserHide = Arrays.asList("unstuck", "hiddenlist");
     final List<String> commandsUserManhunt = Arrays.asList("hiddenlist", "hunterlist");
@@ -40,6 +40,8 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
             ,"tphere","seeker","hunter","eliminate","pardon");
     final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz","manhunt");
+    final List<String> commandsQuestion = Arrays.asList("submit","review","accept","load","clear");
+    final List<String> commandsLeaderboard = Arrays.asList("hide","seek","geo","race","hunt","manhunthide");
 
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){
         List<String> commands = new ArrayList<>();
@@ -50,7 +52,11 @@ public class TabComplete implements TabCompleter {
 
         if(args[0].equalsIgnoreCase("deny") || args[0].equalsIgnoreCase("allow")){
             commands.addAll(commandsAllowDeny);
-        }else if(args[0].equalsIgnoreCase("join")){
+        }else if(args[0].equalsIgnoreCase("question")){
+            commands.addAll(commandsQuestion);
+        } else if(args[0].equalsIgnoreCase("leaderboard")){
+            commands.addAll(commandsLeaderboard);
+        } else if(args[0].equalsIgnoreCase("join")){
             for(AbstractGame games: PluginData.getGames()){
                 commands.add(games.getName());
             }
@@ -71,9 +77,7 @@ public class TabComplete implements TabCompleter {
                 commands.addAll(roleNames);
             }
         } else if(args[0].equalsIgnoreCase("create")){
-            if(game == null){
-                commands.addAll(commandsGametypes);
-            }
+            commands.addAll(commandsGametypes);
         } else {
             arg_1 = false;
             if (game == null) {
