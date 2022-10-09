@@ -45,7 +45,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("hiddenlist", new GameHiddenList(Permissions.USER));
         addCommandHandler("hide", new HaSGameHide(Permissions.MANAGER));
         addCommandHandler("hunt",new ManhuntHunt(Permissions.MANAGER));
-        addCommandHandler("hunter",new GameSeeker(Permissions.MANAGER));
+        addCommandHandler("hunter",new ManhuntGameHunter(Permissions.MANAGER));
         addCommandHandler("hunterlist",new ManhuntGameHunterList(Permissions.USER));
         addCommandHandler("info", new GameInfo(Permissions.USER));
         addCommandHandler("invite", new GameInvite(Permissions.MANAGER));
@@ -61,7 +61,6 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("loadquiz", new QuizGameLoad(Permissions.MANAGER));
         addCommandHandler("loadrace", new RaceGameLoad(Permissions.MANAGER));
         addCommandHandler("manager", new GameManager(Permissions.MANAGER));
-        addCommandHandler("manhunt_seeker",new ManhuntSeeker(Permissions.MANAGER));
         addCommandHandler("marker", new RaceGameMarker(Permissions.MANAGER));
         addCommandHandler("pardon",new WerewolfGamePardon(Permissions.MANAGER));
         addCommandHandler("pvpset", new PvPGameSet(Permissions.MANAGER));
@@ -86,7 +85,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("savepvp", new PvPGameSave(Permissions.MANAGER));
         addCommandHandler("savequiz", new QuizGameSave(Permissions.MANAGER));
         addCommandHandler("saverace", new RaceGameSave(Permissions.MANAGER));
-        addCommandHandler("seeker", new GameSeeker(Permissions.MANAGER));
+        addCommandHandler("seeker", new HaSGameSeeker(Permissions.MANAGER));
         addCommandHandler("send", new QuizGameSend(Permissions.MANAGER));
         addCommandHandler("setarea", new GeoGameSetArea(Permissions.MANAGER));
         addCommandHandler("setrounds", new GeoGameSetRounds(Permissions.MANAGER));

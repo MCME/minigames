@@ -16,9 +16,9 @@ import org.bukkit.entity.Player;
  *
  * @author Eriol_Eandur
  */
-public class GameSeeker extends AbstractGameCommand{
+public class HaSGameSeeker extends AbstractGameCommand{
     
-    public GameSeeker(String... permissionNodes) {
+    public HaSGameSeeker(String... permissionNodes) {
         super(1, true, permissionNodes);
         setShortDescription(": Appoints the seeker for the next round.");
         setUsageDescription(" <player>: Appoints <player> to be next seeker. Without using this command seeker will be randomly chosen from all players.");
@@ -27,20 +27,14 @@ public class GameSeeker extends AbstractGameCommand{
     @Override
     protected void execute(CommandSender cs, String... args) {
         AbstractGame game = getGame((Player) cs);
-        if(game != null && isManager((Player) cs, game)) {
+        if(game != null && isManager((Player) cs, game) && isCorrectGameType((Player)cs,game,GameType.HIDE_AND_SEEK)) {
             OfflinePlayer seeker = game.getPlayer(args[0]);
             if(seeker==null) {
                 sendPlayerNotFoundErrorMessage(cs);
             }
             else {
-                if(game instanceof HideAndSeekGame){
-                    ((HideAndSeekGame)game).setSeeker(seeker);
-                    sendSeekerSetMessage(cs, seeker,"seeker.");
-                } else if(game instanceof ManhuntGame){
-                    ((ManhuntGame)game).setSeeker(seeker);
-                    sendSeekerSetMessage(cs, seeker,"hunter.");
-                }
-
+                ((HideAndSeekGame)game).setSeeker(seeker);
+                sendSeekerSetMessage(cs, seeker);
             }
         }
     }
@@ -49,11 +43,11 @@ public class GameSeeker extends AbstractGameCommand{
         PluginData.getMessageUtil().sendErrorMessage(cs, "Player not found.");
     }
 
-    private void sendSeekerSetMessage(CommandSender cs, OfflinePlayer seeker,String gameType) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, seeker.getName() +" will be the next "+gameType);
+    private void sendSeekerSetMessage(CommandSender cs, OfflinePlayer seeker) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, seeker.getName() +" will be the next seeker.");
         if(PlayerUtil.getOnlinePlayer(seeker)!=null)
             PluginData.getMessageUtil().sendInfoMessage(PlayerUtil.getOnlinePlayer(seeker), 
-                                        "You are assigned to be the next "+gameType);
+                                        "You are assigned to be the next seeker.");
     }
 
  }

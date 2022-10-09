@@ -279,6 +279,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }else{
             seeker.add(player);
             jumpBoost.replace((Player) player,true);
+            sendSeekerAssignedMessage((Player)player);
             //((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
         }
     }
@@ -519,6 +520,9 @@ public class ManhuntGame extends AbstractGame implements Listener {
      */
 
 
+    private void sendSeekerAssignedMessage(Player player){
+        PluginData.getMessageUtil().sendInfoMessage(player,"You are assigned to be one of the next seeker.");
+    }
 
     private void sendStartHideMessage() {
         for(Player player : hiddenPlayers) {
