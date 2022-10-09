@@ -96,8 +96,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     public void hiding(int radius) {
         if(seeker.isEmpty()) {
-            sendNoHunterAssignedMessage(getManager().getPlayer());
-            return;
+            selectRandomHunter(3);
         }
         if(radius>0) {
             this.radius = radius;
@@ -273,7 +272,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         }
     }
 
-    public void setSeeker(OfflinePlayer player) {
+    public void setHunter(OfflinePlayer player) {
         if(seeker.contains(player)){
             sendPlayerAlreadySeeker((Player) player);
         }else{
@@ -281,6 +280,18 @@ public class ManhuntGame extends AbstractGame implements Listener {
             jumpBoost.replace((Player) player,true);
             sendSeekerAssignedMessage((Player)player);
             //((ManhuntGameScoreboard)getBoard()).setSeeker(player.getName());
+        }
+    }
+
+    public void selectRandomHunter(Integer number){
+        for(int i = 0; i < number;i++) {
+            while(true){
+                Player hunter = getOnlinePlayers().get(new Double(Math.floor(Math.random() * (getPlayers().size()))).intValue());
+                if(!seeker.contains(hunter)) {
+                    setHunter(hunter);
+                    break;
+                }
+            }
         }
     }
 
@@ -635,10 +646,6 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private void sendPlayerAlreadySeeker(Player player){
         PluginData.getMessageUtil().sendInfoMessage(player,"This player is already a seeker.");
-    }
-
-    private void sendNoHunterAssignedMessage(Player player){
-        PluginData.getMessageUtil().sendErrorMessage(player,"You haven´t assigned at least one hunter yet.");
     }
 }
 
