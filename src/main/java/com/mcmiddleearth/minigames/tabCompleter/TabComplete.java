@@ -16,10 +16,10 @@ public class TabComplete implements TabCompleter {
 
     final List<String> commandsManager = Arrays.asList("create");
     final List<String> commandsManagerGame = Arrays.asList("ban","allow", "deny", "end",
-            "invite", "kick", "manager", "ready", "restart", "start", "unban","files");
+            "invite", "kick", "manager", "ready", "restart", "start", "unban","files","switchables");
     final List<String> commandsManagerGeo = Arrays.asList("winner", "round", "setrounds", "setarea", "blacklist");
     final List<String> commandsManagerHide = Arrays.asList("hide", "seeker", "tphere", "glow", "radius");
-    final List<String> commandsManagerManhunt = Arrays.asList("manhunt_start", "manhunt_seeker");
+    final List<String> commandsManagerManhunt = Arrays.asList("hunt", "hunter");
     final List<String> commandsManagerQuiz = Arrays.asList("clear", "loadquiz", "loadquestions", "question", "random", "savequiz"
             , "send", "stat", "winner");
     final List<String> commandsManagerRace = Arrays.asList("loadrace", "marker", "remove", "savemarker", "saverace", "show"
@@ -27,21 +27,21 @@ public class TabComplete implements TabCompleter {
     final List<String> commandsManagerWerewolf = Arrays.asList("eliminate", "revive", "pardon", "config");
 
     final List<String> commandsUser = Arrays.asList("stats", "check", "info", "join", "spectate", "warp", "leaderboard");
-    final List<String> commandsUserGame = Arrays.asList("leave", "help");
+    final List<String> commandsUserGame = Arrays.asList("leave", "help", "leaderboard","stats");
     final List<String> commandsUserGeo = new ArrayList<>();
     final List<String> commandsUserHide = Arrays.asList("unstuck", "hiddenlist");
-    final List<String> commandsUserManhunt = new ArrayList<>();
+    final List<String> commandsUserManhunt = Arrays.asList("hiddenlist", "hunterlist");
     final List<String> commandsUserQuiz = Arrays.asList("showCategories", "submitquestion");
     final List<String> commandsUserRace = Arrays.asList("tpcp", "racestats");
     final List<String> commandsUserWerewolf = Arrays.asList("vote", "list", "roleinfo");
 
     final List<String> commandsAllowDeny = Arrays.asList("flight","teleport","join","warp","spectate","collision","invisible"
-            ,"signs","points","throwable");
+            ,"signs","points","throwable","save");
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
-            ,"tphere","seeker","manhunt_seeker","eliminate","pardon");
-    final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz");
-
-
+            ,"tphere","seeker","hunter","eliminate","pardon");
+    final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz","manhunt");
+    final List<String> commandsQuestion = Arrays.asList("submit","review","accept","load","clear");
+    final List<String> commandsLeaderboard = Arrays.asList("hide","seek","geo","race","hunt","manhunthide");
 
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args){
         List<String> commands = new ArrayList<>();
@@ -50,28 +50,34 @@ public class TabComplete implements TabCompleter {
         AbstractGame game = PluginData.getGame((Player)sender);
         Boolean arg_1 = true;
 
-        if(input.startsWith("deny") || input.startsWith("allow")){
+        if(args[0].equalsIgnoreCase("deny") || args[0].equalsIgnoreCase("allow")){
             commands.addAll(commandsAllowDeny);
-        }else if(commandsPlayer.contains(input)){
+        }else if(args[0].equalsIgnoreCase("question")){
+            commands.addAll(commandsQuestion);
+        } else if(args[0].equalsIgnoreCase("leaderboard")){
+            commands.addAll(commandsLeaderboard);
+        } else if(args[0].equalsIgnoreCase("join")){
+            for(AbstractGame games: PluginData.getGames()){
+                commands.add(games.getName());
+            }
+        } else if(commandsPlayer.contains(args[0])){
             if(game != null){
                 for(Player player :game.getOnlinePlayers()){
                     commands.add(player.getName());
                 }
-                if(input.startsWith("vote")){
+                if(args[0].equalsIgnoreCase("vote")){
                     commands.add("yay");
                     commands.add("nay");
                 }
             }
-        }else if(input.startsWith("roleinfo")){
+        }else if(args[0].equalsIgnoreCase("roleinfo")){
             if(game != null) {
                 WerewolfGame werewolf = (WerewolfGame) game;
                 Set<String> roleNames = werewolf.getRoleNames();
                 commands.addAll(roleNames);
             }
-        } else if(input.startsWith("create")){
-            if(game == null){
-                commands.addAll(commandsGametypes);
-            }
+        } else if(args[0].equalsIgnoreCase("create")){
+            commands.addAll(commandsGametypes);
         } else {
             arg_1 = false;
             if (game == null) {

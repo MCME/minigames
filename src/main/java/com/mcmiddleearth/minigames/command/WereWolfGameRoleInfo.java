@@ -7,6 +7,10 @@ import com.mcmiddleearth.minigames.game.WerewolfGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ *
+ * @author Jubo
+ */
 public class WereWolfGameRoleInfo extends AbstractGameCommand{
 
     public WereWolfGameRoleInfo(String... permissionNodes){

@@ -31,3 +31,10 @@ When the game is started all participating players are caged at the start and fr
 Players have to visit the checkpoints in proper order and then move to the finish to win the race.
 Starter list, intermediate and final rankings are shown in scoreboards.
 Winner is announced with title screens.
+
+GeoGuessr:
+GeoGuessr uses the warp database of MCME. Players get randomly teleported to a warp and have to guess said warp, by typing it in chat.
+
+Manhunt:
+This is a subgame of Hide and Seek. There are several seekers called hunters. Who try to find the other players by walking into them or right clicking them.
+The normal players have a speed and jump boost. The hunters have a feather with which they can have a double jump every 15 seconds.

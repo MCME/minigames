@@ -54,14 +54,14 @@ public class RaceGame extends AbstractGame {
 
     private List<Player> save = new ArrayList<>();
 
-    private boolean save_allowed = true;
+    //private boolean save_allowed = true;
 
     private String raceName = "temporaryRace";
 
     private raceHighscoreAbstract highscore;
 
     //Visibility default off because its still buggy for non donors
-    private boolean invisibile_allowed = true;
+    //private boolean invisibile_allowed = true;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -92,11 +92,13 @@ public class RaceGame extends AbstractGame {
         sendTop5(player,String.valueOf(top5));
     }
 
+    /*
     public void setSave(boolean allowed){
         save_allowed = allowed;
     }
+     */
 
-    public void setInvisbile(boolean allowed){ invisibile_allowed = allowed;}
+    //public void setInvisbile(boolean allowed){ invisibile_allowed = allowed;}
 
     @Override
     public void playerMove(PlayerMoveEvent event) {
@@ -126,7 +128,7 @@ public class RaceGame extends AbstractGame {
                                 ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
                     }
                 }
-                if(invisibile_allowed) {
+                if(getInvisible()) {
                     event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
                     if(helmet_save.containsKey(event.getPlayer().getUniqueId())){
                         event.getPlayer().getInventory().setHelmet(helmet_save.get(event.getPlayer().getUniqueId()));
@@ -220,7 +222,7 @@ public class RaceGame extends AbstractGame {
     @Override
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
-        if(invisibile_allowed) {
+        if(getInvisible()) {
             if (player.isOnline()) {
                 Player player_on = (Player) player;
                 player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -267,7 +269,7 @@ public class RaceGame extends AbstractGame {
     public void steady() {
         steady = true;
         started = true;
-        if(invisibile_allowed) {
+        if(getInvisible()) {
             for (Player player : getOnlinePlayers()) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
                 ItemStack helmet = player.getInventory().getHelmet();
@@ -339,7 +341,7 @@ public class RaceGame extends AbstractGame {
     }
 
     public void tp_Save(Player player) {
-        if (save_allowed) {
+        if (getTPSave()) {
             if (save.contains(player)) {
                 if (tp_save.containsKey(player.getUniqueId())) {
                     forceTeleport(player, tp_save.get(player.getUniqueId()));

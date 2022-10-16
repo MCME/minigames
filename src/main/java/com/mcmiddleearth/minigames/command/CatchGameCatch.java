@@ -19,6 +19,7 @@ public class CatchGameCatch extends AbstractGameCommand{
 
     @Override
     protected void execute(CommandSender cs,String... args){
+        /*
         AbstractGame game = getGame((Player)cs);
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.CATCH)){
             if(game.countOnlinePlayer()<1){
@@ -31,6 +32,7 @@ public class CatchGameCatch extends AbstractGameCommand{
                 catchgame.catching(radius,time,countdown);
             }
         }
+         */
     }
 
     private void sendNotEnoughPlayerErrorMessage(CommandSender cs) {

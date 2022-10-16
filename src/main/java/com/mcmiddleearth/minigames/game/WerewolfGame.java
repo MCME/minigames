@@ -40,7 +40,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private boolean throwable = true;
+    //private boolean throwable = true;
 
     private  List<OfflinePlayer> eliminated = new ArrayList<>();
     private  List<OfflinePlayer> alive = new ArrayList<>();
@@ -481,10 +481,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     @Override
-    public void checkThrow(PlayerInteractEvent event){
+    public void itemInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Material material = event.getMaterial();
-        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !throwable){
+        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !getThrowable()){
             player.getInventory().remove(material);
             sendYouCantDoThisMessage(player);
             event.setCancelled(true);
@@ -506,9 +506,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         return false;
     }
 
-    public void switchThrowable(boolean bool){
-        this.throwable = bool;
-    }
+
 
     @Override
     public void addPlayer(Player player){

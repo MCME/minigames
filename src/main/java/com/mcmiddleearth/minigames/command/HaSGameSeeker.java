@@ -6,9 +6,7 @@
 package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.data.PluginData;
-import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.game.GameType;
-import com.mcmiddleearth.minigames.game.HideAndSeekGame;
+import com.mcmiddleearth.minigames.game.*;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -22,7 +20,6 @@ public class HaSGameSeeker extends AbstractGameCommand{
     
     public HaSGameSeeker(String... permissionNodes) {
         super(1, true, permissionNodes);
-        cmdGroup = CmdGroup.HIDE_AND_SEEK;
         setShortDescription(": Appoints the seeker for the next round.");
         setUsageDescription(" <player>: Appoints <player> to be next seeker. Without using this command seeker will be randomly chosen from all players.");
     }
@@ -30,8 +27,7 @@ public class HaSGameSeeker extends AbstractGameCommand{
     @Override
     protected void execute(CommandSender cs, String... args) {
         AbstractGame game = getGame((Player) cs);
-        if(game != null && isManager((Player) cs, game) 
-                        && isCorrectGameType((Player) cs, game, GameType.HIDE_AND_SEEK)) {
+        if(game != null && isManager((Player) cs, game) && isCorrectGameType((Player)cs,game,GameType.HIDE_AND_SEEK)) {
             OfflinePlayer seeker = game.getPlayer(args[0]);
             if(seeker==null) {
                 sendPlayerNotFoundErrorMessage(cs);
