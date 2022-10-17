@@ -85,6 +85,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(false);
+        setGlow(false);
         sendReminder(manager);
         world = manager.getWorld();
         geoArea = new GeoGuessrAreas(area);

@@ -89,6 +89,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(true);
+        setGlow(false);
         seeker.clear();
         announceGame();
 
@@ -136,8 +137,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
         meta_boots.setColor(Color.WHITE);
         boots.setItemMeta(meta_boots);
 
-        for(Player player: hiddenPlayers) {
-            if (player != null) {
+        for(Player player: getOnlinePlayers()) {
+            if (!seeker.contains(player)) {
                 hidePlayer(player);
 
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3));
