@@ -83,6 +83,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         setFlightAllowed(true);
         setGm2Forced(false);
         setCollision(true);
+        setGlow(false);
         announceGame();
 
         this.roles = new WerewolfRoles();

@@ -69,6 +69,7 @@ public class RaceGame extends AbstractGame {
         setTeleportAllowed(false);
         setGm2Forced(true);
         setCollision(false);
+        setGlow(false);
         ((RaceGameScoreboard)getBoard()).init(this);
     }
 
