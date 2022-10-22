@@ -57,7 +57,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private final Material jumpItem = Material.FEATHER;
+    private final Material jumpItem = Material.FIRE_CHARGE;
 
     private final List<OfflinePlayer> seeker = new ArrayList<>();
     private final List<Player> hiddenPlayers = new ArrayList<>();
@@ -154,7 +154,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
             }
         }
         for(OfflinePlayer player: seeker){
-            player.getPlayer().getInventory().setItem(2,new ItemStack(Material.FEATHER));
+            player.getPlayer().getInventory().setItem(2,new ItemStack(jumpItem));
         }
 
         ((ManhuntGameScoreboard)this.getBoard()).startHiding(hideTime,bar);
@@ -493,7 +493,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
     private void setCooldown(Player player){
         BukkitRunnable jumpCooldownTask;
         setJumpCooldown(player,false);
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED+"Test"));
+        //player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED+"Test"));
         jumpCooldownTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -583,7 +583,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
         GameChatUtil.sendAllInfoMessage(player, this, "The hunters left.");
     }
 
-    private void sendPlayerFoundMessage(Player hidden,Player hunter) {
+    private void sendPlayerFoundMessage(Player hunter,Player hidden) {
         PluginData.getMessageUtil().sendInfoMessage(hidden, "You were found.");
         hidden.playEffect(hidden.getLocation(),Effect.BLAZE_SHOOT,0);
         for(OfflinePlayer OP:seeker){
