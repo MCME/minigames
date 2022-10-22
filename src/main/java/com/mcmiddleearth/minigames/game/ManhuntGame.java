@@ -513,7 +513,7 @@ public class ManhuntGame extends AbstractGame implements Listener {
     @Override
     public String getGameChatTag(Player player) {
         if(seeker.contains(player)) {
-            return ChatColor.GOLD + "<Seeker ";
+            return ChatColor.GOLD + "<Hunter ";
         }
         else {
             return super.getGameChatTag(player);

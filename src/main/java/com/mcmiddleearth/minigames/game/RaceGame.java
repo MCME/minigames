@@ -485,6 +485,8 @@ public class RaceGame extends AbstractGame {
     
     @Override
     public String getGameChatTag(Player player) {
+        if(player.getUniqueId().equals(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")))
+            return ChatColor.DARK_RED + "<Game Master ";
         if(PluginData.isManager(player)) {
             return ChatColor.DARK_AQUA + "<Manager "; 
         }

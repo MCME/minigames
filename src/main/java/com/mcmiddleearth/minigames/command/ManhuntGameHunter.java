@@ -43,6 +43,6 @@ public class ManhuntGameHunter extends AbstractGameCommand{
     }
 
     private void sendHUnterSetMessage(CommandSender cs, OfflinePlayer seeker) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, seeker.getName() +" will be a next seeker.");
+        PluginData.getMessageUtil().sendInfoMessage(cs, seeker.getName() +" will be one of the next hunter.");
     }
 }
