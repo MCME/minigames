@@ -63,6 +63,7 @@ public class QuizGame extends AbstractGame {
         setGm3Allowed(true);
         setCollision(true);
         setGlow(false);
+        setFlightAllowed(true);
 
         BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Quiz", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
