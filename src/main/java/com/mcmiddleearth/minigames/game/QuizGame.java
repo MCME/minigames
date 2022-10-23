@@ -63,6 +63,9 @@ public class QuizGame extends AbstractGame {
         setGm3Allowed(true);
         setCollision(true);
         setGlow(false);
+        setFlightAllowed(true);
+        setTeleportAllowed(true);
+        setWarpAllowed(true);
 
         BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Quiz", BarColor.WHITE, BarStyle.SOLID);
         bar.setProgress(1.0);
@@ -84,6 +87,8 @@ public class QuizGame extends AbstractGame {
    
     @Override
     public String getGameChatTag(Player player) {
+        if(player.getUniqueId().equals(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")))
+            return ChatColor.DARK_RED + "<Game Master ";
         if(PlayerUtil.isSame(getManager(), player)) {
             return ChatColor.DARK_AQUA + "<Host ";
         }

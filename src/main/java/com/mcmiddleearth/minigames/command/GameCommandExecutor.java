@@ -100,6 +100,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("switchables",new GameSwitchables(Permissions.MANAGER));
         addCommandHandler("teamblue", new PvPGameTeamBlue(Permissions.MANAGER));
         addCommandHandler("teamred", new PvPGameTeamRed(Permissions.MANAGER));
+        addCommandHandler("timer",new GameTimer(Permissions.MANAGER));
         addCommandHandler("tpcp",new RaceGameTPCheckpoint(Permissions.USER));
         addCommandHandler("tphere",new HaSGameTPHere(Permissions.MANAGER));
         addCommandHandler("tpstart", new RaceGameStartTP(Permissions.MANAGER));
