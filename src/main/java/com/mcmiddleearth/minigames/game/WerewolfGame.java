@@ -526,8 +526,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     @Override
     public void playerMove(PlayerMoveEvent event){
-        super.playerMove(event);
-        event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
+        //super.playerMove(event);
+        //event.getPlayer().-
+        //event.getPlayer().stopSound(Sound.STE);
+        //event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
     }
 
     @Override

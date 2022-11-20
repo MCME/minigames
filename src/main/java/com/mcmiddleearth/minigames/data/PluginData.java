@@ -309,7 +309,7 @@ public class PluginData {
         timerTask = new BukkitRunnable(){
             @Override
             public void run(){
-                if(startTimer==0) return;
+                if(startTimer==0) timerTask.cancel();
                 if(startTimer == 60 || startTimer == 30 || startTimer == 10) {
                     if (player != null && connectPlugin != null && connectPlugin.isEnabled()) {
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
