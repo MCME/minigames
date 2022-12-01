@@ -93,7 +93,8 @@ public class ManhuntGame extends AbstractGame implements Listener {
         seeker.clear();
         announceGame();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.GREEN+"Manhunt", BarColor.WHITE, BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.GREEN+"Manhunt");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;

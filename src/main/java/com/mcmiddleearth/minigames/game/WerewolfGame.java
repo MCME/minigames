@@ -89,7 +89,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
         this.roles = new WerewolfRoles();
         configSetup();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Werewolf", BarColor.WHITE, BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"Werewolf");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;

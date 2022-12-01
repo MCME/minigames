@@ -16,6 +16,9 @@ import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
@@ -52,6 +55,8 @@ public abstract class AbstractGame {
     private String switchInvName = "Switchables";
 
     private final GameType type;
+
+    private final BossBar bar;
     
     private final List<UUID> players = new ArrayList<>();
     private final List<UUID> bannedPlayers = new ArrayList<>();
@@ -97,6 +102,7 @@ public abstract class AbstractGame {
         this.board = board;
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
+        this.bar = Bukkit.createBossBar(ChatColor.WHITE+"Game", BarColor.WHITE, BarStyle.SOLID);
         team.setCanSeeFriendlyInvisibles(true);
         if(manager!=null) {
             if(type != GameType.GEO_GUESSR) {
@@ -672,4 +678,6 @@ public abstract class AbstractGame {
     public GameScoreboard getBoard() {
         return board;
     }
+
+    public BossBar getBossBar(){return bar;}
 }
