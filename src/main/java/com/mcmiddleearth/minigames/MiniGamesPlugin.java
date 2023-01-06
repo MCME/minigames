@@ -5,9 +5,11 @@
  */
 package com.mcmiddleearth.minigames;
 
+import com.mcmiddleearth.minigames.bungee.Channel;
 import com.mcmiddleearth.minigames.command.GCCommandExecutor;
 import com.mcmiddleearth.minigames.command.GameCommandExecutor;
 import com.mcmiddleearth.minigames.data.PluginData;
+import com.mcmiddleearth.minigames.listener.MinigamesPluginListenerPaper;
 import com.mcmiddleearth.minigames.listener.PlayerListener;
 import com.mcmiddleearth.minigames.tabCompleter.TabComplete;
 import com.mcmiddleearth.pluginutil.EntityUtil;
@@ -29,6 +31,7 @@ public class MiniGamesPlugin extends JavaPlugin{
         PluginData.cleanup();
         PluginData.load();
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, Channel.MAIN,new MinigamesPluginListenerPaper());
         getCommand("game").setExecutor(new GameCommandExecutor());
         getCommand("game").setTabCompleter(new TabComplete());
         getCommand("gc").setExecutor(new GCCommandExecutor());
