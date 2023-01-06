@@ -77,8 +77,6 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     //TODO:
     // /game reset
-    // /game pardon without player
-    // timer for quizes
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
         this.manager = manager;

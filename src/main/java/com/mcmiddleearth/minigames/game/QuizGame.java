@@ -49,6 +49,8 @@ public class QuizGame extends AbstractGame {
     
     private boolean randomQuestions = true;
     private boolean randomChoices = true;
+
+    private boolean started = false;
     
     private int nextQuestion = 0;
 
@@ -181,6 +183,7 @@ public class QuizGame extends AbstractGame {
     
     public void sendQuestion() {
         if(hasNextQuestion()) {
+            started = true;
             AbstractQuestion question = getNextQuestion();
             nextQuestion++;
             question.setAnswered(true);
@@ -677,6 +680,8 @@ public class QuizGame extends AbstractGame {
             return false;
         }
     }
+
+    public boolean isStarted(){return started;}
     
     private boolean checkWantedCategories(String wantedQuizCategories,
                                      String questionCategories,
