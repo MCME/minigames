@@ -50,7 +50,7 @@ public class GameCommandExecutor implements CommandExecutor {
         addCommandHandler("info", new GameInfo(Permissions.USER));
         addCommandHandler("invite", new GameInvite(Permissions.MANAGER));
         addCommandHandler("join", new GameJoin(Permissions.USER));
-        addCommandHandler("jump",new GameJump(Permissions.USER));
+        //addCommandHandler("jump",new GameJump(Permissions.USER));
         addCommandHandler("kick", new GameKick(Permissions.MANAGER));
         addCommandHandler("leaderboard",new GameLeaderboard(Permissions.USER));
         addCommandHandler("leave", new GameLeave(Permissions.USER));

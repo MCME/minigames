@@ -1,3 +1,4 @@
+/*
 package com.mcmiddleearth.minigames.MicroGame;
 
 import com.mcmiddleearth.minigames.game.GameType;
@@ -10,3 +11,4 @@ public abstract class AbstractMicroGame {
 
     }
 }
+ */

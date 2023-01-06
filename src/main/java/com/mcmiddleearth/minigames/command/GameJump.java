@@ -1,3 +1,4 @@
+/*
 package com.mcmiddleearth.minigames.command;
 
 import com.mcmiddleearth.minigames.MicroGame.AbstractMicroGame;
@@ -7,10 +8,6 @@ import com.mcmiddleearth.minigames.MicroGame.JumpGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- *
- * @author Jubo
- */
 public class GameJump extends AbstractGameCommand{
 
     public GameJump(String... permissionNodes){
@@ -27,3 +24,4 @@ public class GameJump extends AbstractGameCommand{
         PluginData.setGameChat((Player)cs,true);
     }
 }
+ */

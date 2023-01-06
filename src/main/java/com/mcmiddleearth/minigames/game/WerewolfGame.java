@@ -74,6 +74,11 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private final Material playerCountButton = Material.PLAYER_HEAD;
     private final Material playerCountZeroButton = Material.SKELETON_SKULL;
 
+
+    //TODO:
+    // /game reset
+    // /game pardon without player
+    // timer for quizes
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
         this.manager = manager;

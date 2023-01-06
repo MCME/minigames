@@ -1,3 +1,4 @@
+/*
 package com.mcmiddleearth.minigames.MicroGame;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
@@ -8,15 +9,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-/**
- *
- * @author Jubo
- */
 public class JumpGame extends AbstractMicroGame implements Listener{
 
     //IDEAS:
     // speedrun option
     // blöcke verschwinden nach bestimmter zeit
+    // switch instead of else if for allow/deny
 
     public JumpGame(Player manager){
         super(manager, GameType.JUMP);
@@ -37,3 +35,4 @@ public class JumpGame extends AbstractMicroGame implements Listener{
     }
 
 }
+*/
