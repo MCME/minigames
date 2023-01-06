@@ -1,0 +1,4 @@
+name: MiniGames
+version: '${project.version}'
+main: com.mcmiddleearth.minigames.MiniGames
+description: old Plugin with Bungee
