@@ -127,12 +127,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         sendPlayerRevived(manager,player);
     }
 
-    public void pardon(Player player){
+    public void pardon(){
         ((WerewolfGameScoreboard)getBoard()).reset();
         voted.clear();
         upForVote = false;
+        sendPlayerPardoned(votee);
         votee = null;
-        sendPlayerPardoned(player);
     }
 
     public void putUpVote(Player player){
