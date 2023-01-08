@@ -1,17 +1,9 @@
 name: MiniGames
 version: '${project.version}'
-main: com.mcmiddleearth.minigames.MiniGamesPlugin
+main: com.mcmiddleearth.minigames.spigot.MiniGamesSpigot
 description: old Plugin with Bungee
 author: Jubo, Eriol_Eandur
 api-version: 1.18
-
-commands:
-  game:
-    description: manage MiniGames plugin
-    usage: TBA
-  gc:
-    description: MiniGames chat message
-    usage: /gc <message> Sends a message to all participants of the MiniGame
 
 permissions:
   minigames.*:
