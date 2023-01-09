@@ -1,7 +1,7 @@
 package com.mcmiddleearth.minigames.command.argument;
 
 import com.mcmiddleearth.command.argument.AbstractPlayerArgumentType;
-import com.mcmiddleearth.minigames.game.GameType;
+import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -12,20 +12,20 @@ import java.util.Collection;
 /**
  * @author Jubo
  */
-public class CommandGameTypeArgument extends AbstractPlayerArgumentType {
+public class CommandAllowDenyArgument extends AbstractPlayerArgumentType {
 
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
         String o = reader.readUnquotedString();
-        if(GameType.getGameType(o) != null){
+        if(AbstractGame.getConfig().keySet().contains(o)){
             return o;
         }
-        throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Failed parsing of CommandGameTypeArgument")),
-                new LiteralMessage(String.format("Not a valid gametype "+o)));
+        throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Failed parsing of CommandAllowDenyArgument")),
+                new LiteralMessage(String.format("Not valid: "+o)));
     }
 
     @Override
     protected Collection<String> getPlayerSuggestions() {
-        return GameType.toList();
+        return AbstractGame.getConfig().keySet();
     }
 }

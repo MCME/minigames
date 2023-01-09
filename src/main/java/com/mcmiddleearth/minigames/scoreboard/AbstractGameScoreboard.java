@@ -1,17 +1,10 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
 
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.score.Objective;
-import net.md_5.bungee.api.score.Score;
-import net.md_5.bungee.api.score.Scoreboard;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +13,11 @@ import java.util.List;
  *
  * @author Jubo
  */
-public abstract class GameScoreboard {
+public abstract class AbstractGameScoreboard {
 
     private final List<ProxiedPlayer> players = new ArrayList<>();
 
-    public GameScoreboard(){}
+    public AbstractGameScoreboard(){}
 
     protected void updateObjective(ScoreboardObjective objective){
         for(ProxiedPlayer player :players)

@@ -13,6 +13,7 @@ public class Style {
     public static final ChatColor STRESSED = ChatColor.GREEN;
     public static final ChatColor HIGHLIGHT = ChatColor.GOLD;
     public static final ChatColor HIGHLIGHT_STRESSED = ChatColor.YELLOW;
+    public static final ChatColor NOTYET = ChatColor.STRIKETHROUGH;
     public static final ChatColor BOLD = ChatColor.BOLD;
     public static final ChatColor CURSIVE = ChatColor.ITALIC;
     public static final ChatColor EMPHASIZE = ChatColor.UNDERLINE;

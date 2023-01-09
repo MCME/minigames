@@ -2,7 +2,7 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.quiz.question.*;
-import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
+import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.util.NumericUtil;
 import com.mcmiddleearth.minigames.util.StringUtil;
@@ -209,5 +209,4 @@ public class QuizGame extends AbstractGame{
         }
         return true;
     }
-
 }

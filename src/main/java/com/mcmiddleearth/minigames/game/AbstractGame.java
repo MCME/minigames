@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.game;
 
-import com.mcmiddleearth.minigames.scoreboard.GameScoreboard;
+import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ChatColor;
@@ -8,7 +8,9 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jubo
@@ -18,12 +20,29 @@ public abstract class AbstractGame {
     private ProxiedPlayer manager;
     private final String name;
     private final GameType type;
-    private final GameScoreboard board;
+    private final AbstractGameScoreboard board;
     private final List<ProxiedPlayer> players = new ArrayList<>();
 
     private boolean announced = false;
 
-    public AbstractGame(ProxiedPlayer manager, String name, GameType type, GameScoreboard board){
+    private static final Map<String,Boolean> toggleConfig = new HashMap<>();
+
+    static {
+        toggleConfig.put("flight",false);
+        toggleConfig.put("teleport",false);
+        toggleConfig.put("privat",false);
+        toggleConfig.put("warp",false);
+        toggleConfig.put("spectate",true);
+        toggleConfig.put("save",true);
+        toggleConfig.put("collision",true);
+        toggleConfig.put("invisible",true);
+        toggleConfig.put("signs",true);
+        toggleConfig.put("glow",false);
+        toggleConfig.put("throwable",true);
+        toggleConfig.put("points",true);
+    }
+
+    public AbstractGame(ProxiedPlayer manager, String name, GameType type, AbstractGameScoreboard board){
         this.manager = manager;
         this.name = name;
         this.type = type;
@@ -86,7 +105,8 @@ public abstract class AbstractGame {
             PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
     }
 
-    public GameScoreboard getBoard(){return board;}
+    public static Map<String,Boolean> getConfig(){return toggleConfig;}
+    public AbstractGameScoreboard getBoard(){return board;}
     public String getName(){return name;}
     public GameType getType(){return type;}
     public List<ProxiedPlayer> getPlayers(){return players;}
