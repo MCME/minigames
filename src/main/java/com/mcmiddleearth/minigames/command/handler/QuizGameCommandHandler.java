@@ -3,6 +3,7 @@ package com.mcmiddleearth.minigames.command.handler;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
+import com.mcmiddleearth.minigames.command.argument.CommandQuestionTypeArgument;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
@@ -12,6 +13,7 @@ import com.mcmiddleearth.minigames.util.Style;
 
 import java.io.FileNotFoundException;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
@@ -28,34 +30,101 @@ public class QuizGameCommandHandler {
     public HelpfulLiteralBuilder createCommandTree(HelpfulLiteralBuilder helpfulLiteralBuilder){
         helpfulLiteralBuilder
                 .then(HelpfulLiteralBuilder.literal("acceptquestions")
-                        .withHelpText("")
-                        .withTooltip("")
+                        .withHelpText("Saves questions to file.")
+                        .withTooltip("Saves all questions of the game to file <filename>. A <description> will be saved with the questions.")
                         .requires(sender -> PluginData.hasPermission(sender, Permission.STAFF))
                         .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
-                        .then(HelpfulRequiredArgumentBuilder.argument("description",greedyString())
-                        .executes(context -> doCommand(context.getSource(), "acceptquestions",context.getArgument("filename",String.class),context.getArgument("description",String.class))))))
+                                .then(HelpfulRequiredArgumentBuilder.argument("description",greedyString())
+                                        .executes(context -> doCommand(context.getSource(), "acceptquestions",context.getArgument("filename",String.class),context.getArgument("description",String.class))))))
                 .then(HelpfulLiteralBuilder.literal("clear")
                         .withHelpText("Removes all questions from a quiz game.")
                         .withTooltip("Removes all questions from a quiz game.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
                         .executes(context -> doCommand(context.getSource(),"clear",null)))
-                .then(HelpfulLiteralBuilder.literal("load")
+                .then(HelpfulLiteralBuilder.literal("loadquiz")
                         .withHelpText("Loads questions from a quiz data file.")
                         .withTooltip("Loads all questions from the file <filename>. The questions will be appended to the existing questions.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)&& !PluginData.isAlreadyAnnounced(sender))
                         .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
-                                .executes(context -> doCommand(context.getSource(),"load",context.getArgument("filename",String.class)))))
+                                .executes(context -> doCommand(context.getSource(),"loadquiz",context.getArgument("filename",String.class)))))
                 .then(HelpfulLiteralBuilder.literal("loadquestions")
                         .withHelpText("Loads questions from the question table.")
                         .withTooltip("Gives you 15 questions of your wanted category.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender, type) && PluginData.isManager(sender) && !PluginData.isAlreadyAnnounced(sender))
                         .then(HelpfulRequiredArgumentBuilder.argument("category",word())
                                 .executes(context -> doCommand(context.getSource(),"loadquestions",context.getArgument("category",String.class)))))
+                .then(HelpfulLiteralBuilder.literal("question")
+                        .withHelpText("Manipulates questions of a quiz game.")
+                        .withTooltip("Arguments <questionType> may be 'single', 'multi', 'free' or 'number' and will initiate a conversation to create a new question, which will be added to the quiz. " +
+                                "Argument <manage> may be 'remove', 'list', 'edit', 'submit', 'review' ,'accept', 'clear' or 'load'. See manual for full description.")
+                        .then(HelpfulLiteralBuilder.literal("accept")
+                                .requires(sender -> PluginData.hasPermission(sender, Permission.STAFF))
+                                .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
+                                        .then(HelpfulRequiredArgumentBuilder.argument("description",greedyString())
+                                                .executes(context -> doCommand(context.getSource(), "acceptquestions",context.getArgument("filename",String.class),context.getArgument("description",String.class))))))
+                        .then(HelpfulLiteralBuilder.literal("clear")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                                .executes(context -> doCommand(context.getSource(),"clear",null)))
+                        .then(HelpfulLiteralBuilder.literal("load")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)&& !PluginData.isAlreadyAnnounced(sender))
+                                .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
+                                        .executes(context -> doCommand(context.getSource(),"load",context.getArgument("filename",String.class)))))
+                        .then(HelpfulLiteralBuilder.literal("review")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.STAFF) && !PluginData.isManager(sender))
+                                .executes(context -> doCommand(context.getSource(), "reviewquestions",null))
+                                .then(HelpfulRequiredArgumentBuilder.argument("check",word())
+                                    .executes(context -> doCommand(context.getSource(), "reviewquestions",context.getArgument("check",String.class)))))
+                        .then(HelpfulLiteralBuilder.literal("submit")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.USER))
+                                .then(HelpfulRequiredArgumentBuilder.argument("questiontype",new CommandQuestionTypeArgument())
+                                        .executes(context -> doCommand(context.getSource(), "submitquestion",context.getArgument("questiontype",String.class))))))
+                .then(HelpfulLiteralBuilder.literal("random")
+                        .withHelpText("Defines the order of questions.")
+                        .withTooltip("'off' will set all questions and choices to be shown in saved order. 'questions' will show questions in random order. 'choices' will show possible" +
+                                " answers for a question in random order. 'all' or just no argument will show questions and choices in random order")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.USER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                        .then(HelpfulRequiredArgumentBuilder.argument("off|questions|choices|all",word())
+                                .executes(context -> doCommand(context.getSource(), "random",context.getArgument("off|questions|choices|all",String.class)))))
+                .then(HelpfulLiteralBuilder.literal("reviewquestions")
+                        .withHelpText("Creates a quiz game with submitted questions.")
+                        .withTooltip("Creates a lore quiz game with all submitted question which have not been reviewed before. The quiz is save in a quiz file with filename <rYYYY_MM_DD> you can then " +
+                                "edit or remove questions and accept (save) them for the MCME lore question table.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.STAFF) && !PluginData.isManager(sender))
+                        .executes(context -> doCommand(context.getSource(), "reviewquestions",null))
+                        .then(HelpfulRequiredArgumentBuilder.argument("check",word())
+                                .executes(context -> doCommand(context.getSource(), "reviewquestions",context.getArgument("check",String.class)))))
+                .then(HelpfulLiteralBuilder.literal("savequiz")
+                        .withHelpText("Saves questions to file.")
+                        .withTooltip("Saves all questions of the game to file <filename>. A <description> will be saved with the questions.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                        .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
+                                .then(HelpfulRequiredArgumentBuilder.argument("description",greedyString())
+                                        .executes(context -> doCommand(context.getSource(), "savequiz",context.getArgument("filename",String.class),context.getArgument("description",String.class))))))
+                .then(HelpfulLiteralBuilder.literal("send")
+                        .withHelpText("Sends the next question.")
+                        .withTooltip("Sends the next question to all participating players and the game manager. Without a given [answerTime] players will have 30 sec to answer. A specified [answerTime] will be use " +
+                                "for all later questions too.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                        .executes(context -> doCommand(context.getSource(), "send",null))
+                        .then(HelpfulRequiredArgumentBuilder.argument("answerTime",integer())
+                                .executes(context -> doCommand(context.getSource(), "send", String.valueOf(context.getArgument("answerTime",Integer.class))))))
                 .then(HelpfulLiteralBuilder.literal("showcategories")
                         .withHelpText("Shows all available question categories.")
                         .withTooltip("Shows all available question categories.")
                         .requires(sender -> PluginData.hasPermission(sender, Permission.USER))
-                        .executes(context -> doCommand(context.getSource(), "showcategories",null)));
+                        .executes(context -> doCommand(context.getSource(), "showcategories",null)))
+                .then(HelpfulLiteralBuilder.literal("stat")
+                        .withHelpText("Shows players in question conversation.")
+                        .withTooltip("Shows all players who are still in the conversation to answer a question. They may have made an invalid input and aren't aware that they are still in the conversation.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                        .executes(context -> doCommand(context.getSource(), "stat",null)))
+                .then(HelpfulLiteralBuilder.literal("submitquestion")
+                        .withHelpText("Submits a quiz question.")
+                        .withTooltip("single|multi|free|number: Initiates a conversation to create a new question of the specified type. Without a type a single choice question is created.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.USER))
+                        .then(HelpfulRequiredArgumentBuilder.argument("questiontype",new CommandQuestionTypeArgument())
+                                .executes(context -> doCommand(context.getSource(), "submitquestion",context.getArgument("questiontype",String.class)))));
+
 
         return helpfulLiteralBuilder;
     }
@@ -63,8 +132,14 @@ public class QuizGameCommandHandler {
     private int doCommand(McmeCommandSender sender, String command, String... args){
         QuizGame quizgame;
         switch (command){
-            case "showcategories":
-                QuizShowCategories.execute(sender);
+            case "acceptquestions":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "clear":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "loadquiz":
+                sendNotImplementedYetMessage(sender);
                 break;
             case "loadquestions":
                 quizgame = (QuizGame) PluginData.getGame(sender);
@@ -74,6 +149,27 @@ public class QuizGameCommandHandler {
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+                break;
+            case "random":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "reviewquestions":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "savequiz":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "send":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "showcategories":
+                QuizShowCategories.execute(sender);
+                break;
+            case "stat":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "submitquestion":
+                sendNotImplementedYetMessage(sender);
                 break;
             default:
                 sendNothereMessage(sender);
