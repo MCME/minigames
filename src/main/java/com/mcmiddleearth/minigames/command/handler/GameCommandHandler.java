@@ -135,8 +135,7 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 .then(HelpfulLiteralBuilder.literal("ready")
                         .withHelpText("Announces a game.")
                         .withTooltip("Announces a game which is sending a message to all online players.")
-                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isManager(sender) && !PluginData.isAlreadyAnnounced(sender)
-                                && (PluginData.isCorrectGameType(sender, GameType.RACE) || PluginData.isCorrectGameType(sender,GameType.GEO_GUESSR)))
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isManager(sender) && !PluginData.isAlreadyAnnounced(sender))
                         .executes(context -> doCommand(context.getSource(), "ready",null)))
                 .then(HelpfulLiteralBuilder.literal("restart")
                         .withHelpText("Restarts a game.")
@@ -266,7 +265,12 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "ready":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(sender);
+                if(game instanceof QuizGame){
+                    QuizGame quizGame = (QuizGame) game;
+                    quizGame.announceGame();
+                    quizGame.addPlayer((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender());
+                }
                 break;
             case "restart":
                 sendNotImplementedYetMessage(sender);

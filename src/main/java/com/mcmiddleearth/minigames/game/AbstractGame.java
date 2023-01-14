@@ -51,7 +51,7 @@ public abstract class AbstractGame {
 
     public void addPlayer(ProxiedPlayer player){
         players.add(player);
-        notifyGame("Everybody welcome"+player.getName()+"to the game!");
+        notifyGame("Everybody welcome "+player.getName()+" to the game!");
         PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
     }
 
@@ -99,7 +99,7 @@ public abstract class AbstractGame {
     public void announceGame(){
         announced = true;
         String message = Style.INFO+PluginData.getMessageUtil().getPREFIX()+Style.STRESSED+manager.getName()+Style.INFO+
-                "started a new game "+Style.STRESSED+type.toString()+Style.INFO+" game. To play that game, type in chat: "+
+                " started a new game "+Style.STRESSED+type.toString()+Style.INFO+" game. To play that game, type in chat: "+
                 Style.STRESSED+"/game join "+name+Style.INFO+" or "+Style.HIGHLIGHT+"Click here";
         for(ProxiedPlayer player: ProxyServer.getInstance().getPlayers())
             PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);

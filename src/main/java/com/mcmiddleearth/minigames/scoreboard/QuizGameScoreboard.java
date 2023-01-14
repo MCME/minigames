@@ -86,16 +86,20 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
                 answerTime.setValue(answerTime.getValue()-1);
                 updateScore(answerTime);
                 if(answerTime.getValue()<1){
-                    updateQuiz();
-                    quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-                    updateObjective(quizObjective);
-                    for(ScoreboardScore score: scores.values())
-                        updateScore(score);
-                    updateDisplay(quizDisplay);
-                    timerTask.cancel();
+                    cancelTimerTask();
                 }
             }
         },0,1,TimeUnit.SECONDS);
+    }
+
+    private void cancelTimerTask(){
+        updateQuiz();
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        updateObjective(quizObjective);
+        for(ScoreboardScore score: scores.values())
+            updateScore(score);
+        updateDisplay(quizDisplay);
+        timerTask.cancel();
     }
 
     public void addPlayer(ProxiedPlayer player){
@@ -134,6 +138,33 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
     public void addQuestion(){
         questionCount++;
         timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+    }
+
+    public void removeQuestion(){
+        questionCount--;
+        timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+    }
+
+    public void restart(){
+        currentQuestion = 0;
+        updateQuiz();
+        updateObjective(quizObjective);
+        for(ScoreboardScore score: scores.values())
+            updateScore(score);
+        updateDisplay(quizDisplay);
+    }
+
+    public void clearQuestions(){
+        questionCount = 0;
+        restart();
+    }
+
+    public void stopQuestion(){
+        cancelTimerTask();
+    }
+
+    public int getScore(ProxiedPlayer player){
+        return scores.get(player).getValue();
     }
 
     public void playerFinished(){

@@ -1,29 +1,35 @@
 package com.mcmiddleearth.minigames.game;
 
+import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.quiz.question.*;
 import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.util.NumericUtil;
+import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.StringUtil;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.mcmiddleearth.minigames.quiz.question.QuestionType.getQuestionType;
 
 /**
- * @author Jubo
+ * @author Jubo, Eriol_Eandur
  */
 public class QuizGame extends AbstractGame{
 
+    private AbstractQuestion currentQuestion;
     private final List<AbstractQuestion> questions = new ArrayList<>();
 
     private boolean randomQuestions = true;
@@ -33,7 +39,11 @@ public class QuizGame extends AbstractGame{
 
     private int answerTime = 30;
 
+    private HashMap<ProxiedPlayer,Boolean> inConversation = new HashMap<>();
 
+    private ScheduledTask timerTask;
+
+    private boolean allAnswered = false;
 
     public QuizGame(ProxiedPlayer manager, String name) {
         super(manager, name,GameType.LORE_QUIZ,new QuizGameScoreboard());
@@ -42,6 +52,7 @@ public class QuizGame extends AbstractGame{
     @Override
     public void addPlayer(ProxiedPlayer player){
         super.addPlayer(player);
+        inConversation.put(player,false);
         ((QuizGameScoreboard) getBoard()).addPlayer(player);
     }
 
@@ -51,6 +62,190 @@ public class QuizGame extends AbstractGame{
             return ChatColor.DARK_AQUA + "<Host ";
         else
             return super.getGameChatTag(player);
+    }
+
+    public void setAllAnswered(){
+        allAnswered = true;
+        ((QuizGameScoreboard)getBoard()).stopQuestion();
+        cancelTimerTask();
+    }
+
+    public boolean isInConversation(ProxiedPlayer player){
+        return inConversation.get(player);
+    }
+
+    public void setRandom(boolean question, boolean choice) {
+        if(this.randomQuestions && !question) {
+            nextQuestion = 0;
+        }
+        this.randomQuestions = question;
+        this.randomChoices = choice;
+    }
+
+    public void removeQuestion(int index) {
+        questions.remove(index);
+        ((QuizGameScoreboard)getBoard()).removeQuestion();
+    }
+
+    public void resetQuestions() {
+        nextQuestion = 0;
+        for(AbstractQuestion search: questions) {
+            search.setAnswered(false);
+        }
+        ((QuizGameScoreboard)getBoard()).restart();
+    }
+
+    public boolean hasNextQuestion() {
+        for(AbstractQuestion search: questions) {
+            if(!search.isAnswered()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public AbstractQuestion getNextQuestion() {
+        if(hasNextQuestion()) {
+            if(randomQuestions) {
+                int questionsLeft = 0;
+                for(AbstractQuestion search: questions) {
+                    if(!search.isAnswered()){
+                        questionsLeft++;
+                    }
+                }
+                int rand = (int) Math.round(Math.floor(questionsLeft*Math.random()));
+                nextQuestion = 0;
+                while(questions.get(nextQuestion).isAnswered()) {
+                    nextQuestion++;
+                }
+                for(int i=0; i<rand; i++) {
+                    nextQuestion++;
+                    while(questions.get(nextQuestion).isAnswered()) {
+                        nextQuestion++;
+                    }
+                }
+            }
+            return questions.get(nextQuestion);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public void setAnswerTime(int answerTime) {
+        if(answerTime > 0) {
+            this.answerTime = answerTime;
+        }
+    }
+
+    public void sendQuestion() {
+        if(hasNextQuestion()) {
+            allAnswered = false;
+            AbstractQuestion question = getNextQuestion();
+            nextQuestion++;
+            question.setAnswered(true);
+            currentQuestion = question;
+            ((QuizGameScoreboard)getBoard()).startQuestion(answerTime, getPlayers().size());
+            /*
+            AskQuestionConversationFactory askQuestionFactory
+                    = new AskQuestionConversationFactory(MiniGamesPlugin.getPluginInstance(),answerTime);
+
+             */
+            for (ProxiedPlayer player : getPlayers()) {
+                inConversation.replace(player,true);
+                String questionText = question.getQuestion();
+                String[] questionAnswer = null;
+                if(question instanceof ChoiceQuestion){
+                    if(randomChoices)
+                        questionAnswer = ((ChoiceQuestion) question).getInRandomOrder();
+                    else
+                        questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
+                }
+                player.sendMessage(new ComponentBuilder(questionText).create());
+                if(questionAnswer != null)
+                    for(String answer: questionAnswer){
+                        player.sendMessage(new ComponentBuilder(answer).create());
+                    }
+                /*
+                if(player.isConversing()) {
+                    PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
+                } else {
+                    player.playEffect(player.getLocation(), Effect.CLICK1,0);
+                    Conversation newConvo = askQuestionFactory.start(player, this, question);
+                    playersInQuestion.put(player,newConvo);
+                }
+
+                 */
+            }
+            timerTask = ProxyServer.getInstance().getScheduler().schedule(MiniGamesPlugin.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    answerTime--;
+                    if(answerTime < 1){
+                        for(ProxiedPlayer player:inConversation.keySet()){
+                            if(inConversation.get(player)){
+                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: " +currentQuestion.getCorrectAnswer());
+                            }
+                        }
+                    }
+                }
+            },0,1, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelTimerTask(){
+        for(ProxiedPlayer player: inConversation.keySet()) {
+            inConversation.replace(player, false);
+        }
+        timerTask.cancel();
+    }
+
+    public void stopQuestion() {
+        ((QuizGameScoreboard)getBoard()).stopQuestion();
+        if(!hasNextQuestion()) {
+            if(!announceWinner(false)) {
+                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
+            }
+        }
+    }
+
+    public boolean announceWinner(boolean allowEqual) {
+        int maxScore = 0;
+        List<ProxiedPlayer> winner = new ArrayList<>();
+        boolean equalMaxScore = true;
+        for(ProxiedPlayer player: getPlayers()) {
+            int score = ((QuizGameScoreboard)getBoard()).getScore(player);
+            if(score>maxScore) {
+                maxScore = score;
+                winner.clear();
+                winner.add(player);
+                equalMaxScore = false;
+            }
+            else if(score == maxScore) {
+                equalMaxScore = true;
+                winner.add(player);
+            }
+        }
+        if(winner.size()>0 && (allowEqual || winner.size()==1)) {
+            for(ProxiedPlayer player: winner) {
+                //getWinHighscore().setQuizWin(player.getUniqueId());
+                PluginData.getMessageUtil().sendInfoMessage(player,ChatColor.GOLD+"Congrats, You won the quiz game.");
+                String winnerNames = winner.get(0).getName();
+                for(int i=1;i<winner.size()-1;i++) {
+                    winnerNames = winnerNames + ", "+winner.get(i).getName();
+                }
+                if(winner.size()>1) {
+                    winnerNames = winnerNames + " and "+winner.get(winner.size()-1).getName();
+                }
+                notifyGame("Game Over,"+winnerNames+" won the quiz.");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void incrementScore(ProxiedPlayer player) {
+        ((QuizGameScoreboard)getBoard()).score(player);
     }
 
     public int[] loadQuestionsFromDataFile(File file, String quizCategories,
@@ -108,6 +303,260 @@ public class QuizGame extends AbstractGame{
             }
         }
         ((QuizGameScoreboard)getBoard()).addQuestion();
+    }
+
+    /*
+
+    public void saveQuestionsToJson(File file, String description) throws IOException {
+        saveQuestionsToJson(file, description, questions);
+    }
+
+     */
+
+    /*
+    public static void saveQuestionsToJson(File file, String description, List<AbstractQuestion> questions)
+            throws IOException {
+        JSONArray jQuestionArray = new JSONArray();
+        for (AbstractQuestion question : questions) {
+            JSONObject jQuestion = new JSONObject();
+            jQuestion.put("Question",question.getQuestion());
+            jQuestion.put("Type", question.getType().getName());
+            jQuestion.put("Categories", question.getCategories());
+            switch(question.getType()) {
+                case FREE:
+                    jQuestion.put("Answer", ((FreeQuestion)question).getAnswer());
+                    break;
+                case NUMBER:
+                    jQuestion.put("Answer", ((NumberQuestion)question).getAnswer());
+                    jQuestion.put("Precision", ((NumberQuestion)question).getPrecision());
+                    break;
+                case SINGLE:
+                case MULTI:
+                    JSONArray jChoices = new JSONArray();
+                    jChoices.addAll(Arrays.asList(((ChoiceQuestion)question).getAnswers()));
+                    jQuestion.put("Choices", jChoices);
+                    jQuestion.put("Correct", ((ChoiceQuestion)question).getCorrectAnswer());
+            }
+            jQuestionArray.add(jQuestion);
+        }
+        JSONObject jFile = new JSONObject();
+        jFile.put("questions", jQuestionArray);
+        jFile.put("description", description);
+        try(OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8)) {
+            jFile.writeJSONString(fw);
+        }
+    }
+
+     */
+
+    /*
+    public void loadQuestionsFromJson(File file) throws FileNotFoundException, ParseException{
+        List<AbstractQuestion> newQuestions = new ArrayList<>();
+        loadQuestionsFromJson(file, newQuestions);
+        for(AbstractQuestion question : newQuestions) {
+            addQuestion(question, -1);
+        }
+    }
+
+     */
+
+    /*
+    public static void loadQuestionsFromJson(File file, List<AbstractQuestion> questions)
+            throws FileNotFoundException, ParseException {
+        try {
+            String input;
+            try (Scanner reader = new Scanner(file, StandardCharsets.UTF_8.name())) {
+                input = "";
+                while(reader.hasNext()){
+                    input = input+reader.nextLine();
+                }
+            }
+            JSONObject jInput = (JSONObject) new JSONParser().parse(input);
+            JSONArray jQuestions = (JSONArray) jInput.get("questions");
+            for (Object questionObject : jQuestions) {
+                JSONObject jQuestion = (JSONObject) questionObject;
+                QuestionType type = QuestionType.getQuestionType((String) jQuestion.get("Type"));
+                AbstractQuestion newQuestion;
+                switch(type) {
+                    case FREE:
+                        newQuestion = new FreeQuestion((String) jQuestion.get("Question"),
+                                (String) jQuestion.get("Answer"),
+                                (String) jQuestion.get("Categories"));
+                        break;
+                    case NUMBER:
+                        newQuestion = new NumberQuestion((String) jQuestion.get("Question"),
+                                ((Long) jQuestion.get("Answer")).intValue(),
+                                ((Long) jQuestion.get("Precision")).intValue(),
+                                (String) jQuestion.get("Categories"));
+                        break;
+                    case MULTI:
+                        newQuestion = new ChoiceQuestion((String) jQuestion.get("Question"),
+                                readStringArray(jQuestion,"Choices"),
+                                (String) jQuestion.get("Correct"),
+                                (String) jQuestion.get("Categories"));
+                        break;
+                    case SINGLE:
+                        newQuestion = new SingleChoiceQuestion((String) jQuestion.get("Question"),
+                                readStringArray(jQuestion,"Choices"),
+                                (String) jQuestion.get("Correct"),
+                                (String) jQuestion.get("Categories"));
+                        break;
+                    default:
+                        throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
+                }
+                questions.add(newQuestion);
+            }
+        } catch (FileNotFoundException | ParseException ex) {
+            //MiniGamesPlugin.getPluginInstance().getLogger().log(Level.SEVERE, null, ex);
+            throw ex;
+        }
+    }
+
+     */
+
+    /*
+    private static String[] readStringArray(JSONObject jQuestion, String key) {
+        JSONArray jAnswers = (JSONArray) jQuestion.get(key);
+        List<String> answers= new ArrayList<>();
+        for(Object answerObject : jAnswers) {
+            answers.add((String) answerObject);
+        }
+        return answers.toArray(new String[0]);
+    }
+
+     */
+
+    private int getQuestionTypeNumber(QuestionType type) {
+        switch(type) {
+            case FREE: return 1;
+            case NUMBER: return 2;
+            case SINGLE: return 3;
+            case MULTI: return 4;
+            default: return 1;
+        }
+    }
+
+    private String questionToString(AbstractQuestion question) {
+        String line = question.getCategories()+";"+
+                +getQuestionTypeNumber(question.getType())+";"
+                +question.getQuestion()+";";
+        switch(question.getType()) {
+            case FREE:
+                line = line+question.getCorrectAnswer();
+                break;
+            case NUMBER:
+                line = line+question.getCorrectAnswer()+";"+((NumberQuestion)question).getPrecision();
+                break;
+            case SINGLE:
+            case MULTI:
+                for(String choice: ((ChoiceQuestion)question).getAnswers()) {
+                    line = line+choice+";";
+                }
+                line = line+((ChoiceQuestion)question).getCorrectAnswer();
+                break;
+        }
+        return line;
+    }
+
+    public void saveQuestionsToDataFile(File file) throws FileNotFoundException, IOException {
+        for(AbstractQuestion question: questions) {
+            if(question.getId()!=0) {
+                storeQuestionsToDataFile(file);
+                return;
+            }
+        }
+        addQuestionsToDataFile(file);
+    }
+
+    private void addQuestionsToDataFile(File file) throws FileNotFoundException, IOException {
+        try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
+             PrintWriter writer = new PrintWriter(fw)) {
+            for(AbstractQuestion question: questions) {
+                writer.println(questionToString(question));
+            }
+        }
+    }
+
+    private void storeQuestionsToDataFile(File file) throws FileNotFoundException, IOException {
+        List<AbstractQuestion> saveQuestions = new ArrayList<>();
+        saveQuestions.addAll(questions);
+        Comparator<AbstractQuestion> comp = new Comparator<AbstractQuestion>(){
+            @Override
+            public int compare(AbstractQuestion o1, AbstractQuestion o2) {
+                if(o1.getId()==0) return 1;
+                if(o2.getId()==0) return -1;
+                if(o1.getId()==o2.getId()) return 0;
+                return (o1.getId()<o2.getId()?-1:1);
+            }
+        };
+        Collections.sort(saveQuestions, comp);
+        File tmpFile = new File(file.toString()+".tmp");
+        try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(tmpFile, true), StandardCharsets.UTF_8);
+             PrintWriter writer = new PrintWriter(fw);
+             Scanner reader = new Scanner(file, StandardCharsets.UTF_8.name())) {
+            int line = 1;
+            for(AbstractQuestion question: saveQuestions) {
+                int id = question.getId();
+                if(id==0) {
+                    while(reader.hasNext()) {
+                        writer.println(reader.nextLine());
+                    }
+                    writer.println(questionToString(question));
+                } else {
+                    while(line<id) {
+                        writer.println(reader.nextLine());
+                        line++;
+                    }
+                    reader.nextLine();
+                    String str = questionToString(question);
+                    writer.println(str);
+                    line++;
+                }
+            }
+            while(reader.hasNext()) {
+                String str =reader.nextLine();
+                writer.println(str);
+            }
+        }
+        file.delete();
+        tmpFile.renameTo(file);
+    }
+
+    public int[] loadQuestionsFromDataFile(File file, List<Integer> questionIds) throws FileNotFoundException {
+        Collections.sort(questionIds);
+        int found = 0;
+        try {
+            int line = 1;
+            try (Scanner reader = new Scanner(file, StandardCharsets.UTF_8.name())) {
+                for(Integer questionId: questionIds) {
+                    try {
+                        while(line<questionId && reader.hasNext()) {
+                            reader.nextLine();
+                            line++;
+                        }
+                        if(reader.hasNext()) {
+                            StringTokenizer tokenizer = new StringTokenizer(reader.nextLine(),";");
+                            String questionCategories = tokenizer.nextToken();
+                            AbstractQuestion question = questionFromString(tokenizer, questionCategories);
+                            question.setId(line);
+                            addQuestion(question,-1);
+                            found++;
+                            line++;
+                        }
+                    } catch (ParseException | NoSuchElementException ex) {
+                        Logger.getLogger(QuizGame.class.getName()).log(Level.SEVERE,
+                                "Error reading questions from data file in line "+line
+                                        +". Question skipped. ");
+                        line++;
+                    }
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);
+            throw ex;
+        }
+        return new int[]{found,found};
+
     }
 
     private AbstractQuestion questionFromString(StringTokenizer tokenizer, String questionCategories) throws ParseException {
@@ -208,5 +657,9 @@ public class QuizGame extends AbstractGame{
             }
         }
         return true;
+    }
+
+    public AbstractQuestion getCurrentQuestion(){
+        return currentQuestion;
     }
 }

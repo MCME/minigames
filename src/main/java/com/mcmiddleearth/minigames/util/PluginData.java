@@ -92,8 +92,23 @@ public class PluginData {
         return false;
     }
 
+    public static boolean isInGame(ProxiedPlayer player){
+        for(AbstractGame game: games)
+            if(game.getPlayers().contains(player))
+                return true;
+        return false;
+    }
+
     public static boolean isCorrectGameType(McmeCommandSender sender, GameType type){
         ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        for(AbstractGame game:games){
+            if((game.getPlayers().contains(player) || game.getManager().equals(player)) && type == game.getType() )
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean isCorrectGameType(ProxiedPlayer player, GameType type){
         for(AbstractGame game:games){
             if((game.getPlayers().contains(player) || game.getManager().equals(player)) && type == game.getType() )
                 return true;

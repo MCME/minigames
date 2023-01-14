@@ -9,6 +9,7 @@ import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
 import com.mcmiddleearth.minigames.util.Permission;
 import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.util.StringUtil;
 import com.mcmiddleearth.minigames.util.Style;
 
 import java.io.FileNotFoundException;
@@ -65,10 +66,22 @@ public class QuizGameCommandHandler {
                         .then(HelpfulLiteralBuilder.literal("clear")
                                 .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
                                 .executes(context -> doCommand(context.getSource(),"clear",null)))
+                        .then(HelpfulLiteralBuilder.literal("edit")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                                .then(HelpfulRequiredArgumentBuilder.argument("index",integer())
+                                        .executes(context -> doCommand(context.getSource(), "editquestion", String.valueOf(context.getArgument("index",Integer.class))))))
+                        .then(HelpfulLiteralBuilder.literal("list")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)).requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                                .then(HelpfulRequiredArgumentBuilder.argument("page",integer())
+                                        .executes(context -> doCommand(context.getSource(), "listquestions", String.valueOf(context.getArgument("page",Integer.class))))))
                         .then(HelpfulLiteralBuilder.literal("load")
                                 .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)&& !PluginData.isAlreadyAnnounced(sender))
-                                .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
-                                        .executes(context -> doCommand(context.getSource(),"load",context.getArgument("filename",String.class)))))
+                                .then(HelpfulRequiredArgumentBuilder.argument("category",word())
+                                        .executes(context -> doCommand(context.getSource(),"load",context.getArgument("category",String.class)))))
+                        .then(HelpfulLiteralBuilder.literal("remove")
+                                .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender))
+                                .then(HelpfulRequiredArgumentBuilder.argument("index",integer())
+                                        .executes(context -> doCommand(context.getSource(), "removequestion", String.valueOf(context.getArgument("index",Integer.class))))))
                         .then(HelpfulLiteralBuilder.literal("review")
                                 .requires(sender -> PluginData.hasPermission(sender,Permission.STAFF) && !PluginData.isManager(sender))
                                 .executes(context -> doCommand(context.getSource(), "reviewquestions",null))
@@ -138,6 +151,12 @@ public class QuizGameCommandHandler {
             case "clear":
                 sendNotImplementedYetMessage(sender);
                 break;
+            case "editquestion":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "listquestions":
+                sendNotImplementedYetMessage(sender);
+                break;
             case "loadquiz":
                 sendNotImplementedYetMessage(sender);
                 break;
@@ -153,6 +172,9 @@ public class QuizGameCommandHandler {
             case "random":
                 sendNotImplementedYetMessage(sender);
                 break;
+            case "removequestion":
+                sendNotImplementedYetMessage(sender);
+                break;
             case "reviewquestions":
                 sendNotImplementedYetMessage(sender);
                 break;
@@ -160,7 +182,13 @@ public class QuizGameCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "send":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                if(args != null){
+                    quizgame.setAnswerTime(StringUtil.parseInt(args[0]));
+                }else{
+                    quizgame.setAnswerTime(30);
+                }
+                quizgame.sendQuestion();
                 break;
             case "showcategories":
                 QuizShowCategories.execute(sender);
