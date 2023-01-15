@@ -99,7 +99,7 @@ public class GameCommandHandler extends AbstractCommandHandler {
                         .withTooltip("The player issuing this command joins the game with name <gamename>.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.USER) && PluginData.gameRunning() && !PluginData.isInGame(sender))
                         .then(HelpfulRequiredArgumentBuilder.argument("gamename",new CommandGamenameArgument())
-                                .executes(context -> doCommand(context.getSource(), "gamename",context.getArgument("gamename",String.class)))))
+                                .executes(context -> doCommand(context.getSource(), "join",context.getArgument("gamename",String.class)))))
                 .then(HelpfulLiteralBuilder.literal("kick")
                         .withHelpText("Kicks a player from a game.")
                         .withTooltip("Removes <player> from a game, he may join again.")
@@ -241,7 +241,8 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "end":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(sender);
+                game.endGame();
                 break;
             case "files":
                 sendNotImplementedYetMessage(sender);
@@ -250,7 +251,8 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "join":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(args[0]);
+                game.addPlayer((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender());
                 break;
             case "kick":
                 sendNotImplementedYetMessage(sender);
@@ -259,7 +261,8 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "leave":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(sender);
+                game.removePlayer((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender());
                 break;
             case "manager":
                 sendNotImplementedYetMessage(sender);

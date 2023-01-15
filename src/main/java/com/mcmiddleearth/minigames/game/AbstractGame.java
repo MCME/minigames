@@ -51,12 +51,15 @@ public abstract class AbstractGame {
 
     public void addPlayer(ProxiedPlayer player){
         players.add(player);
+        getBoard().addPlayer(player);
         notifyGame("Everybody welcome "+player.getName()+" to the game!");
         PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
     }
 
     public void endGame(){
         notifyGame("The game has ended.");
+        for(ProxiedPlayer player: players)
+            getBoard().removePlayer(player);
         players.clear();
         PluginData.removeGame(this);
     }
@@ -66,6 +69,7 @@ public abstract class AbstractGame {
             endGame();
             return;
         }
+        getBoard().removePlayer(player);
         players.remove(player);
         notifyGame(player.getName()+" has left the game.");
         PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");

@@ -4,15 +4,25 @@ import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.quiz.question.AbstractQuestion;
+import com.mcmiddleearth.minigames.quiz.question.NumberQuestion;
+import com.mcmiddleearth.minigames.quiz.question.SingleChoiceQuestion;
 import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.util.StringUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.apache.commons.lang.StringUtils;
 
 public class askQuestion implements Listener {
+
+    /*
+    TODO:
+     handle input of different types of questions
+     write texts in sendQuestionToPlayer()
+     */
 
     @EventHandler
     public void askQuestionHandler(ChatEvent event){
@@ -27,16 +37,39 @@ public class askQuestion implements Listener {
         QuizGame game = (QuizGame) PluginData.getGame(sender);
         if(!game.isInConversation(sender))
             return;
+        event.setCancelled(true);
         String answer = event.getMessage();
         AbstractQuestion question = game.getCurrentQuestion();
-        game.setAllAnswered();
+        if(question instanceof SingleChoiceQuestion){
+            if(answer.length() != 1){
+                PluginData.getMessageUtil().sendErrorMessage(sender,"Invalid answer. You did not type in a single answer letter.");
+                return;
+            }
+        }else if(question instanceof NumberQuestion){
+            if(!StringUtils.isNumeric(answer)){
+                PluginData.getMessageUtil().sendErrorMessage(sender,"Invalid answer. You did not type in a whole number.");
+                return;
+            }
+        }
+        game.removeConversation(sender);
+        if(game.allAnswered())
+            game.setAllAnswered();
         sender.sendMessage(new ComponentBuilder("[Your answer] "+answer).color(ChatColor.AQUA).create());
         if(question.isCorrectAnswer(answer)){
             game.incrementScore(sender);
-            PluginData.getMessageUtil().sendInfoMessage(sender,"You answered this Question correctly.");
+            if(question instanceof NumberQuestion){
+                if(answer != question.getCorrectAnswer())
+                    PluginData.getMessageUtil().sendInfoMessage(sender,"Almost! The right answer was "+question.getCorrectAnswer()+" but you were close enough.");
+                else
+                    PluginData.getMessageUtil().sendInfoMessage(sender,"You answered this Question correctly.");
+            }else
+                PluginData.getMessageUtil().sendInfoMessage(sender,"You answered this Question correctly.");
         }else{
-            PluginData.getMessageUtil().sendInfoMessage(sender,"You failed to answer this Question correctly. Correct answer: "+question.getCorrectAnswer());
+            if(question instanceof NumberQuestion){
+                PluginData.getMessageUtil().sendInfoMessage(sender,"You failed to answer this Question correctly. Correct answer was "
+                        +question.getCorrectAnswer()+". Allowed deviation from correct answer was "+((NumberQuestion)question).getPrecision()+".");
+            }else
+                PluginData.getMessageUtil().sendInfoMessage(sender,"You failed to answer this Question correctly. Correct answer: "+question.getCorrectAnswer());
         }
-        event.setCancelled(true);
     }
 }

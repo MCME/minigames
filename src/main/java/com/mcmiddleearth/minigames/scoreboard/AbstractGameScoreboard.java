@@ -1,7 +1,9 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
@@ -37,6 +39,23 @@ public abstract class AbstractGameScoreboard {
 
     public void addPlayer(ProxiedPlayer player){
         players.add(player);
+    }
+
+    public void removePlayer(ProxiedPlayer player){
+        players.remove(player);
+
+        ScoreboardObjective objective = new ScoreboardObjective();
+        objective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(player.getName())));
+        objective.setAction((byte) 0);
+        objective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
+        objective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("")));
+
+        ScoreboardDisplay display = new ScoreboardDisplay();
+        display.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(player.getName())));
+        display.setPosition((byte) 1);
+
+        player.unsafe().sendPacket(objective);
+        player.unsafe().sendPacket(display);
     }
     /*
     public void incrementPlayer(){

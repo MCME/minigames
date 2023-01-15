@@ -8,11 +8,20 @@ import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.util.NumericUtil;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.StringUtil;
+import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
+
+/*
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+ */
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +48,7 @@ public class QuizGame extends AbstractGame{
 
     private int answerTime = 30;
 
-    private HashMap<ProxiedPlayer,Boolean> inConversation = new HashMap<>();
+    private List<ProxiedPlayer> inConversation = new ArrayList<>();
 
     private ScheduledTask timerTask;
 
@@ -49,12 +58,14 @@ public class QuizGame extends AbstractGame{
         super(manager, name,GameType.LORE_QUIZ,new QuizGameScoreboard());
     }
 
+    /*
     @Override
     public void addPlayer(ProxiedPlayer player){
         super.addPlayer(player);
-        inConversation.put(player,false);
-        ((QuizGameScoreboard) getBoard()).addPlayer(player);
+        getBoard().addPlayer(player);
     }
+
+     */
 
     @Override
     public String getGameChatTag(ProxiedPlayer player){
@@ -67,11 +78,24 @@ public class QuizGame extends AbstractGame{
     public void setAllAnswered(){
         allAnswered = true;
         ((QuizGameScoreboard)getBoard()).stopQuestion();
+        if(!hasNextQuestion()) {
+            if(!announceWinner(false)) {
+                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
+            }
+        }
         cancelTimerTask();
     }
 
     public boolean isInConversation(ProxiedPlayer player){
-        return inConversation.get(player);
+        return inConversation.contains(player);
+    }
+
+    public void removeConversation(ProxiedPlayer player){
+        inConversation.remove(player);
+    }
+
+    public boolean allAnswered(){
+        return inConversation.isEmpty();
     }
 
     public void setRandom(boolean question, boolean choice) {
@@ -152,7 +176,7 @@ public class QuizGame extends AbstractGame{
 
              */
             for (ProxiedPlayer player : getPlayers()) {
-                inConversation.replace(player,true);
+                inConversation.add(player);
                 sendQuestionToPlayer(player,question);
                 /*
                 if(player.isConversing()) {
@@ -170,48 +194,59 @@ public class QuizGame extends AbstractGame{
                 public void run() {
                     answerTime--;
                     if(answerTime < 1){
-                        for(ProxiedPlayer player:inConversation.keySet()){
-                            if(inConversation.get(player)){
+                        for(ProxiedPlayer player:inConversation){
+                            if(currentQuestion instanceof NumberQuestion)
+                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: "
+                                        +question.getCorrectAnswer()+"."+" Allowed deviation from correct answer was "+((NumberQuestion)question).getPrecision()+".");
+                            else
                                 PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: " +currentQuestion.getCorrectAnswer());
-                            }
                         }
+                        cancelTimerTask();
                     }
                 }
             },0,1, TimeUnit.SECONDS);
         }
     }
 
+    @Override
+    public void removePlayer(ProxiedPlayer player){
+        super.removePlayer(player);
+        inConversation.remove(player);
+    }
+
     private void sendQuestionToPlayer(ProxiedPlayer player, AbstractQuestion question){
         String questionText = question.getQuestion();
         String[] questionAnswer = null;
         if(question instanceof ChoiceQuestion){
-            if(randomChoices)
-                questionAnswer = ((ChoiceQuestion) question).getInRandomOrder();
-            else
-                questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
+            questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
         }
-        player.sendMessage(new ComponentBuilder(questionText).create());
-        if(questionAnswer != null)
+        //String test = ChoiceQuestion.getAnswerCharacter();
+
+        player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
+        if(questionAnswer != null){
             for(String answer: questionAnswer){
                 //player.sendMessage(new ComponentBuilder(answer).create());
-                PluginData.getMessageUtil().sendInfoMessage(player,answer);
+                char answerIndex = answer.charAt(0);
+                String answerTemp = answer.substring(1);
+                player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT+"["+answerIndex+"] "+Style.INFO+answerTemp).create());
             }
+        }
+        String hint = "";
+        if(question instanceof SingleChoiceQuestion){
+            hint = ChatColor.DARK_GREEN+"Type in chat the letter of the correct answer. \n"+ChatColor.GREEN+Style.BOLD+"Only one"+ChatColor.RESET+ChatColor.DARK_GREEN+" answer is correct.";
+        }else if(question instanceof NumberQuestion){
+            hint = ChatColor.DARK_GREEN+"Type in chat a whole number.";
+        }else if(question instanceof FreeQuestion){
+            hint = ChatColor.DARK_GREEN+"Type your answer in chat.";
+        }else if(question instanceof ChoiceQuestion){
+            hint = ChatColor.DARK_GREEN+"Type in the letters of the correct answers. \n"+ChatColor.LIGHT_PURPLE+Style.BOLD+"More than one"+ChatColor.RESET+ChatColor.DARK_GREEN+" answer may be correct.";
+        }
+        player.sendMessage(new ComponentBuilder(ChatColor.DARK_GREEN+"[Hint] "+hint).create());
     }
 
     private void cancelTimerTask(){
-        for(ProxiedPlayer player: inConversation.keySet()) {
-            inConversation.replace(player, false);
-        }
+        inConversation.clear();
         timerTask.cancel();
-    }
-
-    public void stopQuestion() {
-        ((QuizGameScoreboard)getBoard()).stopQuestion();
-        if(!hasNextQuestion()) {
-            if(!announceWinner(false)) {
-                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
-            }
-        }
     }
 
     public boolean announceWinner(boolean allowEqual) {
@@ -242,7 +277,7 @@ public class QuizGame extends AbstractGame{
                 if(winner.size()>1) {
                     winnerNames = winnerNames + " and "+winner.get(winner.size()-1).getName();
                 }
-                notifyGame("Game Over,"+winnerNames+" won the quiz.");
+                notifyGame("Game Over, "+winnerNames+" won the quiz.");
             }
             return true;
         }
@@ -310,15 +345,15 @@ public class QuizGame extends AbstractGame{
         ((QuizGameScoreboard)getBoard()).addQuestion();
     }
 
-    /*
 
+/*
     public void saveQuestionsToJson(File file, String description) throws IOException {
         saveQuestionsToJson(file, description, questions);
     }
 
-     */
 
-    /*
+
+
     public static void saveQuestionsToJson(File file, String description, List<AbstractQuestion> questions)
             throws IOException {
         JSONArray jQuestionArray = new JSONArray();
@@ -352,9 +387,9 @@ public class QuizGame extends AbstractGame{
         }
     }
 
-     */
 
-    /*
+
+
     public void loadQuestionsFromJson(File file) throws FileNotFoundException, ParseException{
         List<AbstractQuestion> newQuestions = new ArrayList<>();
         loadQuestionsFromJson(file, newQuestions);
@@ -363,9 +398,9 @@ public class QuizGame extends AbstractGame{
         }
     }
 
-     */
 
-    /*
+
+
     public static void loadQuestionsFromJson(File file, List<AbstractQuestion> questions)
             throws FileNotFoundException, ParseException {
         try {
@@ -417,9 +452,9 @@ public class QuizGame extends AbstractGame{
         }
     }
 
-     */
 
-    /*
+
+
     private static String[] readStringArray(JSONObject jQuestion, String key) {
         JSONArray jAnswers = (JSONArray) jQuestion.get(key);
         List<String> answers= new ArrayList<>();
@@ -429,7 +464,9 @@ public class QuizGame extends AbstractGame{
         return answers.toArray(new String[0]);
     }
 
-     */
+
+
+ */
 
     private int getQuestionTypeNumber(QuestionType type) {
         switch(type) {

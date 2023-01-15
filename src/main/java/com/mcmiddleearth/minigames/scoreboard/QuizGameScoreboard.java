@@ -45,7 +45,6 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         quizObjective = new ScoreboardObjective();
         quizObjective.setName(name);
         quizObjective.setAction((byte) 0);
-        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
         quizObjective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
 
         timerObjective = new ScoreboardObjective();
@@ -102,6 +101,7 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         timerTask.cancel();
     }
 
+    @Override
     public void addPlayer(ProxiedPlayer player){
         super.addPlayer(player);
         ScoreboardScore score = new ScoreboardScore();
@@ -110,6 +110,7 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         score.setItemName(player.getDisplayName());
         scores.put(player,score);
 
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
         updateObjective(quizObjective);
         updateDisplay(quizDisplay);
         for(ScoreboardScore scoreUpdate: scores.values()){
@@ -117,8 +118,16 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         }
     }
 
+    @Override
+    public void removePlayer(ProxiedPlayer player){
+        super.removePlayer(player);
+        scores.remove(player);
+    }
+
     public void score(ProxiedPlayer player){
         scores.get(player).setValue(scores.get(player).getValue()+1);
+        for(ScoreboardScore score:scores.values())
+            updateScore(score);
     }
 
     private void updateTimer(){

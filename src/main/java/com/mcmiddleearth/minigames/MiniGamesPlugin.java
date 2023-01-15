@@ -7,6 +7,7 @@ import com.mcmiddleearth.minigames.command.handler.GameCommandHandler;
 import com.mcmiddleearth.minigames.command.handler.GcCommandHandler;
 import com.mcmiddleearth.minigames.listener.ChatListener;
 import com.mcmiddleearth.minigames.listener.MinigamesPluginListener;
+import com.mcmiddleearth.minigames.listener.PlayerListener;
 import com.mcmiddleearth.minigames.listener.quizListener.askQuestion;
 import com.mcmiddleearth.minigames.util.PluginData;
 import net.md_5.bungee.api.CommandSender;
@@ -30,6 +31,7 @@ public final class MiniGamesPlugin extends Plugin {
 
         ProxyServer.getInstance().getPluginManager().registerListener(this,new MinigamesPluginListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this,new ChatListener());
+        ProxyServer.getInstance().getPluginManager().registerListener(this,new PlayerListener());
         ProxyServer.getInstance().getPluginManager().registerListener(this,new askQuestion());
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this,new MinigamesPluginCommand(new GcCommandHandler("gc"),"gc"));
