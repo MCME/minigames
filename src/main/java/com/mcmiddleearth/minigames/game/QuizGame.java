@@ -153,19 +153,7 @@ public class QuizGame extends AbstractGame{
              */
             for (ProxiedPlayer player : getPlayers()) {
                 inConversation.replace(player,true);
-                String questionText = question.getQuestion();
-                String[] questionAnswer = null;
-                if(question instanceof ChoiceQuestion){
-                    if(randomChoices)
-                        questionAnswer = ((ChoiceQuestion) question).getInRandomOrder();
-                    else
-                        questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
-                }
-                player.sendMessage(new ComponentBuilder(questionText).create());
-                if(questionAnswer != null)
-                    for(String answer: questionAnswer){
-                        player.sendMessage(new ComponentBuilder(answer).create());
-                    }
+                sendQuestionToPlayer(player,question);
                 /*
                 if(player.isConversing()) {
                     PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
@@ -191,6 +179,23 @@ public class QuizGame extends AbstractGame{
                 }
             },0,1, TimeUnit.SECONDS);
         }
+    }
+
+    private void sendQuestionToPlayer(ProxiedPlayer player, AbstractQuestion question){
+        String questionText = question.getQuestion();
+        String[] questionAnswer = null;
+        if(question instanceof ChoiceQuestion){
+            if(randomChoices)
+                questionAnswer = ((ChoiceQuestion) question).getInRandomOrder();
+            else
+                questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
+        }
+        player.sendMessage(new ComponentBuilder(questionText).create());
+        if(questionAnswer != null)
+            for(String answer: questionAnswer){
+                //player.sendMessage(new ComponentBuilder(answer).create());
+                PluginData.getMessageUtil().sendInfoMessage(player,answer);
+            }
     }
 
     private void cancelTimerTask(){
