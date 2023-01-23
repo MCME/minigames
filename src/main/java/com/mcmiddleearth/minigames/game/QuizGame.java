@@ -1,9 +1,7 @@
 package com.mcmiddleearth.minigames.game;
 
-import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.quiz.question.*;
-import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.util.NumericUtil;
 import com.mcmiddleearth.minigames.util.PluginData;
@@ -14,6 +12,10 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /*
 import org.json.simple.JSONArray;
@@ -25,13 +27,10 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.mcmiddleearth.minigames.quiz.question.QuestionType.getQuestionType;
 
 /**
  * @author Jubo, Eriol_Eandur
@@ -48,7 +47,9 @@ public class QuizGame extends AbstractGame{
 
     private int answerTime = 30;
 
-    private List<ProxiedPlayer> inConversation = new ArrayList<>();
+    private List<ProxiedPlayer> inQuizConversation = new ArrayList<>();
+
+    private boolean acceptConversation = false;
 
     private ScheduledTask timerTask;
 
@@ -66,6 +67,12 @@ public class QuizGame extends AbstractGame{
     }
 
      */
+
+    public void setAcceptConversation(boolean acceptConversation){this.acceptConversation = acceptConversation;}
+
+    public boolean acceptConversation(){
+        return acceptConversation;
+    }
 
     @Override
     public String getGameChatTag(ProxiedPlayer player){
@@ -86,16 +93,18 @@ public class QuizGame extends AbstractGame{
         cancelTimerTask();
     }
 
+    public List<ProxiedPlayer> getConversationPlayers(){return inQuizConversation;}
+
     public boolean isInConversation(ProxiedPlayer player){
-        return inConversation.contains(player);
+        return inQuizConversation.contains(player);
     }
 
-    public void removeConversation(ProxiedPlayer player){
-        inConversation.remove(player);
+    public void removeQuizConversation(ProxiedPlayer player){
+        inQuizConversation.remove(player);
     }
 
     public boolean allAnswered(){
-        return inConversation.isEmpty();
+        return inQuizConversation.isEmpty();
     }
 
     public void setRandom(boolean question, boolean choice) {
@@ -176,7 +185,7 @@ public class QuizGame extends AbstractGame{
 
              */
             for (ProxiedPlayer player : getPlayers()) {
-                inConversation.add(player);
+                inQuizConversation.add(player);
                 sendQuestionToPlayer(player,question);
                 /*
                 if(player.isConversing()) {
@@ -194,7 +203,7 @@ public class QuizGame extends AbstractGame{
                 public void run() {
                     answerTime--;
                     if(answerTime < 1){
-                        for(ProxiedPlayer player:inConversation){
+                        for(ProxiedPlayer player: inQuizConversation){
                             if(currentQuestion instanceof NumberQuestion)
                                 PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: "
                                         +question.getCorrectAnswer()+"."+" Allowed deviation from correct answer was "+((NumberQuestion)question).getPrecision()+".");
@@ -211,7 +220,7 @@ public class QuizGame extends AbstractGame{
     @Override
     public void removePlayer(ProxiedPlayer player){
         super.removePlayer(player);
-        inConversation.remove(player);
+        inQuizConversation.remove(player);
     }
 
     private void sendQuestionToPlayer(ProxiedPlayer player, AbstractQuestion question){
@@ -245,7 +254,7 @@ public class QuizGame extends AbstractGame{
     }
 
     private void cancelTimerTask(){
-        inConversation.clear();
+        inQuizConversation.clear();
         timerTask.cancel();
     }
 
@@ -282,6 +291,15 @@ public class QuizGame extends AbstractGame{
             return true;
         }
         return false;
+    }
+
+    public void clearQuestions(){
+        if(!allAnswered)
+            setAllAnswered();
+        questions.clear();
+        ((QuizGameScoreboard)getBoard()).clearQuestions();
+        resetQuestions();
+        PluginData.getMessageUtil().sendInfoMessage(getManager(),"You removed all questions from this Lore Quiz.");
     }
 
     public void incrementScore(ProxiedPlayer player) {
@@ -346,7 +364,7 @@ public class QuizGame extends AbstractGame{
     }
 
 
-/*
+
     public void saveQuestionsToJson(File file, String description) throws IOException {
         saveQuestionsToJson(file, description, questions);
     }
@@ -398,9 +416,6 @@ public class QuizGame extends AbstractGame{
         }
     }
 
-
-
-
     public static void loadQuestionsFromJson(File file, List<AbstractQuestion> questions)
             throws FileNotFoundException, ParseException {
         try {
@@ -442,7 +457,7 @@ public class QuizGame extends AbstractGame{
                                 (String) jQuestion.get("Categories"));
                         break;
                     default:
-                        throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
+                        throw new ParseException(org.json.simple.parser.ParseException.ERROR_UNEXPECTED_TOKEN);
                 }
                 questions.add(newQuestion);
             }
@@ -466,7 +481,7 @@ public class QuizGame extends AbstractGame{
 
 
 
- */
+
 
     private int getQuestionTypeNumber(QuestionType type) {
         switch(type) {
@@ -634,7 +649,7 @@ public class QuizGame extends AbstractGame{
                         answer,questionCategories);
                 break;
             default:
-                throw new ParseException("Error",5);
+                throw new ParseException(ParseException.ERROR_UNEXPECTED_TOKEN);
         }
         return newQuestion;
     }
@@ -671,6 +686,12 @@ public class QuizGame extends AbstractGame{
             return checkExcludedCategories(excludedCategories, questionCategories);
         } else {
             return false;
+        }
+    }
+
+    public void QuizGameWinner(ProxiedPlayer player){
+        if(!announceWinner(true)){
+            PluginData.getMessageUtil().sendErrorMessage(player,"There is no winner.");
         }
     }
 

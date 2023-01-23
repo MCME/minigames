@@ -3,7 +3,9 @@ package com.mcmiddleearth.minigames.command.handler;
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
+import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.command.argument.CommandQuestionTypeArgument;
+import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
@@ -11,8 +13,16 @@ import com.mcmiddleearth.minigames.util.Permission;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.StringUtil;
 import com.mcmiddleearth.minigames.util.Style;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -23,6 +33,18 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
  * @author Jubo
  */
 public class QuizGameCommandHandler {
+
+    /*
+    TODO:
+     test clear questions
+     test winner
+     test stat
+     test load and save quiz
+     figure confirmation listener out, also really important for submitting questions and stuff
+     create the accept conversation
+     test delete
+     test acceptquestion
+     */
 
     private final GameType type = GameType.LORE_QUIZ;
 
@@ -144,12 +166,16 @@ public class QuizGameCommandHandler {
 
     private int doCommand(McmeCommandSender sender, String command, String... args){
         QuizGame quizgame;
+        File file;
         switch (command){
             case "acceptquestions":
-                sendNotImplementedYetMessage(sender);
+                AbstractGame.addConversation((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender());
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                quizgame.setAcceptConversation(true);
                 break;
             case "clear":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                quizgame.clearQuestions();
                 break;
             case "editquestion":
                 sendNotImplementedYetMessage(sender);
@@ -158,7 +184,16 @@ public class QuizGameCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "loadquiz":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                file = new File(PluginData.getQuestionDir(),args[0]+".json");
+                try{
+                    quizgame.loadQuestionsFromJson(file);
+                    PluginData.getMessageUtil().sendInfoMessage(sender,"Questions loaded from file.");
+                }catch (FileNotFoundException ex) {
+                    PluginData.getMessageUtil().sendErrorMessage(sender,"File not found.");
+                } catch (ParseException ex) {
+                    PluginData.getMessageUtil().sendErrorMessage(sender,"The file contains invalid data.");
+                }
                 break;
             case "loadquestions":
                 quizgame = (QuizGame) PluginData.getGame(sender);
@@ -170,7 +205,28 @@ public class QuizGameCommandHandler {
                 }
                 break;
             case "random":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                switch (args[0]){
+                    case "off":
+                        quizgame.setRandom(false,false);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and choices will be presented in proper order.");
+                        break;
+                    case "questions":
+                        quizgame.setRandom(true,false);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions will be sended in random order.");
+                        break;
+                    case "choices":
+                        quizgame.setRandom(false,true);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"Choices will be presented in random order.");
+                        break;
+                    case "all":
+                        quizgame.setRandom(true,true);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and Choises will be presented in random order.");
+                        break;
+                    default:
+                        PluginData.getMessageUtil().sendErrorMessage(sender,"Error: Try off|questions|choices|all");
+                        break;
+                }
                 break;
             case "removequestion":
                 sendNotImplementedYetMessage(sender);
@@ -179,7 +235,22 @@ public class QuizGameCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "savequiz":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                file = new File(PluginData.getQuestionDir(),args[0]+".json");
+                String description = args[1];
+                if(file.exists()){
+                    AbstractGame.addConversation((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender());
+                    quizgame.setSaveInfos(file,description);
+                    PluginData.getMessageUtil().sendInfoMessage(sender, "A question file with that name already exists. Overwrite it?");
+                } else {
+                    try{
+                        quizgame.saveQuestionsToJson(file,description);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions of the game were saved to disk.");
+                    }catch (IOException ex){
+                        PluginData.getMessageUtil().sendErrorMessage(sender,"There was an error. Nothing was saved.");
+                        Logger.getLogger(QuizGameCommandHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 break;
             case "send":
                 quizgame = (QuizGame) PluginData.getGame(sender);
@@ -194,14 +265,20 @@ public class QuizGameCommandHandler {
                 QuizShowCategories.execute(sender);
                 break;
             case "stat":
-                sendNotImplementedYetMessage(sender);
+                quizgame = (QuizGame) PluginData.getGame(sender);
+                if(quizgame.allAnswered()){
+                    PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.RED+"NO QUESTION running."+ChatColor.AQUA+" Online players:");
+                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toSet())));
+                }else{
+                    PluginData.getMessageUtil().sendInfoMessage(sender, "Players in question conversation:");
+                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getConversationPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toSet())));
+                }
                 break;
             case "submitquestion":
                 sendNotImplementedYetMessage(sender);
                 break;
             default:
                 sendNothereMessage(sender);
-
         }
         return 0;
     }

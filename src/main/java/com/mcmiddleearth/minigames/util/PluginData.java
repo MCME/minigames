@@ -173,6 +173,8 @@ public class PluginData {
         games.clear();
     }
 
+    public static File getQuestionDir(){return questionDir;}
+
     public static File getQuestionDataTable() {
         return questionDataTable;
     }

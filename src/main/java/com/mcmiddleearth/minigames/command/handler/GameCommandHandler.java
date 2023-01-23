@@ -8,11 +8,14 @@ import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.command.argument.*;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
+import com.mcmiddleearth.minigames.game.GeoGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.util.Permission;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.io.File;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -65,9 +68,10 @@ public class GameCommandHandler extends AbstractCommandHandler {
                         .withHelpText("Deletes saved minigame files.")
                         .withTooltip("quiz|race|marker|werewolf <filename>: Deletes a quiz, race, marker, golf or pvp data file with name <filename>.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.STAFF))
-                        .then(HelpfulRequiredArgumentBuilder.argument("gametype",new CommandGameTypeArgument())
+                        //there needs marker to be added, probably the best to do a new argument type
+                        .then(HelpfulRequiredArgumentBuilder.argument("filetype",word())
                                 .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
-                                        .executes(context -> doCommand(context.getSource(), "delete",context.getArgument("gametype", String.class),context.getArgument("filename",String.class))))))
+                                        .executes(context -> doCommand(context.getSource(), "delete",context.getArgument("filetype", String.class),context.getArgument("filename",String.class))))))
                 .then(HelpfulLiteralBuilder.literal("deny")
                         .withHelpText("Denies various actions for a game.")
                         .withTooltip("flight|teleport|join|warp|save|collision|invisible|signs: 'flight' or 'teleport' denies for players in the game to fly or teleport. 'join' denies players to join without invitation. " +
@@ -238,7 +242,29 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 }
                 break;
             case "delete":
-                sendNotImplementedYetMessage(sender);
+                File file;
+                switch(args[0]){
+                    case "quiz":
+                        file = new File(PluginData.getQuestionDir(),args[1]+".json");
+                        if(file.exists()){
+                            AbstractGame.addConversation((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender());
+                            AbstractGame.setDeleteConversation(true);
+                            AbstractGame.setDeleteFile(file);
+                            PluginData.getMessageUtil().sendInfoMessage(sender,"Are you sure to delete "+args[1]+"? There is no undo.");
+                        }else{
+                            PluginData.getMessageUtil().sendErrorMessage(sender, "File not found.");
+                        }
+                        break;
+                    case "race":
+                        sendNotImplementedYetMessage(sender);
+                        break;
+                    case "marker":
+                        sendNotImplementedYetMessage(sender);
+                        break;
+                    default:
+                        PluginData.getMessageUtil().sendErrorMessage(sender,"Use quiz, marker or race.");
+                        break;
+                }
                 break;
             case "end":
                 game = PluginData.getGame(sender);
@@ -291,7 +317,12 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 sendNotImplementedYetMessage(sender);
                 break;
             case "winner":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(sender);
+                if(game instanceof QuizGame){
+                    QuizGame quizgame = (QuizGame) game;
+                    quizgame.QuizGameWinner(((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender()));
+                }else if(game instanceof GeoGame)
+                    sendNotImplementedYetMessage(sender);
                 break;
             default:
                 sendNothereMessage(sender);

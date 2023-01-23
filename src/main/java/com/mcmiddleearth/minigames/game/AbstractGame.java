@@ -7,6 +7,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,15 @@ public abstract class AbstractGame {
     private final GameType type;
     private final AbstractGameScoreboard board;
     private final List<ProxiedPlayer> players = new ArrayList<>();
+
+    private static List<ProxiedPlayer> inConversation = new ArrayList<>();
+
+    private boolean saveConversation = false;
+    private File saveFile;
+    private String saveDescription;
+
+    private static File deleteFile;
+    private static boolean deleteConversation = false;
 
     private boolean announced = false;
 
@@ -74,6 +84,33 @@ public abstract class AbstractGame {
         notifyGame(player.getName()+" has left the game.");
         PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
     }
+
+    public static void setDeleteConversation(boolean bool){deleteConversation = bool;}
+
+    public static void setDeleteFile(File file){deleteFile = file;}
+    public static File getDeleteFile(){return deleteFile;}
+
+    public static boolean deleteConversation(){return deleteConversation; }
+
+    public static void addConversation(ProxiedPlayer player){inConversation.add(player);}
+
+    public static List<ProxiedPlayer> getInConversation(){return inConversation;}
+
+    public static void removeConversation(ProxiedPlayer player){inConversation.remove(player);}
+
+
+    public void setSaveConversation(boolean saveConversation){this.saveConversation = saveConversation;}
+
+    public boolean saveConversation(){return saveConversation;}
+
+    public void setSaveInfos(File file,String description){
+        saveFile = file;
+        saveDescription = description;
+        setSaveConversation(true);
+    }
+
+    public String getSaveDescription(){return saveDescription;}
+    public File getSaveFile(){return saveFile;}
 
     public void setManager(ProxiedPlayer manager){
         this.manager = manager;

@@ -20,8 +20,8 @@ public class askQuestion implements Listener {
 
     /*
     TODO:
-     handle input of different types of questions
-     write texts in sendQuestionToPlayer()
+     handle input of different types of questions   x
+     write texts in sendQuestionToPlayer()          x
      */
 
     @EventHandler
@@ -51,7 +51,7 @@ public class askQuestion implements Listener {
                 return;
             }
         }
-        game.removeConversation(sender);
+        game.removeQuizConversation(sender);
         if(game.allAnswered())
             game.setAllAnswered();
         sender.sendMessage(new ComponentBuilder("[Your answer] "+answer).color(ChatColor.AQUA).create());
