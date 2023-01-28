@@ -9,7 +9,7 @@ import java.util.List;
  */
 public enum QuestionType {
     FREE    ("Free"),
-    NUMBER  ("number"),
+    NUMBER  ("Number"),
     MULTI   ("Multi"),
     SINGLE  ("Single");
 

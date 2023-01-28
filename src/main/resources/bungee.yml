@@ -6,7 +6,7 @@ author: Jubo, Eriol_Eandur
 api-version: 1.18
 
 commands:
-  game:
+  newGame:
     description: manage MiniGames plugin
     usage: TBA
   gc:

@@ -10,6 +10,8 @@ import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import org.json.simple.JSONArray;
@@ -41,7 +43,7 @@ public class QuizGame extends AbstractGame{
     private final List<AbstractQuestion> questions = new ArrayList<>();
 
     private boolean randomQuestions = true;
-    private boolean randomChoices = true;
+    private boolean randomChoices = false;
 
     private int nextQuestion = 0;
 
@@ -59,14 +61,9 @@ public class QuizGame extends AbstractGame{
         super(manager, name,GameType.LORE_QUIZ,new QuizGameScoreboard());
     }
 
-    /*
-    @Override
-    public void addPlayer(ProxiedPlayer player){
-        super.addPlayer(player);
-        getBoard().addPlayer(player);
+    public List<AbstractQuestion> getQuestions() {
+        return questions;
     }
-
-     */
 
     public void setAcceptConversation(boolean acceptConversation){this.acceptConversation = acceptConversation;}
 
@@ -105,6 +102,24 @@ public class QuizGame extends AbstractGame{
 
     public boolean allAnswered(){
         return inQuizConversation.isEmpty();
+    }
+
+    public void listQuestions(){
+        if(questions.isEmpty()){
+            PluginData.getMessageUtil().sendInfoMessage(getManager(),"No Questions in this game.");
+            return;
+        }
+        PluginData.getMessageUtil().sendInfoMessage(getManager(),"Questions in this game:");
+        int id = 1;
+        for(AbstractQuestion question: questions){
+            String questionText = question.getQuestion();
+            String[] detailText = question.getDetails();
+            String message = ChatColor.DARK_GREEN+String.valueOf(id)+ChatColor.AQUA+" ["+(question.getId()==0?"-":question.getId())+"]: "+ChatColor.WHITE+questionText;
+            TextComponent text = new TextComponent(message);
+            text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ComponentBuilder(Arrays.toString(detailText)).create()));
+            getManager().sendMessage(text);
+            id++;
+        }
     }
 
     public void setRandom(boolean question, boolean choice) {
@@ -218,6 +233,12 @@ public class QuizGame extends AbstractGame{
     }
 
     @Override
+    public void kickPlayer(ProxiedPlayer player){
+        super.kickPlayer(player);
+        inQuizConversation.remove(player);
+    }
+
+    @Override
     public void removePlayer(ProxiedPlayer player){
         super.removePlayer(player);
         inQuizConversation.remove(player);
@@ -227,7 +248,10 @@ public class QuizGame extends AbstractGame{
         String questionText = question.getQuestion();
         String[] questionAnswer = null;
         if(question instanceof ChoiceQuestion){
-            questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
+            if(randomChoices)
+                questionAnswer = ((ChoiceQuestion) question).getInRandomOrder();
+            else
+                questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
         }
         //String test = ChoiceQuestion.getAnswerCharacter();
 
@@ -255,7 +279,8 @@ public class QuizGame extends AbstractGame{
 
     private void cancelTimerTask(){
         inQuizConversation.clear();
-        timerTask.cancel();
+        if(timerTask != null)
+            timerTask.cancel();
     }
 
     public boolean announceWinner(boolean allowEqual) {
@@ -720,6 +745,10 @@ public class QuizGame extends AbstractGame{
             }
         }
         return true;
+    }
+
+    public boolean isRandomChoices() {
+        return randomChoices;
     }
 
     public AbstractQuestion getCurrentQuestion(){

@@ -40,10 +40,16 @@ public class ConfirmationListener implements Listener {
                             PluginData.getMessageUtil().sendInfoMessage(sender, "Questions of the game were saved to disk.");
                         } catch (IOException ex) {
                             PluginData.getMessageUtil().sendErrorMessage(sender, "There was an error. Nothing was saved.");
-                            Logger.getLogger(QuizGameCommandHandler.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(ConfirmationListener.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }else if(quizGame.acceptConversation()){
-
+                        try{
+                            quizGame.saveQuestionsToDataFile(PluginData.getQuestionDataTable());
+                            PluginData.getMessageUtil().sendInfoMessage(sender,"Questions of the quiz were accepted. Do /game end when done.");
+                        } catch (IOException ex) {
+                            PluginData.getMessageUtil().sendErrorMessage(sender,"There was an error. Nothing was saved.");
+                            Logger.getLogger(ConfirmationListener.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }else if(game instanceof RaceGame){
 

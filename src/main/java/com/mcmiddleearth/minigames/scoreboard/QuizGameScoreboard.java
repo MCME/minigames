@@ -98,7 +98,8 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         for(ScoreboardScore score: scores.values())
             updateScore(score);
         updateDisplay(quizDisplay);
-        timerTask.cancel();
+        if(timerTask != null)
+            timerTask.cancel();
     }
 
     @Override

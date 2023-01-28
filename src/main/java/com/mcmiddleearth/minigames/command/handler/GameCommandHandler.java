@@ -10,9 +10,11 @@ import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.GeoGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
+import com.mcmiddleearth.minigames.game.otherCommands.GameCheck;
 import com.mcmiddleearth.minigames.util.Permission;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.File;
@@ -176,10 +178,7 @@ public class GameCommandHandler extends AbstractCommandHandler {
                         .withTooltip("Announces the winner in GeoGuessr Games and Quiz Games. Has to be used if there are two or more winner.")
                         .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isManager(sender)
                                 && (PluginData.isCorrectGameType(sender,GameType.LORE_QUIZ) || PluginData.isCorrectGameType(sender,GameType.GEO_GUESSR)))
-                        .executes(context -> doCommand(context.getSource(), "winner",null)))
-
-                .then(HelpfulLiteralBuilder.literal("test")
-                        .executes(context -> doCommand(context.getSource(), "test",null)));
+                        .executes(context -> doCommand(context.getSource(), "winner",null)));
 
         GeoGameCommandHandler geoHandler = new GeoGameCommandHandler();
         helpfulLiteralBuilder = geoHandler.createCommandTree(helpfulLiteralBuilder);
@@ -205,16 +204,11 @@ public class GameCommandHandler extends AbstractCommandHandler {
     private int doCommand(McmeCommandSender sender, String command, String... args){
         AbstractGame game;
         switch (command){
-            case "test":
-                ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
-                PluginData.getMessageUtil().sendInfoMessage(player,player.getUUID());
-                break;
-
             case "allow/deny":
                 sendNotImplementedYetMessage(sender);
                 break;
             case "check":
-                sendNotImplementedYetMessage(sender);
+                GameCheck.sendInfos(sender);
                 break;
             case "create":
                 GameType type = GameType.getGameType(args[0]);
@@ -281,7 +275,8 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 game.addPlayer((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender());
                 break;
             case "kick":
-                sendNotImplementedYetMessage(sender);
+                game = PluginData.getGame(sender);
+                game.kickPlayer(ProxyServer.getInstance().getPlayer(args[0]));
                 break;
             case "leaderboard":
                 sendNotImplementedYetMessage(sender);
@@ -302,6 +297,9 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 }
                 break;
             case "restart":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "request":
                 sendNotImplementedYetMessage(sender);
                 break;
             case "spectate":

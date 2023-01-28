@@ -1,17 +1,20 @@
 package com.mcmiddleearth.minigames.game;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jubo
@@ -34,6 +37,9 @@ public abstract class AbstractGame {
     private static boolean deleteConversation = false;
 
     private boolean announced = false;
+
+    private ScheduledTask cleanup;
+    private boolean task = false;
 
     private static final Map<String,Boolean> toggleConfig = new HashMap<>();
 
@@ -66,8 +72,26 @@ public abstract class AbstractGame {
         PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
     }
 
+    public void selfDestruction(){
+        notifyGame("The host was disconnected from the server. This tour will destroy itself in 60 seconds.");
+        task = true;
+        cleanup = ProxyServer.getInstance().getScheduler().schedule(MiniGamesPlugin.getInstance(),() -> {
+            if(!manager.isConnected())
+                endGame();
+        }, 60, TimeUnit.SECONDS);
+    }
+
+    public void returnedManager(ProxiedPlayer player){
+        this.manager = player;
+        players.add(player);
+        cleanup.cancel();
+        task = false;
+        notifyGame("The manager has returned. Destruction prevented.");
+    }
+
     public void endGame(){
         notifyGame("The game has ended.");
+        PluginData.getMessageUtil().sendInfoMessage(manager,"You ended the game.");
         for(ProxiedPlayer player: players)
             getBoard().removePlayer(player);
         players.clear();
@@ -83,6 +107,16 @@ public abstract class AbstractGame {
         players.remove(player);
         notifyGame(player.getName()+" has left the game.");
         PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
+    }
+
+    public void kickPlayer(ProxiedPlayer player){
+        if(player != manager){
+            removePlayer(player);
+            PluginData.getMessageUtil().sendErrorMessage(player,"You were kicked from the game. Think about it!");
+            PluginData.getMessageUtil().sendInfoMessage(manager,"You kicked " + player.getName() + " from the game.");
+        }else{
+            PluginData.getMessageUtil().sendErrorMessage(player,"You can´t kick yourself idiot.");
+        }
     }
 
     public static void setDeleteConversation(boolean bool){deleteConversation = bool;}

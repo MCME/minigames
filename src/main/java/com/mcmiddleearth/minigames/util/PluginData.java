@@ -27,6 +27,7 @@ public class PluginData {
     private static final File questionDir = new File(MiniGamesPlugin.getInstance().getDataFolder()+File.separator+"QuizQuestions");
     private static final File questionDataTable = new File(questionDir,"questionTable.dat");
     private static final File questionCategoriesFile = new File(questionDir,"questionCategories.dat");
+    private static final File submittedQuestionsFile = new File(questionDir,"submitted.json");
     private static final List<String> questionCategories = new ArrayList<>();
 
     private static final List<AbstractGame> games = new ArrayList<>();
@@ -159,6 +160,10 @@ public class PluginData {
             }
         }
         return manager;
+    }
+
+    public static File getSubmittedQuestionsFile() {
+        return submittedQuestionsFile;
     }
 
     public static void addGame(AbstractGame game){

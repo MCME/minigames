@@ -2,6 +2,8 @@ package com.mcmiddleearth.minigames.quiz;
 
 import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.minigames.util.PluginData;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 
 /**
  * @author Jubo
@@ -10,8 +12,7 @@ public class QuizShowCategories {
 
     public static void execute(McmeCommandSender sender){
         for(String line: PluginData.getQuestionCategoriesFile()){
-            //PluginData.getMessageUtil().sendInfoMessage(sender,"Test");
-            PluginData.getMessageUtil().sendInfoMessage(sender,line);
+            sender.sendMessage(new ComponentBuilder(line).color(ChatColor.AQUA).create());
         }
     }
 }
