@@ -35,8 +35,8 @@ public class editQuestion implements Listener {
         }
         event.setCancelled(true);
         QuizEditQuestion edit = QuizEditQuestion.getEditInstance(sender);
-        switch(edit.getPosition()){
-            case "question":
+        switch(edit.getConType()){
+            case QUESTION:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Question kept.");
                 }else {
@@ -44,69 +44,69 @@ public class editQuestion implements Listener {
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
                 if(edit.getType() == QuestionType.FREE){
-                    edit.setPosition("freeAnswer");
+                    edit.setConType(QuestionConversationType.FREEANSWER);
                     sender.sendMessage(new ComponentBuilder("[Answer] "+edit.getFreeAnswer()).color(ChatColor.DARK_GREEN).create());
                 }
                 else if(edit.getType() == QuestionType.NUMBER){
-                    edit.setPosition("numberAnswer");
+                    edit.setConType(QuestionConversationType.NUMBERANSWER);
                     sender.sendMessage(new ComponentBuilder("[Answer] "+edit.getNumberAnswer()).color(ChatColor.DARK_GREEN).create());
                 }
                 else{
-                    edit.setPosition("aAnswer");
+                    edit.setConType(QuestionConversationType.AANSWER);
                     sender.sendMessage(new ComponentBuilder("[Choice A] "+edit.getaAnswer()).color(ChatColor.DARK_GREEN).create());
                 }
                 break;
-            case "freeAnswer":
+            case FREEANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Answer kept.");
                 }else {
                     edit.setFreeAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("categories");
+                edit.setConType(QuestionConversationType.CATEGORIES);
                 sendCategories(sender,edit);
                 break;
-            case "aAnswer":
+            case AANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
                     edit.setaAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("bAnswer");
+                edit.setConType(QuestionConversationType.BANSWER);
                 sender.sendMessage(new ComponentBuilder("[Choice B] "+edit.getbAnswer()).color(ChatColor.DARK_GREEN).create());
                 break;
-            case "bAnswer":
+            case BANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
                     edit.setbAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("cAnswer");
+                edit.setConType(QuestionConversationType.CANSWER);
                 sender.sendMessage(new ComponentBuilder("[Choice C] "+edit.getcAnswer()).color(ChatColor.DARK_GREEN).create());
                 break;
-            case "cAnswer":
+            case CANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
                     edit.setcAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("dAnswer");
+                edit.setConType(QuestionConversationType.DANSWER);
                 sender.sendMessage(new ComponentBuilder("[Choice D] "+edit.getdAnswer()).color(ChatColor.DARK_GREEN).create());
                 break;
-            case "dAnswer":
+            case DANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
                     edit.setdAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("correctAnswer");
+                edit.setConType(QuestionConversationType.CORRECTANSWER);
                 sender.sendMessage(new ComponentBuilder("[Correct Answer] "+edit.getCorrectAnswer()).color(ChatColor.DARK_GREEN).create());
                 break;
-            case "correctAnswer":
+            case CORRECTANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Correct choice kept.");
                 }else {
@@ -120,10 +120,10 @@ public class editQuestion implements Listener {
                     edit.setCorrectAnswer(message);
                     sender.sendMessage(new ComponentBuilder(message).color(ChatColor.AQUA).create());
                 }
-                edit.setPosition("categories");
+                edit.setConType(QuestionConversationType.CATEGORIES);
                 sendCategories(sender,edit);
                 break;
-            case "numberAnswer":
+            case NUMBERANSWER:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
@@ -135,10 +135,10 @@ public class editQuestion implements Listener {
                         return;
                     }
                 }
-                edit.setPosition("deviation");
+                edit.setConType(QuestionConversationType.TOLERANCE);
                 sender.sendMessage(new ComponentBuilder("[Tolerance] "+edit.getDeviation()).color(ChatColor.DARK_GREEN).create());
                 break;
-            case "deviation":
+            case TOLERANCE:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Choice kept.");
                 }else {
@@ -150,10 +150,10 @@ public class editQuestion implements Listener {
                         return;
                     }
                 }
-                edit.setPosition("categories");
+                edit.setConType(QuestionConversationType.CATEGORIES);
                 sendCategories(sender,edit);
                 break;
-            case "categories":
+            case CATEGORIES:
                 if(message.equals("!keep")){
                     PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.YELLOW+"Categories are kept.");
                 }else {
@@ -162,7 +162,7 @@ public class editQuestion implements Listener {
                 }
                 QuizEditQuestion.cancel(sender);
                 edit.addQuestion();
-                PluginData.getMessageUtil().sendInfoMessage(sender,"Changes saved. Do /newgame end when done.");
+                PluginData.getMessageUtil().sendInfoMessage(sender,"Changes saved. Do /newgame accept when done.");
                 break;
         }
     }

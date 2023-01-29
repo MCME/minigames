@@ -2,6 +2,7 @@ package com.mcmiddleearth.minigames.quiz;
 
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
+import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
 import com.mcmiddleearth.minigames.quiz.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,7 +24,6 @@ public class QuizSubmitQuestion {
 
     private static final List<ProxiedPlayer> inSubmitConversation = new ArrayList<>();
     private static final HashMap<ProxiedPlayer,QuizSubmitQuestion> submitSave = new HashMap<>();
-    private boolean answeresSet = false;
     private final QuestionType type;
     private String questionText = null;
     private String aText = null;
@@ -36,12 +36,14 @@ public class QuizSubmitQuestion {
     private Integer deviation = null;
     private String categories = null;
     private final QuizGame game;
+    private QuestionConversationType conType;
 
     public QuizSubmitQuestion(ProxiedPlayer player,QuestionType type){
         inSubmitConversation.add(player);
         submitSave.put(player,this);
         this.type = type;
         game = new QuizGame(null,"submitQuestions");
+        conType = QuestionConversationType.QUESTION;
     }
 
     public static void cancel(ProxiedPlayer player){
@@ -51,46 +53,32 @@ public class QuizSubmitQuestion {
 
     public QuestionType getType(){return type;}
 
-    public String getQuestionText(){return questionText;}
     public void setQuestionText(String text){questionText = text;}
 
-    public String getaText(){return aText;}
     public void setaText(String text){aText = text;}
 
-    public String getbText(){return bText;}
     public void setbText(String text){bText = text;}
 
-    public String getcText(){return cText;}
     public void setcText(String text){cText = text;}
 
-    public String getdText(){return dText;}
     public void setdText(String text){dText = text;}
 
-    public String getCorrectAnswer(){return correctAnswer;}
     public void setCorrectAnswer(String correctAnswer){
         this.correctAnswer = correctAnswer;
-        answeresSet = true;
     }
 
-    public String getFreeText(){return freeText;}
     public void setFreeText(String text){
         freeText = text;
-        answeresSet = true;
     }
 
-    public Integer getNumberText(){return numberText;}
     public void setNumberText(Integer numberText){this.numberText = numberText;}
 
-    public Integer getDeviation(){return deviation;}
     public void setDeviation(Integer deviation){
         this.deviation = deviation;
-        answeresSet = true;
     }
 
     public String getCategories(){return categories;}
     public void setCategories(String categories){this.categories = categories;}
-
-    public boolean answeresSet(){return answeresSet;}
 
     public void saveQuestion(){
         try {
@@ -122,6 +110,9 @@ public class QuizSubmitQuestion {
             Logger.getLogger(QuizSubmitQuestion.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void setConType(QuestionConversationType conType){this.conType = conType;}
+    public QuestionConversationType getConType(){return conType;}
 
     public static boolean inConversation(ProxiedPlayer player){
         return inSubmitConversation.contains(player);

@@ -1,6 +1,7 @@
 package com.mcmiddleearth.minigames.quiz;
 
 import com.mcmiddleearth.minigames.game.QuizGame;
+import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
 import com.mcmiddleearth.minigames.quiz.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
 import net.md_5.bungee.api.ChatColor;
@@ -27,13 +28,13 @@ public class QuizEditQuestion {
     private String bText = null;
     private String cText = null;
     private String dText = null;
-    private String position;
+    private QuestionConversationType conType;
 
     public QuizEditQuestion(ProxiedPlayer player,int index){
         game = (QuizGame) PluginData.getGame("review");
         if(game != null){
             this.index = index;
-            position = "question";
+            conType = QuestionConversationType.QUESTION;
             question = game.getQuestions().get(index);
             type = question.getType();
             inEditConversation.add(player);
@@ -97,8 +98,8 @@ public class QuizEditQuestion {
         game.addQuestion(question,-1);
     }
 
-    public void setPosition(String position){this.position = position;}
-    public String getPosition(){return position;}
+    public void setConType(QuestionConversationType conType){this.conType = conType;}
+    public QuestionConversationType getConType(){return conType;}
 
     public static boolean inConversation(ProxiedPlayer player){
         return inEditConversation.contains(player);
