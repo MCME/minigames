@@ -390,6 +390,6 @@ public class QuizGameCommandHandler {
         PluginData.getMessageUtil().sendInfoMessage(cs, "A quiz game with all submitted questions was created to review.");
         cs.sendMessage(new ComponentBuilder("Submitted questions saved in file: "+ filename).color(ChatColor.AQUA).create());
         cs.sendMessage(new ComponentBuilder("Don't forget to delete when no loger needed:").color(ChatColor.AQUA).create());
-        cs.sendMessage(new ComponentBuilder("/game delete quiz "+filename).color(ChatColor.DARK_AQUA).create());
+        cs.sendMessage(new ComponentBuilder("/newgame delete quiz "+filename).color(ChatColor.DARK_AQUA).create());
     }
 }

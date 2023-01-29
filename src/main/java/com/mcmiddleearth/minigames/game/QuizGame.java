@@ -51,6 +51,8 @@ public class QuizGame extends AbstractGame{
 
     private List<ProxiedPlayer> inQuizConversation = new ArrayList<>();
 
+    private HashMap<ProxiedPlayer,Integer> scores = new HashMap<>();
+
     private boolean acceptConversation = false;
 
     private ScheduledTask timerTask;
@@ -84,7 +86,7 @@ public class QuizGame extends AbstractGame{
         ((QuizGameScoreboard)getBoard()).stopQuestion();
         if(!hasNextQuestion()) {
             if(!announceWinner(false)) {
-                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
+                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /newgame winner");
             }
         }
         cancelTimerTask();
@@ -97,6 +99,7 @@ public class QuizGame extends AbstractGame{
     }
 
     public void removeQuizConversation(ProxiedPlayer player){
+        ((QuizGameScoreboard)getBoard()).playerFinished();
         inQuizConversation.remove(player);
     }
 
@@ -233,15 +236,27 @@ public class QuizGame extends AbstractGame{
     }
 
     @Override
+    public void addPlayer(ProxiedPlayer player){
+        super.addPlayer(player);
+        scores.put(player,0);
+    }
+
+    @Override
     public void kickPlayer(ProxiedPlayer player){
         super.kickPlayer(player);
-        inQuizConversation.remove(player);
+        removeQuizConversation(player);
+        scores.remove(player);
+        if(!allAnswered)
+            setAllAnswered();
     }
 
     @Override
     public void removePlayer(ProxiedPlayer player){
         super.removePlayer(player);
-        inQuizConversation.remove(player);
+        removeQuizConversation(player);
+        scores.remove(player);
+        if(!allAnswered)
+            setAllAnswered();
     }
 
     private void sendQuestionToPlayer(ProxiedPlayer player, AbstractQuestion question){
@@ -288,7 +303,7 @@ public class QuizGame extends AbstractGame{
         List<ProxiedPlayer> winner = new ArrayList<>();
         boolean equalMaxScore = true;
         for(ProxiedPlayer player: getPlayers()) {
-            int score = ((QuizGameScoreboard)getBoard()).getScore(player);
+            int score = scores.get(player);
             if(score>maxScore) {
                 maxScore = score;
                 winner.clear();
@@ -301,18 +316,19 @@ public class QuizGame extends AbstractGame{
             }
         }
         if(winner.size()>0 && (allowEqual || winner.size()==1)) {
+            String winnerNames = "";
             for(ProxiedPlayer player: winner) {
                 //getWinHighscore().setQuizWin(player.getUniqueId());
                 PluginData.getMessageUtil().sendInfoMessage(player,ChatColor.GOLD+"Congrats, You won the quiz game.");
-                String winnerNames = winner.get(0).getName();
+                winnerNames = winner.get(0).getName();
                 for(int i=1;i<winner.size()-1;i++) {
                     winnerNames = winnerNames + ", "+winner.get(i).getName();
                 }
                 if(winner.size()>1) {
                     winnerNames = winnerNames + " and "+winner.get(winner.size()-1).getName();
                 }
-                notifyGame("Game Over, "+winnerNames+" won the quiz.");
             }
+            notifyGame("Game Over, "+winnerNames+" won the quiz.");
             return true;
         }
         return false;
@@ -321,6 +337,8 @@ public class QuizGame extends AbstractGame{
     public void clearQuestions(){
         if(!allAnswered)
             setAllAnswered();
+        for(ProxiedPlayer player: scores.keySet())
+            scores.replace(player,0);
         questions.clear();
         ((QuizGameScoreboard)getBoard()).clearQuestions();
         resetQuestions();
@@ -328,6 +346,7 @@ public class QuizGame extends AbstractGame{
     }
 
     public void incrementScore(ProxiedPlayer player) {
+        scores.replace(player,scores.get(player)+1);
         ((QuizGameScoreboard)getBoard()).score(player);
     }
 
@@ -367,6 +386,8 @@ public class QuizGame extends AbstractGame{
                 for(AbstractQuestion question: newQuestions) {
                     addQuestion(question,-1);
                 }
+                ((QuizGameScoreboard)getBoard()).updateQuiz(questions.size());
+                PluginData.getMessageUtil().sendInfoMessage(getManager(), String.valueOf(questions.size()));
             }
         } catch (FileNotFoundException ex) {
             MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);

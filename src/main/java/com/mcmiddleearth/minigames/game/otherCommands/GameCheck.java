@@ -17,7 +17,7 @@ public class GameCheck {
             PluginData.getMessageUtil().sendInfoMessage(sender,"Running games (click to join):");
             for(String game : PluginData.getGames()){
                 PluginData.getMessageUtil().sendClickableInfoMessage(((MinigameCommandSender)sender).getCommandSender(), Style.HIGHLIGHT+PluginData.getGame(game).getManager().getName()
-                        +Style.INFO+": Do "+ Style.STRESSED+"/tour join "+game+Style.INFO+" to join this tour.","/tour join "+game);
+                        +Style.INFO+": Do "+ Style.STRESSED+"/newgame join "+game+Style.INFO+" to join this tour.","/newgame join "+game);
             }
         }
     }

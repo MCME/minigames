@@ -1,6 +1,7 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -11,6 +12,8 @@ import net.md_5.bungee.protocol.packet.ScoreboardDisplay;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
 import net.md_5.bungee.protocol.packet.ScoreboardScore;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +39,9 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
     private final List<String> players = new ArrayList<>();
 
     private ScheduledTask timerTask;
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/ddHH:mm:ss");
+    private String currentName;
 
     private final String name = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz"));
     private final String name2 = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz2"));
@@ -111,6 +117,7 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         score.setItemName(player.getDisplayName());
         scores.put(player,score);
 
+        updateQuiz();
         quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
         updateObjective(quizObjective);
         updateDisplay(quizDisplay);
@@ -132,41 +139,75 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
     }
 
     private void updateTimer(){
-        timerDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(currentQuestion))));
-        timerObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(currentQuestion))));
-        answerTime.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(currentQuestion))));
-        unfinishedScore.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(currentQuestion))));
+        setCurrentName();
+        timerDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
+        timerObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
+        answerTime.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
+        unfinishedScore.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
     }
 
     private void updateQuiz(){
-        quizObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(-currentQuestion))));
-        quizDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(-currentQuestion))));
+        setCurrentName();
+        quizObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
+        quizDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
         for(ScoreboardScore score: scores.values())
-            score.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(String.valueOf(-currentQuestion))));
+            score.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
     }
 
     public void addQuestion(){
         questionCount++;
-        timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-    }
-
-    public void removeQuestion(){
-        questionCount--;
-        timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-    }
-
-    public void restart(){
-        currentQuestion = 0;
         updateQuiz();
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        //timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
         updateObjective(quizObjective);
         for(ScoreboardScore score: scores.values())
             updateScore(score);
         updateDisplay(quizDisplay);
     }
 
+    public void removeQuestion(){
+        questionCount--;
+        updateQuiz();
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        //timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        updateObjective(quizObjective);
+        for(ScoreboardScore score: scores.values())
+            updateScore(score);
+        updateDisplay(quizDisplay);
+    }
+
+    public void restart(){
+        currentQuestion = 0;
+        questionCount = 0;
+        updateQuiz();
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        updateObjective(quizObjective);
+        for(ScoreboardScore score: scores.values()) {
+            score.setValue(0);
+            updateScore(score);
+        }
+        updateDisplay(quizDisplay);
+    }
+
     public void clearQuestions(){
         questionCount = 0;
         restart();
+    }
+
+    public void updateQuiz(Integer questionCount){
+        this.questionCount = questionCount;
+        updateQuiz();
+        quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
+        updateObjective(quizObjective);
+        for(ScoreboardScore score: scores.values()) {
+            score.setValue(0);
+            updateScore(score);
+        }
+        updateDisplay(quizDisplay);
+    }
+
+    private void setCurrentName(){
+        currentName = ComponentSerializer.toString(TextComponent.fromLegacyText(dtf.format(LocalDateTime.now())));
     }
 
     public void stopQuestion(){

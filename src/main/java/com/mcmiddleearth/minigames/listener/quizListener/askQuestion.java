@@ -52,8 +52,6 @@ public class askQuestion implements Listener {
             }
         }
         game.removeQuizConversation(sender);
-        if(game.allAnswered())
-            game.setAllAnswered();
         sender.sendMessage(new ComponentBuilder("[Your answer] "+answer).color(ChatColor.AQUA).create());
         if(question.isCorrectAnswer(answer)){
             game.incrementScore(sender);
@@ -71,5 +69,7 @@ public class askQuestion implements Listener {
             }else
                 PluginData.getMessageUtil().sendInfoMessage(sender,"You failed to answer this Question correctly. Correct answer: "+question.getCorrectAnswer());
         }
+        if(game.allAnswered())
+            game.setAllAnswered();
     }
 }
