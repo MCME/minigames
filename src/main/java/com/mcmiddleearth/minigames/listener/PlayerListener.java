@@ -6,6 +6,7 @@ import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -21,6 +22,14 @@ public class PlayerListener implements Listener {
                 if(event.getPlayer().getName().equalsIgnoreCase(game.getManager().getName()))
                     game.returnedManager(game.getManager());
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void playerSwitchServer(ServerSwitchEvent event){
+        if(PluginData.isInGame(event.getPlayer())){
+            AbstractGame game = PluginData.getGame(event.getPlayer());
+            game.getBoard().switchServer(event.getPlayer());
         }
     }
 

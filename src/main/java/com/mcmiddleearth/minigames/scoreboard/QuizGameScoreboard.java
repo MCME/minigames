@@ -222,4 +222,12 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         unfinishedScore.setValue(unfinishedScore.getValue()-1);
         updateScore(unfinishedScore);
     }
+
+    @Override
+    public void switchServer(ProxiedPlayer player){
+        super.switchServer(player);
+        player.unsafe().sendPacket(quizObjective);
+        player.unsafe().sendPacket(quizDisplay);
+        player.unsafe().sendPacket(scores.get(player));
+    }
 }

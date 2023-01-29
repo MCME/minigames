@@ -57,6 +57,8 @@ public abstract class AbstractGameScoreboard {
         player.unsafe().sendPacket(objective);
         player.unsafe().sendPacket(display);
     }
+
+    public void switchServer(ProxiedPlayer player){}
     /*
     public void incrementPlayer(){
         playerCountScore.setValue(playerCountScore.getValue()+1);
