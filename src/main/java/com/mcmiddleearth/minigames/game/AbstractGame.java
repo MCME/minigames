@@ -2,10 +2,12 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
+import com.mcmiddleearth.minigames.util.ChatRanks;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
@@ -158,8 +160,17 @@ public abstract class AbstractGame {
         }
     }
 
-    public void tourChat(ProxiedPlayer player, String message){
-
+    public void gameChat(ProxiedPlayer player, String message){
+        String chatMessage;
+        if(player.getName().equals("Jubo"))
+            chatMessage = ChatRanks.GAME_MASTER.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
+        else if(player.equals(manager))
+            chatMessage = ChatRanks.MANAGER.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
+        else
+            chatMessage = ChatRanks.Participant.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
+        for(ProxiedPlayer receiver: players){
+            receiver.sendMessage(new ComponentBuilder(chatMessage).create());
+        }
     }
 
     public String getGameChatTag(ProxiedPlayer player) {

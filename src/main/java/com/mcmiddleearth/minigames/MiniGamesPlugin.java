@@ -24,6 +24,12 @@ public final class MiniGamesPlugin extends Plugin {
 
     private static MiniGamesPlugin instance;
 
+    /*
+    TODO:
+        werewolf:
+            rework the voting system (maybe clickable?)
+     */
+
     @Override
     public void onEnable() {
         instance = this;
@@ -37,7 +43,7 @@ public final class MiniGamesPlugin extends Plugin {
         ProxyServer.getInstance().getPluginManager().registerListener(this,new editQuestion());
         ProxyServer.getInstance().getPluginManager().registerListener(this,new askQuestion());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this,new MinigamesPluginCommand(new GcCommandHandler("gc"),"gc"));
+        ProxyServer.getInstance().getPluginManager().registerCommand(this,new MinigamesPluginCommand(new GcCommandHandler("ngc"),"ngc"));
         ProxyServer.getInstance().getPluginManager().registerCommand(this,new MinigamesPluginCommand(new GameCommandHandler("newGame"),"newGame"));
     }
 

@@ -9,7 +9,7 @@ commands:
   newGame:
     description: manage MiniGames plugin
     usage: TBA
-  gc:
+  ngc:
     description: MiniGames chat message
     usage: /gc <message> Sends a message to all participants of the MiniGame
 
