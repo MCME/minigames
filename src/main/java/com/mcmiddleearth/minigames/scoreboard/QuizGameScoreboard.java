@@ -169,7 +169,6 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         questionCount--;
         updateQuiz();
         quizObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        //timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
         updateObjective(quizObjective);
         for(ScoreboardScore score: scores.values())
             updateScore(score);

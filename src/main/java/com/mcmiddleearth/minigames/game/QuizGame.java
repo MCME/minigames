@@ -387,7 +387,6 @@ public class QuizGame extends AbstractGame{
                     addQuestion(question,-1);
                 }
                 ((QuizGameScoreboard)getBoard()).updateQuiz(questions.size());
-                PluginData.getMessageUtil().sendInfoMessage(getManager(), String.valueOf(questions.size()));
             }
         } catch (FileNotFoundException ex) {
             MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);
