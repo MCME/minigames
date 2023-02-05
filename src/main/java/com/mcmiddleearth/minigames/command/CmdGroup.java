@@ -32,7 +32,8 @@ public enum CmdGroup {
     GEO_GUESSR      ("GEO"),
     CATCH           ("Catch"),
     MANHUNT         ("Manhunt"),
-    WEREWOLF        ("Werewolf");
+    WEREWOLF        ("Werewolf"),
+    JUMP            ("Jump");
 
     private final String name;
 

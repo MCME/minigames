@@ -74,6 +74,8 @@ public class PluginData {
 
     public static Integer startTimer = 0;
     private static BukkitRunnable timerTask;
+
+    private static FileConfiguration werewolfBooksConfig;
     
     static {
         if(!MiniGamesPlugin.getPluginInstance().getDataFolder().exists()) {
@@ -274,6 +276,7 @@ public class PluginData {
         } catch (FileNotFoundException | ParseException ex) {
             Logger.getLogger(PluginData.class.getName()).log(Level.INFO, "No submitted questions found.");
         }
+        werewolfBooksConfig = YamlConfiguration.loadConfiguration(new File(PluginData.getWerewolfDir(),"werewolfConfig.yml"));
     }
     
     public static boolean areValidCategories(String categories) {
@@ -309,7 +312,7 @@ public class PluginData {
         timerTask = new BukkitRunnable(){
             @Override
             public void run(){
-                if(startTimer==0) return;
+                if(startTimer==0) timerTask.cancel();
                 if(startTimer == 60 || startTimer == 30 || startTimer == 10) {
                     if (player != null && connectPlugin != null && connectPlugin.isEnabled()) {
                         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -328,6 +331,8 @@ public class PluginData {
         };
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(),1,20);
     }
+
+    public static FileConfiguration getWerewolfBooks() {return werewolfBooksConfig;}
 
     public static MessageUtil getMessageUtil() {
         return messageUtil;

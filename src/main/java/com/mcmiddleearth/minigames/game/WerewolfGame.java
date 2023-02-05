@@ -74,6 +74,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private final Material playerCountButton = Material.PLAYER_HEAD;
     private final Material playerCountZeroButton = Material.SKELETON_SKULL;
 
+
+    //TODO:
+    // /game reset
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
         this.manager = manager;
@@ -89,7 +92,8 @@ public class WerewolfGame extends AbstractGame implements Listener {
         this.roles = new WerewolfRoles();
         configSetup();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Werewolf", BarColor.WHITE, BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"Werewolf");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -121,12 +125,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         sendPlayerRevived(manager,player);
     }
 
-    public void pardon(Player player){
+    public void pardon(){
         ((WerewolfGameScoreboard)getBoard()).reset();
         voted.clear();
         upForVote = false;
+        sendPlayerPardoned(votee);
         votee = null;
-        sendPlayerPardoned(player);
     }
 
     public void putUpVote(Player player){
@@ -526,8 +530,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     @Override
     public void playerMove(PlayerMoveEvent event){
-        super.playerMove(event);
-        event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
+        //super.playerMove(event);
+        //event.getPlayer().-
+        //event.getPlayer().stopSound(Sound.STE);
+        //event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
     }
 
     @Override

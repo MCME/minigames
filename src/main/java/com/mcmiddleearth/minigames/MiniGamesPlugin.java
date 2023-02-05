@@ -5,6 +5,7 @@
  */
 package com.mcmiddleearth.minigames;
 
+import com.mcmiddleearth.minigames.bungee.Channel;
 import com.mcmiddleearth.minigames.command.GCCommandExecutor;
 import com.mcmiddleearth.minigames.command.GameCommandExecutor;
 import com.mcmiddleearth.minigames.data.PluginData;

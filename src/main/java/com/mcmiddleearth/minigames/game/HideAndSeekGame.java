@@ -75,7 +75,8 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setGlow(false);
         announceGame();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"Hide and Seek");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;

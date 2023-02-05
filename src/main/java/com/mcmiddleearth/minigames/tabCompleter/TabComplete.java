@@ -39,7 +39,7 @@ public class TabComplete implements TabCompleter {
             ,"signs","points","throwable","save");
     final List<String> commandsPlayer = Arrays.asList("vote","ban","invite","kick","manager","unban"
             ,"tphere","seeker","hunter","eliminate","pardon");
-    final List<String> commandsGametypes = Arrays.asList("geo","hide","race","quiz","manhunt");
+    final List<String> commandsGametypes = Arrays.asList("geo","hide","race","manhunt");
     final List<String> commandsQuestion = Arrays.asList("submit","review","accept","load","clear");
     final List<String> commandsLeaderboard = Arrays.asList("hide","seek","geo","race","hunt","manhunthide");
 
