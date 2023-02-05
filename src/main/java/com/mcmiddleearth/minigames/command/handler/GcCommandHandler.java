@@ -27,7 +27,7 @@ public class GcCommandHandler extends AbstractCommandHandler {
         helpfulLiteralBuilder
                 .requires(sender -> (sender instanceof MinigameCommandSender))
                 .requires(sender -> PluginData.isInGame(sender) && PluginData.hasPermission(sender, Permission.USER))
-                .then(HelpfulRequiredArgumentBuilder.argument("test",greedyString())
+                .then(HelpfulRequiredArgumentBuilder.argument("text",greedyString())
                         .executes(context -> sendToGameChat(context.getSource(), context.getArgument("text",String.class))));
         return helpfulLiteralBuilder;
     }

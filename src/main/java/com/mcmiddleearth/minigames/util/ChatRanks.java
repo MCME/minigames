@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.util;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * @author Jubo
