@@ -42,7 +42,7 @@ public class PlayerListener implements Listener {
             }else{
                 game.removePlayer(event.getPlayer());
             }
-            MinigameCommandSender.removeMcmePlayer(event.getPlayer());
         }
+        MinigameCommandSender.removeMcmePlayer(event.getPlayer());
     }
 }
