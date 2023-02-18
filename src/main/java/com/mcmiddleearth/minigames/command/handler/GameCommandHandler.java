@@ -6,10 +6,7 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.command.argument.*;
-import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.game.GameType;
-import com.mcmiddleearth.minigames.game.GeoGame;
-import com.mcmiddleearth.minigames.game.QuizGame;
+import com.mcmiddleearth.minigames.game.*;
 import com.mcmiddleearth.minigames.game.otherCommands.GameCheck;
 import com.mcmiddleearth.minigames.util.Permission;
 import com.mcmiddleearth.minigames.util.PluginData;
@@ -94,6 +91,12 @@ public class GameCommandHandler extends AbstractCommandHandler {
                         .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER))
                         .then(HelpfulRequiredArgumentBuilder.argument("gametype",new CommandGameTypeArgument())
                                 .executes(context -> doCommand(context.getSource(), "files",context.getArgument("gametype",String.class)))))
+                .then(HelpfulLiteralBuilder.literal("hiddenlist")
+                        .withHelpText("Shows all hidden Players.")
+                        .withTooltip("Can give everyone in the game a list of all hidden players´.")
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.USER) && PluginData.isInGame(sender)
+                                && (PluginData.isCorrectGameType(sender,GameType.HIDE_AND_SEEK) || PluginData.isCorrectGameType(sender,GameType.MANHUNT)))
+                        .executes(context -> doCommand(context.getSource(), "hiddenlist", null)))
                 .then(HelpfulLiteralBuilder.literal("info")
                         .withHelpText("Displays information about a game.")
                         .withTooltip("Displays the manager and the number of players participating oin a game.")
@@ -214,10 +217,14 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 GameType type = GameType.getGameType(args[0]);
                 switch (type){
                     case GEO_GUESSR:
-                        sendNotImplementedYetMessage(sender);
+                        game = new GeoGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
+                        PluginData.addGame(game);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"The geo game was created.");
                         break;
                     case HIDE_AND_SEEK:
-                        sendNotImplementedYetMessage(sender);
+                        game = new HideGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
+                        PluginData.addGame(game);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"The hide game was created.");
                         break;
                     case LORE_QUIZ:
                         game = new QuizGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
@@ -225,13 +232,19 @@ public class GameCommandHandler extends AbstractCommandHandler {
                         PluginData.getMessageUtil().sendInfoMessage(sender,"The quiz game was created.");
                         break;
                     case MANHUNT:
-                        sendNotImplementedYetMessage(sender);
+                        game = new ManhuntGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
+                        PluginData.addGame(game);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"The manhunt game was created.");
                         break;
                     case RACE:
-                        sendNotImplementedYetMessage(sender);
+                        game = new RaceGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
+                        PluginData.addGame(game);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"The race game was created.");
                         break;
                     case WEREWOLF:
-                        sendNotImplementedYetMessage(sender);
+                        game = new WerewolfGame((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),args[1]);
+                        PluginData.addGame(game);
+                        PluginData.getMessageUtil().sendInfoMessage(sender,"The werewolf was created.");
                         break;
                 }
                 break;
@@ -265,6 +278,9 @@ public class GameCommandHandler extends AbstractCommandHandler {
                 game.endGame();
                 break;
             case "files":
+                sendNotImplementedYetMessage(sender);
+                break;
+            case "hiddenlist":
                 sendNotImplementedYetMessage(sender);
                 break;
             case "info":

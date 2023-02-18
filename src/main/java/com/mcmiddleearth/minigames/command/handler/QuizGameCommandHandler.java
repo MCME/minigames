@@ -39,18 +39,6 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
  */
 public class QuizGameCommandHandler {
 
-    /*
-    TODO:
-     test clear questions       issues with the scoreboard, rest is working
-     test winner    x
-     test stat      x
-     test load and save quiz    x
-     figure confirmation listener out, also really important for submitting questions and stuff     x
-     create the accept conversation     x
-     test delete        x
-     test acceptquestion        x
-     */
-
     private final GameType type = GameType.LORE_QUIZ;
 
     public QuizGameCommandHandler(){}
