@@ -6,10 +6,10 @@ author: Jubo, Eriol_Eandur
 api-version: 1.18
 
 commands:
-  newGame:
+  game:
     description: manage MiniGames plugin
     usage: TBA
-  ngc:
+  gc:
     description: MiniGames chat message
     usage: /gc <message> Sends a message to all participants of the MiniGame
 

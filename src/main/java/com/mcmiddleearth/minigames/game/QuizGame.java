@@ -86,7 +86,7 @@ public class QuizGame extends AbstractGame{
         ((QuizGameScoreboard)getBoard()).stopQuestion();
         if(!hasNextQuestion()) {
             if(!announceWinner(false)) {
-                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /newgame winner");
+                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
             }
         }
         cancelTimerTask();

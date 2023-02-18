@@ -16,7 +16,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void playerJoin(PostLoginEvent event){
         if(PluginData.gameRunning()){
-            PluginData.getMessageUtil().sendInfoMessage(event.getPlayer(),"A game is currently running. Do "+ Style.HIGHLIGHT+"/newgame check "+ Style.INFO+" for more information.");
+            PluginData.getMessageUtil().sendInfoMessage(event.getPlayer(),"A game is currently running. Do "+ Style.HIGHLIGHT+"/game check "+ Style.INFO+" for more information.");
             for(String gameName : PluginData.getGames()){
                 AbstractGame game = PluginData.getGame(gameName);
                 if(event.getPlayer().getName().equalsIgnoreCase(game.getManager().getName()))

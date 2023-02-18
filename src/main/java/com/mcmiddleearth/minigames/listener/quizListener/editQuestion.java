@@ -162,7 +162,7 @@ public class editQuestion implements Listener {
                 }
                 QuizEditQuestion.cancel(sender);
                 edit.addQuestion();
-                PluginData.getMessageUtil().sendInfoMessage(sender,"Changes saved. Do /newgame accept when done.");
+                PluginData.getMessageUtil().sendInfoMessage(sender,"Changes saved. Do /game accept when done.");
                 break;
         }
     }

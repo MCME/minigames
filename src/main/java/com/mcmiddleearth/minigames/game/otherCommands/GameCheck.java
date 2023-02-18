@@ -17,7 +17,7 @@ public class GameCheck {
             for(String game : PluginData.getGames()){
                 PluginData.getMessageUtil().sendClickableInfoMessage(((MinigameCommandSender)sender).getCommandSender()
                         , Style.HIGHLIGHT+PluginData.getGame(game).getManager().getName()
-                        +Style.INFO+": Do "+ Style.STRESSED+"/newgame join "+game+Style.INFO+" to join this game.","/newgame join "+game);
+                        +Style.INFO+": Do "+ Style.STRESSED+"/game join "+game+Style.INFO+" to join this game.","/game join "+game);
             }
         }
     }

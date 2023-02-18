@@ -186,9 +186,9 @@ public abstract class AbstractGame {
         announced = true;
         String message = Style.INFO+PluginData.getMessageUtil().getPREFIX()+Style.STRESSED+manager.getName()+Style.INFO+
                 " started a new game "+Style.STRESSED+type.toString()+Style.INFO+" game. To play that game, type in chat: "+
-                Style.STRESSED+"/newgame join "+name+Style.INFO+" or "+Style.HIGHLIGHT+"Click here";
+                Style.STRESSED+"/game join "+name+Style.INFO+" or "+Style.HIGHLIGHT+"Click here";
         for(ProxiedPlayer player: ProxyServer.getInstance().getPlayers())
-            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/newgame join "+name);
+            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
     }
 
     public static Map<String,Boolean> getConfig(){return toggleConfig;}
