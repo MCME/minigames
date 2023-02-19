@@ -56,7 +56,7 @@ public class askQuestion implements Listener {
         if(question.isCorrectAnswer(answer)){
             game.incrementScore(sender);
             if(question instanceof NumberQuestion){
-                if(answer != question.getCorrectAnswer())
+                if(!answer.equals(question.getCorrectAnswer()))
                     PluginData.getMessageUtil().sendInfoMessage(sender,"Almost! The right answer was "+question.getCorrectAnswer()+" but you were close enough.");
                 else
                     PluginData.getMessageUtil().sendInfoMessage(sender,"You answered this Question correctly.");
