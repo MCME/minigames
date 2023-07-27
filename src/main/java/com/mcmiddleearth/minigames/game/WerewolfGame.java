@@ -40,7 +40,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private boolean throwable = true;
+    //private boolean throwable = true;
 
     private  List<OfflinePlayer> eliminated = new ArrayList<>();
     private  List<OfflinePlayer> alive = new ArrayList<>();
@@ -74,6 +74,9 @@ public class WerewolfGame extends AbstractGame implements Listener {
     private final Material playerCountButton = Material.PLAYER_HEAD;
     private final Material playerCountZeroButton = Material.SKELETON_SKULL;
 
+
+    //TODO:
+    // /game reset
     public WerewolfGame(Player manager, String name){
         super(manager,name,GameType.WEREWOLF,new WerewolfGameScoreboard());
         this.manager = manager;
@@ -83,12 +86,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
         setFlightAllowed(true);
         setGm2Forced(false);
         setCollision(true);
+        setGlow(false);
         announceGame();
 
         this.roles = new WerewolfRoles();
         configSetup();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Werewolf", BarColor.WHITE, BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"Werewolf");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -120,12 +125,12 @@ public class WerewolfGame extends AbstractGame implements Listener {
         sendPlayerRevived(manager,player);
     }
 
-    public void pardon(Player player){
+    public void pardon(){
         ((WerewolfGameScoreboard)getBoard()).reset();
         voted.clear();
         upForVote = false;
+        sendPlayerPardoned(votee);
         votee = null;
-        sendPlayerPardoned(player);
     }
 
     public void putUpVote(Player player){
@@ -481,14 +486,14 @@ public class WerewolfGame extends AbstractGame implements Listener {
     }
 
     @Override
-    public void checkThrow(PlayerInteractEvent event){
+    public void itemInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
         Material material = event.getMaterial();
-        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !throwable){
+        if((material == Material.EGG || material == Material.SNOWBALL || material == Material.FIREWORK_ROCKET) && !getThrowable()){
             player.getInventory().remove(material);
             sendYouCantDoThisMessage(player);
             event.setCancelled(true);
-        }else event.setCancelled(false);
+        }
     }
 
     public boolean sendRoleBook(Player player,String roleName){
@@ -506,9 +511,7 @@ public class WerewolfGame extends AbstractGame implements Listener {
         return false;
     }
 
-    public void switchThrowable(boolean bool){
-        this.throwable = bool;
-    }
+
 
     @Override
     public void addPlayer(Player player){
@@ -527,8 +530,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
 
     @Override
     public void playerMove(PlayerMoveEvent event){
-        super.playerMove(event);
-        event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
+        //super.playerMove(event);
+        //event.getPlayer().-
+        //event.getPlayer().stopSound(Sound.STE);
+        //event.getPlayer().stopSound(Sound.BLOCK_STONE_STEP);
     }
 
     @Override
@@ -563,6 +568,10 @@ public class WerewolfGame extends AbstractGame implements Listener {
             player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
             DynmapUtil.show(player_on);
         }
+    }
+
+    public Set<String> getRoleNames(){
+        return RoleCount.keySet();
     }
 
     public void sendAliveList(CommandSender cs){

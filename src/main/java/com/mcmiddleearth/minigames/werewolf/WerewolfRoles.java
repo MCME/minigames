@@ -12,13 +12,10 @@ import java.util.*;
  * @author Jubo
  */
 public class WerewolfRoles {
-
-    private File file;
     private FileConfiguration config;
 
     public WerewolfRoles() {
-        this.file = new File(PluginData.getWerewolfDir(),"werewolfConfig.yml");
-        config = YamlConfiguration.loadConfiguration(file);
+        config = PluginData.getWerewolfBooks();
     }
 
     public Map<String,Object> getRoles(){

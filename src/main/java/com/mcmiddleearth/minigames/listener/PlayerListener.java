@@ -45,13 +45,15 @@ public class PlayerListener implements Listener{
         }
     }
 
+
     @EventHandler
-    public void checkThrow(PlayerInteractEvent event){
+    public void itemInteract(PlayerInteractEvent event){
         if(PluginData.isInGame(event.getPlayer())){
             AbstractGame game = PluginData.getGame(event.getPlayer());
-            game.checkThrow(event);
+            game.itemInteract(event);
         }
     }
+
 
     @EventHandler
     public void playerQuit(PlayerQuitEvent event) {

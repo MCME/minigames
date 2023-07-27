@@ -1,5 +1,6 @@
 package com.mcmiddleearth.minigames.command;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
@@ -7,6 +8,7 @@ import com.mcmiddleearth.minigames.game.GeoGuessrGame;
 import com.mcmiddleearth.pluginutil.StringUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
@@ -36,21 +38,29 @@ public class GeoGameRound extends AbstractGameCommand{
             }
             else{
                 int radius = StringUtil.parseInt(args[0]);
+                int time = 0;
                 if(radius >= 5) {
+                    if(!geogame.isStarted()){
+                       time = PluginData.getTimer();
+                        PluginData.startTimerRunnable((Player)cs);
+                    }
                     geogame.setGuessRadius(radius);
                     if(args.length>1){
                         int guessTime = StringUtil.parseInt(args[1]);
                         geogame.setGuessTime(guessTime);
                     }
-                    geogame.sendRound();
-                }else
-                {
+                    BukkitRunnable waitTask;
+                    waitTask = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            geogame.sendRound();
+                        }
+                    };
+                    waitTask.runTaskLater(MiniGamesPlugin.getPluginInstance(),(20L*time)+1);
+                }else {
                     sendRadiusToSmall(cs);
                 }
-
-
             }
-
         }
     }
     private void sendRadiusToSmall(CommandSender cs){

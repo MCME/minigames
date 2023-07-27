@@ -19,7 +19,6 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -73,9 +72,11 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(true);
+        setGlow(false);
         announceGame();
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"Hide and Seek",BarColor.WHITE,BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"Hide and Seek");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -156,7 +157,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
                 unhidePlayer(player);
             }
             player.setDisplayName(player.getName());
-            player.setGlowing(false);
             forceTeleport(player,getWarp());
             //bar.removePlayer(player);
         }
@@ -183,7 +183,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         team.removeEntry(player.getName());
         DynmapUtil.show(player);
         player.setSilent(false);
-        player.setGlowing(false);
     }
     
     private void revealPlayer(Player player) {
@@ -206,7 +205,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         super.removePlayer(player);
         if(player.isOnline()){
             Player player_on = (Player) player;
-            player_on.setGlowing(false);
             bar.removePlayer(player_on);
         }
         if(seeker != null && PlayerUtil.isSame(player,seeker)) {
@@ -295,7 +293,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
@@ -360,7 +358,7 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
     }
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent event) {
         if (!hiddenPlayers.isEmpty() && seeker != null) {
             if (hiddenPlayers.contains(event.getPlayer()) || seeker.equals(event.getPlayer())) {
@@ -472,12 +470,6 @@ public class HideAndSeekGame extends AbstractGame implements Listener {
         }
         PluginData.getMessageUtil().sendInfoMessage(player, "These are the still hidden players:");
         PluginData.getMessageUtil().sendInfoMessage(player, hiddenPlayers.toString());
-    }
-
-    public void setGlow(Player manager, boolean allowed){
-        for(Player player: getOnlinePlayers()){
-            player.setGlowing(allowed);
-        }
     }
 
     public void setSeekTime(int seekTime) {

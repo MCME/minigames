@@ -8,6 +8,10 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
+/**
+ *
+ * @author Jubo
+ */
 public class ManhuntGameScoreboard extends GameScoreboard{
 
     private final Objective hidingObjective;
@@ -18,8 +22,8 @@ public class ManhuntGameScoreboard extends GameScoreboard{
     private final Score hiddenPlayerScore;
     private final Score locatedPlayerScore;
 
-    private static String title = "Seeker: ";
-    private static String playerCountTitle = "Next Seeker: ";
+    private static String title = "Game running";
+    private static String playerCountTitle = "Game starting";
 
     private BukkitRunnable timerTask;
 
@@ -36,9 +40,9 @@ public class ManhuntGameScoreboard extends GameScoreboard{
         locatedPlayerScore = seekingObjective.getScore(ChatColor.GREEN+"located Players: ");
     }
 
-    public void startHiding(String seeker, int hidingTime,BossBar bar) {
-        hidingObjective.setDisplayName("Seeker: "+seeker);
-        seekingObjective.setDisplayName("Seeker: "+seeker);
+    public void startHiding(int hidingTime,BossBar bar) {
+        hidingObjective.setDisplayName(title);
+        seekingObjective.setDisplayName(title);
         hidingTimeScore.setScore(hidingTime);
         hidingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         double progress = 1.0 / hidingTime;
@@ -59,9 +63,9 @@ public class ManhuntGameScoreboard extends GameScoreboard{
         timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);
     }
 
-    public void startSeeking(int seekingTime,BossBar bar) {
+    public void startSeeking(int seekingTime,BossBar bar, int seekerCount) {
         seekingTimeScore.setScore(seekingTime);
-        hiddenPlayerScore.setScore(getPlayerCount()-1);
+        hiddenPlayerScore.setScore(getPlayerCount()-seekerCount);
         locatedPlayerScore.setScore(0);
         seekingObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         double progress = 1.0 / seekingTime;
@@ -83,31 +87,20 @@ public class ManhuntGameScoreboard extends GameScoreboard{
     }
 
     public void stop() {
-        setSeeker("?");
         getPlayerCountObjective().setDisplaySlot(DisplaySlot.SIDEBAR);
         if(timerTask!=null) {
             timerTask.cancel();
         }
         timerTask = null;
-        title = "Seeker: ";
-        playerCountTitle = "Next Seeker: ";
+        title = "Game running";
+        playerCountTitle = "Game starting";
         hidingObjective.setDisplayName("Test");
         seekingObjective.setDisplayName("Test2");
-        getPlayerCountObjective().setDisplayName("Test3");
+        getPlayerCountObjective().setDisplayName("Game finished");
     }
 
     public void locatePlayer() {
         hiddenPlayerScore.setScore(hiddenPlayerScore.getScore()-1);
         locatedPlayerScore.setScore(locatedPlayerScore.getScore()+1);
     }
-
-    public void setSeeker(String name) {
-        hidingObjective.setDisplayName(title+name+", ");
-        title = hidingObjective.getDisplayName();
-        seekingObjective.setDisplayName(title+name+", ");
-        getPlayerCountObjective().setDisplayName(playerCountTitle+name+", ");
-        playerCountTitle = getPlayerCountObjective().getDisplayName();
-    }
-
-
 }

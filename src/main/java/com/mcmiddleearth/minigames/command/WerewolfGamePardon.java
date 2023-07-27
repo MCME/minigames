@@ -27,11 +27,7 @@ public class WerewolfGamePardon extends AbstractGameCommand{
         if(game != null && isManager((Player)cs,game) && isCorrectGameType((Player)cs,game, GameType.WEREWOLF)){
             WerewolfGame werewolf = (WerewolfGame) game;
             OfflinePlayer player = game.getPlayer(args[0]);
-            if(player == null) {
-                sendPlayerNotFoundErrorMessage(cs);
-            }else{
-                werewolf.pardon((Player) player);
-            }
+            werewolf.pardon();
         }
     }
 

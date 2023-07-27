@@ -9,7 +9,6 @@ import com.mcmiddleearth.minigames.Permissions;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.StringUtil;
-import com.mcmiddleearth.pluginutil.message.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -60,9 +59,11 @@ public class GCCommandExecutor implements CommandExecutor {
         }
         for(Player search : Bukkit.getServer().getOnlinePlayers()) {
             if(PluginData.getGameChat(search)) {
-                Player player = search;
-                if(player!=null) {
-                    GameChatUtil.sendChatMessage(cs, player, StringUtil.concat(args));
+                if (PluginData.isInGame((Player) search)) {
+                    Player player = search;
+                    if (player != null) {
+                        GameChatUtil.sendChatMessage(cs, player, StringUtil.concat(args));
+                    }
                 }
             }
         }

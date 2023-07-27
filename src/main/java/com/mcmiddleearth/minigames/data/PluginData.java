@@ -5,6 +5,8 @@
  */
 package com.mcmiddleearth.minigames.data;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.conversation.confirmation.ConfirmationFactory;
 import com.mcmiddleearth.minigames.conversation.quiz.CreateQuestionConversationFactory;
@@ -14,10 +16,13 @@ import com.mcmiddleearth.minigames.raceCheckpoint.Checkpoint;
 import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.MessageUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
@@ -66,6 +71,11 @@ public class PluginData {
             + File.separator + "Loadouts");
 
     public static boolean pvpRunning = false;
+
+    public static Integer startTimer = 0;
+    private static BukkitRunnable timerTask;
+
+    private static FileConfiguration werewolfBooksConfig;
     
     static {
         if(!MiniGamesPlugin.getPluginInstance().getDataFolder().exists()) {
@@ -266,6 +276,7 @@ public class PluginData {
         } catch (FileNotFoundException | ParseException ex) {
             Logger.getLogger(PluginData.class.getName()).log(Level.INFO, "No submitted questions found.");
         }
+        werewolfBooksConfig = YamlConfiguration.loadConfiguration(new File(PluginData.getWerewolfDir(),"werewolfConfig.yml"));
     }
     
     public static boolean areValidCategories(String categories) {
@@ -283,6 +294,45 @@ public class PluginData {
         }
         return true;
     }
+
+    public static Integer getTimer(){
+        return startTimer;
+    }
+
+    public static void setTime(Integer time){
+        startTimer = time;
+    }
+
+    public static void startTimerRunnable(Player manager){
+        if(startTimer == 0) return;
+
+        Plugin connectPlugin = Bukkit.getPluginManager().getPlugin("MCME-Connect");
+        Player player = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        if(timerTask != null) timerTask.cancel();
+        timerTask = new BukkitRunnable(){
+            @Override
+            public void run(){
+                if(startTimer==0) timerTask.cancel();
+                if(startTimer == 60 || startTimer == 30 || startTimer == 10) {
+                    if (player != null && connectPlugin != null && connectPlugin.isEnabled()) {
+                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                        out.writeUTF("Message");
+                        out.writeUTF("ALL");
+                        String message = getMessageUtil().INFO + "The game " + getGame(manager).getName() + " will start in " + startTimer + " seconds.";
+                        out.writeUTF(message);
+                        player.sendPluginMessage(MiniGamesPlugin.getPluginInstance(), "BungeeCord", out.toByteArray());
+                        Logger.getGlobal().info("Bungee Broadcast sent! " + message);
+                    } else {
+                        getMessageUtil().sendBroadcastMessage("The game " + getGame(manager).getName() + " will start in " + startTimer + " seconds.");
+                    }
+                }
+                startTimer = startTimer - 1;
+            }
+        };
+        timerTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(),1,20);
+    }
+
+    public static FileConfiguration getWerewolfBooks() {return werewolfBooksConfig;}
 
     public static MessageUtil getMessageUtil() {
         return messageUtil;

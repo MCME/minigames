@@ -54,14 +54,14 @@ public class RaceGame extends AbstractGame {
 
     private List<Player> save = new ArrayList<>();
 
-    private boolean save_allowed = true;
+    //private boolean save_allowed = true;
 
     private String raceName = "temporaryRace";
 
     private raceHighscoreAbstract highscore;
 
     //Visibility default off because its still buggy for non donors
-    private boolean invisibile_allowed = true;
+    //private boolean invisibile_allowed = true;
     
     public RaceGame(Player manager, String name) {
         super(manager, name, GameType.RACE, new RaceGameScoreboard());
@@ -69,6 +69,7 @@ public class RaceGame extends AbstractGame {
         setTeleportAllowed(false);
         setGm2Forced(true);
         setCollision(false);
+        setGlow(false);
         ((RaceGameScoreboard)getBoard()).init(this);
     }
 
@@ -92,11 +93,13 @@ public class RaceGame extends AbstractGame {
         sendTop5(player,String.valueOf(top5));
     }
 
+    /*
     public void setSave(boolean allowed){
         save_allowed = allowed;
     }
+     */
 
-    public void setInvisbile(boolean allowed){ invisibile_allowed = allowed;}
+    //public void setInvisbile(boolean allowed){ invisibile_allowed = allowed;}
 
     @Override
     public void playerMove(PlayerMoveEvent event) {
@@ -126,7 +129,7 @@ public class RaceGame extends AbstractGame {
                                 ChatColor.BLUE+event.getPlayer().getName(),"won the race.");
                     }
                 }
-                if(invisibile_allowed) {
+                if(getInvisible()) {
                     event.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
                     if(helmet_save.containsKey(event.getPlayer().getUniqueId())){
                         event.getPlayer().getInventory().setHelmet(helmet_save.get(event.getPlayer().getUniqueId()));
@@ -211,16 +214,12 @@ public class RaceGame extends AbstractGame {
             }
         }
         player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
-
-        //bar.put(player.getUniqueId(),Bukkit.createBossBar(ChatColor.YELLOW+"Race", BarColor.YELLOW, BarStyle.SOLID));
-        //bar.get(player.getUniqueId()).setProgress(1.0);
-        //bar.get(player.getUniqueId()).setVisible(true);
     }
 
     @Override
     public void removePlayer(OfflinePlayer player) {
         super.removePlayer(player);
-        if(invisibile_allowed) {
+        if(getInvisible()) {
             if (player.isOnline()) {
                 Player player_on = (Player) player;
                 player_on.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -232,18 +231,12 @@ public class RaceGame extends AbstractGame {
         }
         if(save.contains((Player) player)){
             tp_save.remove((Player) player);
-            boolean remove = save.remove((Player) player);
+            save.remove((Player) player);
         }
     }
 
     @Override
     public void end(Player player) {
-        /*
-        for(Player p : getOnlinePlayers()){
-            bar.get(p.getUniqueId()).removePlayer(p);
-            bar.remove(p.getUniqueId());
-        }
-         */
         checkpointManager.deleteCheckpoints();
         if(steady) cagePlayer(false);
         super.end(player);
@@ -257,8 +250,6 @@ public class RaceGame extends AbstractGame {
     @Override
     public void playerTeleport(PlayerTeleportEvent event) {
         super.playerTeleport(event);
-        // block warping of racing players to the checkpoints of the race
-        // even if teleportation is allowed
         if(started && event.getCause().equals(TeleportCause_WARP)) {
             event.setCancelled(true);
         }
@@ -267,14 +258,13 @@ public class RaceGame extends AbstractGame {
     public void steady() {
         steady = true;
         started = true;
-        if(invisibile_allowed) {
+        if(getInvisible()) {
             for (Player player : getOnlinePlayers()) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
                 ItemStack helmet = player.getInventory().getHelmet();
                 if(helmet != null) {
                     player.getInventory().setHelmet(new ItemStack(Material.AIR));
                     helmet_save.put(player.getUniqueId(),helmet);
-                    //player.getInventory().addItem(helmet);
                     sendHelmetRemoved(player);
                 }
             }
@@ -282,8 +272,6 @@ public class RaceGame extends AbstractGame {
         resetNextCheckpoints();
         cageLocations = getCageLocations(checkpointManager.getStart());
         cagePlayer(true);
-        //TitleUtil.setTimesAll(getOnlinePlayers(), null, 20,290,0);
-        //TitleUtil.setTitleAll(getOnlinePlayers(), null, ChatColor.RED+"start in");
         final String title = ChatColor.RED+"start in";
         TitleUtil.showTitleAll(getOnlinePlayers(), null, title,"",20,300,0);
         timer = 11;
@@ -292,13 +280,10 @@ public class RaceGame extends AbstractGame {
             public void run() {
                 if(timer>1) {
                     timer--;
-                    //TitleUtil.setSubtitleAll(getOnlinePlayers(), null, timer+"");
                     TitleUtil.showTitleAll(getOnlinePlayers(), null, null, timer+"",0,300,0);
                 }
                 else {
                     cancel();
-                    //TitleUtil.setTitleAll(getOnlinePlayers(), null, ChatColor.GREEN+"GO");
-                    //TitleUtil.setSubtitleAll(getOnlinePlayers(), null, "");
                     TitleUtil.showTitleAll(getOnlinePlayers(), null, ChatColor.GREEN+"GO","",0,30,60);
                     go();
                 }
@@ -307,7 +292,6 @@ public class RaceGame extends AbstractGame {
             @Override
             public void cancel() {
                 super.cancel();
-                //TitleUtil.setTimesAll(getOnlinePlayers(), null, 0,50,20);
             }};
         goTask.runTaskTimer(MiniGamesPlugin.getPluginInstance(), 20, 20);
     }
@@ -339,7 +323,7 @@ public class RaceGame extends AbstractGame {
     }
 
     public void tp_Save(Player player) {
-        if (save_allowed) {
+        if (getTPSave()) {
             if (save.contains(player)) {
                 if (tp_save.containsKey(player.getUniqueId())) {
                     forceTeleport(player, tp_save.get(player.getUniqueId()));
@@ -482,6 +466,8 @@ public class RaceGame extends AbstractGame {
     
     @Override
     public String getGameChatTag(Player player) {
+        if(player.getUniqueId().equals(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")))
+            return ChatColor.DARK_RED + "<Game Master ";
         if(PluginData.isManager(player)) {
             return ChatColor.DARK_AQUA + "<Manager "; 
         }

@@ -5,11 +5,13 @@
  */
 package com.mcmiddleearth.minigames.command;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.*;
 import com.mcmiddleearth.pluginutil.NumericUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
@@ -36,7 +38,6 @@ public class GameStart extends AbstractGameCommand{
                 sendInvalidGameTypeErrorMessage(cs);
                 return;
             }
-
             switch(game.getType()) {
                 case RACE:
                     RaceGame raceGame = (RaceGame) game;
@@ -55,8 +56,15 @@ public class GameStart extends AbstractGameCommand{
                         sendRaceNotEnoughPlayerMessage(cs);
                         return;
                     }
-
-                    raceGame.steady();
+                    PluginData.startTimerRunnable((Player)cs);
+                    BukkitRunnable waitTask;
+                    waitTask = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            raceGame.steady();
+                        }
+                    };
+                    waitTask.runTaskLater(MiniGamesPlugin.getPluginInstance(), 20L *(PluginData.getTimer())+1);
                     break;
                 case GOLF:
                     GolfGame golfGame = (GolfGame) game;

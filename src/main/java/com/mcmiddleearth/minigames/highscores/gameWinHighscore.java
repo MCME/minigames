@@ -23,10 +23,14 @@ public class gameWinHighscore {
     public gameWinHighscore(){
         this.file = new File(PluginData.getHighscoreDir(),"highscore.yml");
         config = YamlConfiguration.loadConfiguration(file);
-        List<String> games = Arrays.asList("hide","geo","race","quiz");
+        List<String> games = Arrays.asList("hide","geo","race","quiz","manhunt");
         for(String game : games){
             if(!config.contains(game)){
                 config.createSection(game);
+                if(game.equalsIgnoreCase("manhunt")){
+                    config.getConfigurationSection(game).createSection("hunt");
+                    config.getConfigurationSection(game).createSection("manhunthide");
+                }
             }
         }
         try {
@@ -37,7 +41,9 @@ public class gameWinHighscore {
     }
 
     public boolean gameExists(String game){
-        if(config.contains(game) || game.equalsIgnoreCase("seek")){
+        if(!game.equalsIgnoreCase("manhunt") && (config.contains(game) || game.equalsIgnoreCase("seek")
+                || game.equalsIgnoreCase("manhunthide"))
+                || game.equalsIgnoreCase("hunt")){
             return true;
         }
         return false;
@@ -66,7 +72,14 @@ public class gameWinHighscore {
             config.getConfigurationSection("quiz").set(String.valueOf(uuid),0);
             save = true;
         }
-
+        if(!config.getConfigurationSection("manhunt").getConfigurationSection("hunt").contains(String.valueOf(uuid))) {
+            config.getConfigurationSection("manhunt").getConfigurationSection("hunt").set(String.valueOf(uuid), 0);
+            save = true;
+        }
+        if(!config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").contains(String.valueOf(uuid))){
+            config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").set(String.valueOf(uuid),0);
+            save = true;
+        }
         if(save){
             try {
                 config.save(file);
@@ -80,12 +93,17 @@ public class gameWinHighscore {
         int geo  = (Integer) config.getConfigurationSection("geo").get(String.valueOf(uuid));
         int race = (Integer) config.getConfigurationSection("race").get(String.valueOf(uuid));
         int quiz = (Integer) config.getConfigurationSection("quiz").get(String.valueOf(uuid));
+        int hunt = (Integer) config.getConfigurationSection("manhunt").getConfigurationSection("hunt").get(String.valueOf(uuid));
+        int hideManhunt = (Integer) config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").get(String.valueOf(uuid));
+
 
         wins.put("Seeker wins",seek);
         wins.put("Hide wins",hide);
         wins.put("GeoGuessr wins",geo);
         wins.put("Race wins",race);
         wins.put("Quiz wins",quiz);
+        wins.put("Hunt wins",hunt);
+        wins.put("Manhunt: Hide wins",hideManhunt);
 
         return wins;
     }
@@ -160,6 +178,34 @@ public class gameWinHighscore {
         }
     }
 
+    public void setManhuntHide(UUID uuid){
+        if(!config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").contains(String.valueOf(uuid))){
+            config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").set(String.valueOf(uuid),0);
+        }
+        int wins = config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").getInt(String.valueOf(uuid));
+        config.getConfigurationSection("manhunt").getConfigurationSection("manhunthide").set(String.valueOf(uuid),wins+1);
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setHuntWin(UUID uuid){
+        if(!config.getConfigurationSection("manhunt").getConfigurationSection("hunt").contains(String.valueOf(uuid))){
+            config.getConfigurationSection("manhunt").getConfigurationSection("hunt").set(String.valueOf(uuid),0);
+        }
+        int wins = config.getConfigurationSection("manhunt").getConfigurationSection("hunt").getInt(String.valueOf(uuid));
+        config.getConfigurationSection("manhunt").getConfigurationSection("hunt").set(String.valueOf(uuid),wins+1);
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Map<String,Object> getLeaderboard(String game, Integer count){
         Map<String,Object> all;
         Map<String,Object> leaderboard = new HashMap<>();
@@ -167,7 +213,9 @@ public class gameWinHighscore {
 
         if(game.equalsIgnoreCase("hide") || game.equalsIgnoreCase("seek")){
             all = config.getConfigurationSection("hide").getConfigurationSection(game).getValues(false);
-        }else{
+        }else if(game.equalsIgnoreCase("hunt") || game.equalsIgnoreCase("manhunthide")){
+            all = config.getConfigurationSection("manhunt").getConfigurationSection(game).getValues(false);
+        } else{
             all = config.getConfigurationSection(game).getValues(false);
         }
 

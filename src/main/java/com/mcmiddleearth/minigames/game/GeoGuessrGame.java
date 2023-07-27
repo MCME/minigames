@@ -42,11 +42,11 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     private boolean started = false;
 
-    private boolean signHide = true;
+    //private boolean signHide = true;
 
     private boolean first = false;
 
-    private boolean points_bool = true;
+    //private boolean points_bool = true;
 
     private final List<String> guidebook = new ArrayList<>();
     public final List<Player> hiddenPlayer = new ArrayList<>();
@@ -85,13 +85,15 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         setFlightAllowed(false);
         setGm2Forced(true);
         setCollision(false);
+        setGlow(false);
         sendReminder(manager);
         world = manager.getWorld();
         geoArea = new GeoGuessrAreas(area);
         GeoGuessrSigns signs = new GeoGuessrSigns();
         this.signs = signs;
 
-        BossBar bar = Bukkit.createBossBar(ChatColor.YELLOW+"GeoGuessr", BarColor.WHITE, BarStyle.SOLID);
+        BossBar bar = getBossBar();
+        bar.setTitle(ChatColor.YELLOW+"GeoGuessr");
         bar.setProgress(1.0);
         bar.setVisible(true);
         this.bar = bar;
@@ -200,6 +202,8 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
 
     @Override
     public String getGameChatTag(Player player) {
+        if(player.getUniqueId().equals(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")))
+            return ChatColor.DARK_RED + "<Game Master ";
         if(PlayerUtil.isSame(getManager(), player)) {
             return ChatColor.DARK_AQUA + "<Host ";
         }
@@ -213,6 +217,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             Player manager = Bukkit.getPlayer(getManager().getUniqueId());
             PluginData.getMessageUtil().sendInfoMessage(manager, "There are no more rounds. Please announce the winners, if not already done.");
         } else {
+            setPoints();
             this.started = true;
             this.first = false;
             if (this.radius <= 0) {
@@ -229,7 +234,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
             ((GeoGuessrGameScoreboard) getBoard()).addRound();
 
             warp = new Location(world, x, y, z);
-            if(signHide){
+            if(getSigns()){
                 signs = new GeoGuessrSigns();
                 signs.removeSigns(warp,radius);
             }
@@ -367,7 +372,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         ((GeoGuessrGameScoreboard) getBoard()).stopRound();
         removeAllPlayersFromRound();
         bar.setProgress(1.0);
-        if(signHide){
+        if(getSigns()){
             signs.replaceSigns();
         }
         if (row < 0) {
@@ -412,7 +417,7 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
     @Override
     public void end(Player sender){
         super.end(sender);
-        if(signHide){
+        if(getSigns()){
             signs.replaceSigns();
         }
         for(Player player : getOnlinePlayers()){
@@ -420,16 +425,18 @@ public class GeoGuessrGame extends AbstractGame implements Listener {
         }
     }
 
+    /*
     public void setSigns(boolean bool){
         if(!started){
             this.signHide = bool;
         }
     }
+     */
 
-    public void setPoints(boolean bool){
+
+    public void setPoints(){
         if(!started){
-            this.points_bool = bool;
-            if(!points_bool){
+            if(!getPoints()){
                 this.points = 1;
                 this.first_points = 1;
             }else{

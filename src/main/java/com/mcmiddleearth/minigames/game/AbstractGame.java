@@ -16,11 +16,18 @@ import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
 import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
@@ -45,7 +52,11 @@ public abstract class AbstractGame {
     
     private OfflinePlayer manager;
 
+    private String switchInvName = "Switchables";
+
     private final GameType type;
+
+    private final BossBar bar;
     
     private final List<UUID> players = new ArrayList<>();
     private final List<UUID> bannedPlayers = new ArrayList<>();
@@ -56,17 +67,30 @@ public abstract class AbstractGame {
     public final Map<UUID,GameMode> playerPreviousMode = new HashMap<>();
     
     private Location warp = null;
-    private boolean warpAllowed = true;
-    private boolean spectateAllowed = true;
-    private boolean privat = false;
-    private boolean flightAllowed = true;
-    private boolean teleportAllowed = true;
+
     private boolean gm3Allowed = false;
     private boolean gm2Forced = false;
-    private boolean Collision = true;
     
     private final GameScoreboard board;
     private final Team team;
+
+    private static final Map<String,Boolean> toggleConfig = new HashMap<>();
+    private final List<String> allToggle = Arrays.asList("flight","teleport","privat","warp","spectate","glow","collision");
+
+    static {
+        toggleConfig.put("flight",false);
+        toggleConfig.put("teleport",false);
+        toggleConfig.put("privat",false);
+        toggleConfig.put("warp",false);
+        toggleConfig.put("spectate",true);
+        toggleConfig.put("save",true);
+        toggleConfig.put("collision",true);
+        toggleConfig.put("invisible",true);
+        toggleConfig.put("signs",true);
+        toggleConfig.put("glow",false);
+        toggleConfig.put("throwable",true);
+        toggleConfig.put("points",true);
+    }
     
     private boolean managerOnlineLastTime = true; //for cleanup task
 
@@ -78,6 +102,7 @@ public abstract class AbstractGame {
         this.board = board;
         this.type = type;
         this.team = board.getScoreboard().registerNewTeam("noCollision");
+        this.bar = Bukkit.createBossBar(ChatColor.WHITE+"Game", BarColor.WHITE, BarStyle.SOLID);
         team.setCanSeeFriendlyInvisibles(true);
         if(manager!=null) {
             if(type != GameType.GEO_GUESSR) {
@@ -165,7 +190,7 @@ public abstract class AbstractGame {
     }
     
     public void addPlayer(Player player) {
-        if(!flightAllowed) {
+        if(!toggleConfig.get("flight")) {
             player.setFlying(false);
             player.setAllowFlight(false);
         }
@@ -205,6 +230,7 @@ public abstract class AbstractGame {
                 if(!PlayerUtil.isSame(onlinePlayer,manager)) {
                     onlinePlayer.setScoreboard(Bukkit.getServer().getScoreboardManager().getMainScoreboard());
                 }
+                onlinePlayer.setGlowing(false);
                 if(gm2Forced) {
                     onlinePlayer.setGameMode(playerPreviousMode.get(onlinePlayer.getUniqueId()));
                     playerPreviousMode.remove(onlinePlayer.getUniqueId());
@@ -232,7 +258,7 @@ public abstract class AbstractGame {
     public void playerJoinServer(PlayerJoinEvent event) {
         event.getPlayer().setScoreboard(board.getScoreboard());
         getBoard().incrementPlayer();
-        if(!flightAllowed) {
+        if(!toggleConfig.get("flight")) {
             event.getPlayer().setFlying(false);
             event.getPlayer().setAllowFlight(false);
         }
@@ -314,7 +340,7 @@ public abstract class AbstractGame {
 
 
     public void playerTeleport(PlayerTeleportEvent event) {
-        if((!teleportAllowed && !event.getCause().equals(TeleportCause_FORCE))
+        if((!toggleConfig.get("teleport") && !event.getCause().equals(TeleportCause_FORCE))
                              && !event.getCause().equals(PlayerTeleportEvent.TeleportCause.UNKNOWN)) {
             event.setCancelled(true);
             sendTeleportNotAllowed(event.getPlayer());
@@ -322,7 +348,7 @@ public abstract class AbstractGame {
     }
     
     public void playerToggleFlight(PlayerToggleFlightEvent event) {
-        if(!flightAllowed) {
+        if(!toggleConfig.get("flight")) {
             event.getPlayer().setFlying(false);
             event.getPlayer().setAllowFlight(false);
             event.setCancelled(true);
@@ -341,13 +367,76 @@ public abstract class AbstractGame {
         }
     }
 
+    public void setGlow(boolean allowed){
+        toggleConfig.replace("glow",allowed);
+        for(Player player: getOnlinePlayers()){
+            player.setGlowing(allowed);
+        }
+    }
+
+    public void openGUI_Switchables(Player player){
+        int size = (toggleConfig.size() / 9) * 9 + 18;
+        Inventory inv = Bukkit.createInventory(null,size,switchInvName);
+        int i = 0;
+        for(String switchString : toggleConfig.keySet()){
+            if((switchString.equalsIgnoreCase("throwable") && GameType.WEREWOLF == type)
+                    ^ (switchString.equalsIgnoreCase("points") && GameType.GEO_GUESSR == type)
+                    ^ (switchString.equalsIgnoreCase("signs") && GameType.GEO_GUESSR == type)
+                    ^ (switchString.equalsIgnoreCase("invisible") && GameType.RACE == type)
+                    ^ (switchString.equalsIgnoreCase("save") && GameType.RACE == type)
+                    || allToggle.contains(switchString) ){
+                ItemStack switchItem = new ItemStack(Material.BOOK);
+                if(toggleConfig.get(switchString)){
+                    switchItem.setType(Material.WRITTEN_BOOK);
+                }
+                ItemMeta meta = switchItem.getItemMeta();
+                meta.setDisplayName(switchString);
+                switchItem.setItemMeta(meta);
+                inv.setItem(i++,switchItem);
+            }
+        }
+        ItemStack close = new ItemStack(Material.SLIME_BALL);
+        ItemMeta meta = close.getItemMeta();
+        meta.setDisplayName("Close");
+        close.setItemMeta(meta);
+        inv.setItem(size-5,close);
+
+        player.openInventory(inv);
+    }
+
+    public void onClick(InventoryClickEvent event){
+        if(event.getView().getTitle() != switchInvName) return;
+        Player player = (Player) event.getWhoClicked();
+        ItemStack current = event.getCurrentItem();
+        ClickType click = event.getClick();
+        if(current == null) return;
+        event.setCancelled(true);
+        if(click == ClickType.LEFT && current.getType() == Material.BOOK){
+            toggleConfig.replace(current.getItemMeta().getDisplayName(),true);
+            current.setType(Material.WRITTEN_BOOK);
+        }else if(click == ClickType.LEFT && current.getType() == Material.WRITTEN_BOOK){
+            toggleConfig.replace(current.getItemMeta().getDisplayName(),false);
+            current.setType(Material.BOOK);
+        }else if(click == ClickType.LEFT && current.getType() == Material.SLIME_BALL){
+            reloadSwitchables();
+            player.closeInventory();
+            sendSwitchesChangedMessage(player);
+        }
+    }
+
+    private void reloadSwitchables(){
+        setFlightAllowed(toggleConfig.get("flight"));
+        setTeleportAllowed(toggleConfig.get("teleport"));
+        setSpectateAllowed(toggleConfig.get("teleport"));
+        setCollision(toggleConfig.get("collision"));
+        setGlow(toggleConfig.get("glow"));
+    }
+
     public void playerInteract(PlayerInteractEntityEvent event){
         event.setCancelled(true);
     }
 
-    public void onClick(InventoryClickEvent event){ event.setCancelled(false); }
-
-    public void checkThrow(PlayerInteractEvent event) { event.setCancelled(false); }
+    public void itemInteract(PlayerInteractEvent event) {}
 
     public void playerDamaged(EntityDamageByEntityEvent event) {
         event.setCancelled(true);
@@ -381,27 +470,28 @@ public abstract class AbstractGame {
     }
     
     public void setFlightAllowed(boolean allowed) {
-        if(this.flightAllowed && !allowed)  {
+        if(toggleConfig.get("flight") && !allowed)  {
             for(Player player : getOnlinePlayers()) {
                 player.setFlying(false);
                 player.setAllowFlight(false);
             }
         }
-        flightAllowed = allowed;
+        toggleConfig.replace("flight",allowed);
     }
 
     public void setCollision(boolean allowed) {
-        if (!this.Collision && allowed) { // false && true
+        if (!toggleConfig.get("collision") && allowed) { // false && true
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS);
             }
-        else if(this.Collision && !allowed){ // true && false
+        else if(toggleConfig.get("collision") && !allowed){ // true && false
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         }
-        Collision = allowed; // Collision is by default on ALWAYS
+        // Collision is by default on ALWAYS
+        toggleConfig.replace("collision",allowed);
     }
 
     public void setSpectateAllowed(boolean allowed) {
-        if(this.spectateAllowed && !allowed)  {
+        if(toggleConfig.get("spectate") && !allowed)  {
             List<UUID> copyOfSpectators = new ArrayList<>();
             copyOfSpectators.addAll(spectators);
             for(UUID uuid : copyOfSpectators) {
@@ -412,12 +502,14 @@ public abstract class AbstractGame {
                 }
             }
         }
-        spectateAllowed = allowed;
+        toggleConfig.replace("spectate",allowed);
     }
     
     public String getGameChatTag(Player player) {
+        if(player.getUniqueId().equals(UUID.fromString("b8d1ce5c-2b38-428c-9bb8-c8ee6ad58c4b")))
+            return ChatColor.DARK_RED + "<Game Master ";
         if(PluginData.isManager(player)) {
-            return ChatColor.DARK_AQUA + "<Manager "; 
+            return ChatColor.DARK_AQUA + "<Manager ";
         }
         else {
             return ChatColor.BLUE + "<Participant "; 
@@ -456,6 +548,10 @@ public abstract class AbstractGame {
     
     public void sendGameEndMessage(Player sender) {
         GameChatUtil.sendAllInfoMessage(sender, this, "The game "+ getName()+" ended.");
+    }
+
+    private void sendSwitchesChangedMessage(Player sender){
+        PluginData.getMessageUtil().sendInfoMessage(sender,"The game config was changed.");
     }
 
     private void sendLeaveNotAllowed(Player player) {
@@ -506,35 +602,57 @@ public abstract class AbstractGame {
     public void setWarp(Location loc){this.warp = loc;}
 
     public boolean isWarpAllowed() {
-        return warpAllowed;
+        return toggleConfig.get("warp");
     }
 
     public void setWarpAllowed(boolean warpAllowed) {
-        this.warpAllowed = warpAllowed;
+        toggleConfig.replace("warp",warpAllowed);
     }
 
     public boolean isSpectateAllowed() {
-        return spectateAllowed;
+        return toggleConfig.get("spectate");
     }
 
     public boolean isPrivat() {
-        return privat;
+        return toggleConfig.get("privat");
     }
 
     public void setPrivat(boolean privat) {
-        this.privat = privat;
+        toggleConfig.replace("privat",privat);
     }
 
+    public void setThrowable(boolean bool){
+        toggleConfig.replace("throwable",bool);
+    }
+
+    public boolean getThrowable(){ return toggleConfig.get("trowable"); }
+
+    public void setTPSave(boolean bool) { toggleConfig.replace("save",bool); }
+
+    public boolean getTPSave(){ return toggleConfig.get("save"); }
+
+    public void setInvisible(boolean bool){ toggleConfig.replace("invisible",bool); }
+
+    public boolean getInvisible(){ return toggleConfig.get("invisible"); }
+
+    public void setPoints(boolean bool){ toggleConfig.replace("points",bool); }
+
+    public boolean getPoints(){ return toggleConfig.get("points"); }
+
+    public void setSigns(boolean bool){ toggleConfig.replace("signs",bool); }
+
+    public boolean getSigns(){ return toggleConfig.get("signs"); }
+
     public boolean isFlightAllowed() {
-        return flightAllowed;
+        return toggleConfig.get("flight");
     }
 
     public boolean isTeleportAllowed() {
-        return teleportAllowed;
+        return toggleConfig.get("teleport");
     }
 
     public void setTeleportAllowed(boolean teleportAllowed) {
-        this.teleportAllowed = teleportAllowed;
+        toggleConfig.replace("teleport",teleportAllowed);
     }
 
     public boolean isGm3Allowed() {
@@ -560,4 +678,6 @@ public abstract class AbstractGame {
     public GameScoreboard getBoard() {
         return board;
     }
+
+    public BossBar getBossBar(){return bar;}
 }

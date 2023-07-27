@@ -5,12 +5,14 @@
  */
 package com.mcmiddleearth.minigames.command;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.data.PluginData;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
@@ -47,13 +49,25 @@ public class QuizGameSend extends AbstractGameCommand{
                 sendNoPlayersErrorMessage(cs);
                 return;
             }
+            int time = 0;
+            if(!quizGame.isStarted()){
+                time = PluginData.getTimer();
+                PluginData.startTimerRunnable((Player)cs);
+            }
             if(args.length>0) {
                 try{
                     int answerTime = Integer.parseInt(args[0]);
                     quizGame.setAnswerTime(answerTime);
                 } catch(NumberFormatException e) { }
             }
-            quizGame.sendQuestion();
+            BukkitRunnable waitTask;
+            waitTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    quizGame.sendQuestion();
+                }
+            };
+            waitTask.runTaskLater(MiniGamesPlugin.getPluginInstance(),(20L*time)+1);
     }
     
  }

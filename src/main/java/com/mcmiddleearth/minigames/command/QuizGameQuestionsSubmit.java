@@ -27,6 +27,8 @@ public class QuizGameQuestionsSubmit extends AbstractGameCommand{
     
     @Override
     protected void execute(CommandSender cs, String... args) {
+        PluginData.getMessageUtil().sendInfoMessage(cs, "Please use /newgame. This is deactived.");
+        /*
         QuestionType type = null;
         if(args.length>0) {
             type = QuestionType.getQuestionType(args[0]);
@@ -39,6 +41,7 @@ public class QuizGameQuestionsSubmit extends AbstractGameCommand{
             type = QuestionType.SINGLE;
         }
         PluginData.getCreateQuestionFactory().start((Player)cs, PluginData.getQuestionSubmitGame(), type, -1);
+         */
     }
  
     private void sendInvalidQuestionType(CommandSender cs) {
