@@ -28,6 +28,8 @@ public final class MiniGamesPlugin extends Plugin {
     TODO:
         werewolf:
             rework the voting system (maybe clickable?)
+        quiz:
+            i did /newgame loadquestions a 1 a couple of times after finishing the previously done 15 questions and each time, everyones scores would reset back to 0
      */
 
     @Override
