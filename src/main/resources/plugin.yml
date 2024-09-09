@@ -1,6 +1,6 @@
 name: MiniGames
 version: '${project.version}'
-main: com.mcmiddleearth.minigames.spigot.MiniGamesSpigot
+main: com.mcmiddleearth.minigames.spigot.MiniGamesSpigotPlugin
 description: old Plugin with Bungee
 author: Jubo, Eriol_Eandur
 api-version: 1.18

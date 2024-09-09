@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.spigot.listener;
 
-import com.mcmiddleearth.minigames.util.Channel;
+import com.mcmiddleearth.minigames.core.util.Channel;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;

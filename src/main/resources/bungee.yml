@@ -1,6 +1,6 @@
 name: MiniGames
 version: '${project.version}'
-main: com.mcmiddleearth.minigames.MiniGamesPlugin
+main: com.mcmiddleearth.minigames.bungee.MiniGamesBungeePlugin
 description: old Plugin with Bungee
 author: Jubo, Eriol_Eandur
 api-version: 1.18
