@@ -1,6 +1,10 @@
 package com.mcmiddleearth.minigames.core.scoreboard;
 
+import com.mcmiddleearth.base.core.player.McmePlayer;
+import com.mcmiddleearth.base.core.scoreboard.*;
+import com.mcmiddleearth.base.core.taskScheduling.Task;
 import com.mcmiddleearth.minigames.bungee.MiniGamesBungeePlugin;
+import com.mcmiddleearth.minigames.core.MiniGames;
 import com.mcmiddleearth.minigames.core.util.Style;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -24,33 +28,37 @@ import java.util.concurrent.TimeUnit;
  */
 public class QuizGameScoreboard extends AbstractGameScoreboard {
 
-    private ScoreboardObjective quizObjective,timerObjective;
+    private Scoreboard scoreboard;
+
+    private Objective quizObjective,timerObjective;
 
     private ScoreboardDisplay quizDisplay,timerDisplay;
 
-    private HashMap<ProxiedPlayer,ScoreboardScore> scores = new HashMap<>();
+    private HashMap<McmePlayer, Score> scores = new HashMap<>();
 
-    private ScoreboardScore answerTime, unfinishedScore;
+    private Score answerTime, unfinishedScore;
 
     private int questionCount = 0;
     private int currentQuestion = 0;
 
     private final List<String> players = new ArrayList<>();
 
-    private ScheduledTask timerTask;
+    private Task timerTask;
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/ddHH:mm:ss");
     private String currentName;
 
-    private final String name = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz"));
-    private final String name2 = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz2"));
+    private final String name = "Quiz";
+    private final String name2 = "Quiz2";
 
     public QuizGameScoreboard() {
 
-        quizObjective = new ScoreboardObjective();
-        quizObjective.setName(name);
-        quizObjective.setAction((byte) 0);
-        quizObjective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
+        scoreboard = MiniGames.getProxy().getScoreboardManager().getNewScoreboard();
+        quizObjective = scoreboard.registerNewObjective(name, "DUMMY", MiniGames.getPlugin().createMessage().add(name));
+        quizObjective.setRenderType(RenderType.INTEGER);
+        //quizObjective.setName(name);
+        //quizObjective.setAction((byte) 0);
+        //quizObjective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
 
         timerObjective = new ScoreboardObjective();
         timerObjective.setName(name2);
