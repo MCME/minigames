@@ -1,11 +1,11 @@
 package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.scoreboard.GeoGameScoreboard;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
 
 public class GeoGame extends AbstractGame{
 
-    public GeoGame(ProxiedPlayer manager, String name){
+    public GeoGame(Player manager, String name){
         super(manager,name,GameType.GEO_GUESSR,new GeoGameScoreboard());
     }
 }

@@ -1,12 +1,11 @@
 package com.mcmiddleearth.minigames.util;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.GameType;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +23,7 @@ public class PluginData {
 
     private final static MessageUtil messageUtil = new MessageUtil();
 
-    private static final File questionDir = new File(MiniGamesPlugin.getInstance().getDataFolder()+File.separator+"QuizQuestions");
+    private static final File questionDir = new File(MiniGamesPlugin.getInstance().getDataDirectory()+File.separator+"QuizQuestions");
     private static final File questionDataTable = new File(questionDir,"questionTable.dat");
     private static final File questionCategoriesFile = new File(questionDir,"questionCategories.dat");
     private static final File submittedQuestionsFile = new File(questionDir,"submitted.json");
@@ -34,8 +33,8 @@ public class PluginData {
 
 
     static{
-        if(!MiniGamesPlugin.getInstance().getDataFolder().exists()){
-            MiniGamesPlugin.getInstance().getDataFolder().mkdirs();
+        if(!MiniGamesPlugin.getInstance().getDataDirectory().toFile().exists()){
+            MiniGamesPlugin.getInstance().getDataDirectory().toFile().mkdirs();
         }
 
         if(!questionDir.exists()) {
@@ -67,16 +66,16 @@ public class PluginData {
         return false;
     }
 
-    public static boolean isAlreadyAnnounced(McmeCommandSender sender){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+    public static boolean isNotAnnounced(McmeCommandSender sender){
+        Player player = ((MinigameCommandSender) sender).getCommandSender();
         for(AbstractGame game:games)
             if(game.getManager().equals(player) || game.getPlayers().contains(player))
-                    return game.isAnnounced();
-        return false;
+                    return !game.isAnnounced();
+        return true;
     }
 
     public static boolean isManager(McmeCommandSender sender){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        Player player = ((MinigameCommandSender) sender).getCommandSender();
         for(AbstractGame game:games){
             if(game.getManager().equals(player))
                 return true;
@@ -85,7 +84,7 @@ public class PluginData {
     }
 
     public static boolean isInGame(McmeCommandSender sender){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        Player player = ((MinigameCommandSender) sender).getCommandSender();
         for(AbstractGame game:games){
             if(game.getPlayers().contains(player))
                 return true;
@@ -93,7 +92,7 @@ public class PluginData {
         return false;
     }
 
-    public static boolean isInGame(ProxiedPlayer player){
+    public static boolean isInGame(Player player){
         for(AbstractGame game: games)
             if(game.getPlayers().contains(player))
                 return true;
@@ -101,7 +100,7 @@ public class PluginData {
     }
 
     public static boolean isCorrectGameType(McmeCommandSender sender, GameType type){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        Player player = (Player) ((MinigameCommandSender) sender).getCommandSender();
         for(AbstractGame game:games){
             if((game.getPlayers().contains(player) || game.getManager().equals(player)) && type == game.getType() )
                 return true;
@@ -109,7 +108,7 @@ public class PluginData {
         return false;
     }
 
-    public static boolean isCorrectGameType(ProxiedPlayer player, GameType type){
+    public static boolean isCorrectGameType(Player player, GameType type){
         for(AbstractGame game:games){
             if((game.getPlayers().contains(player) || game.getManager().equals(player)) && type == game.getType() )
                 return true;
@@ -118,7 +117,7 @@ public class PluginData {
     }
 
     public static AbstractGame getGame(McmeCommandSender sender){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        Player player = (Player) ((MinigameCommandSender) sender).getCommandSender();
         for(AbstractGame game:games){
             if(game.getManager().equals(player) || game.getPlayers().contains(player)){
                 return game;
@@ -127,7 +126,7 @@ public class PluginData {
         return null;
     }
 
-    public static AbstractGame getGame(ProxiedPlayer player){
+    public static AbstractGame getGame(Player player){
         for(AbstractGame game: games){
             if(game.getManager().equals(player) || game.getPlayers().contains(player)){
                 return game;
@@ -154,9 +153,9 @@ public class PluginData {
 
     public static List<String> getManagerPerms(){
         List<String> manager = new ArrayList<>();
-        for(ProxiedPlayer player: ProxyServer.getInstance().getPlayers()){
+        for(Player player: MiniGamesPlugin.getInstance().getProxyServer().getAllPlayers()){
             if(player.hasPermission(Permission.MANAGER.getPermissionNode())){
-                manager.add(player.getName());
+                manager.add(player.getUsername());
             }
         }
         return manager;
@@ -190,7 +189,7 @@ public class PluginData {
     public static MessageUtil getMessageUtil(){return messageUtil;}
 
     public static boolean hasPermission(McmeCommandSender sender, Permission perm){
-        ProxiedPlayer player = (ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender();
+        Player player = (Player) ((MinigameCommandSender) sender).getCommandSender();
         return player.hasPermission(perm.getPermissionNode());
     }
 }

@@ -1,11 +1,11 @@
 package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.scoreboard.HideGameScoreboard;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
 
 public class HideGame extends AbstractGame{
 
-    public HideGame(ProxiedPlayer manager, String name){
+    public HideGame(Player manager, String name){
         super(manager,name,GameType.HIDE_AND_SEEK,new HideGameScoreboard());
     }
 }

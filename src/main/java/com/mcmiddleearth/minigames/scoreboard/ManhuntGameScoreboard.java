@@ -1,6 +1,8 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
-public class ManhuntGameScoreboard extends AbstractGameScoreboard{
+import com.mcmiddleearth.minigames.scoreboard.generics.AbstractGameScoreboard;
+
+public class ManhuntGameScoreboard extends AbstractGameScoreboard {
 
     public ManhuntGameScoreboard(){
 

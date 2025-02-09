@@ -4,9 +4,7 @@ import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
 import com.mcmiddleearth.minigames.quiz.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import com.velocitypowered.api.proxy.Player;
 
 import javax.swing.text.Position;
 import java.util.ArrayList;
@@ -18,8 +16,8 @@ import java.util.List;
  */
 public class QuizEditQuestion {
 
-    private static final List<ProxiedPlayer> inEditConversation = new ArrayList<>();
-    private static final HashMap<ProxiedPlayer,QuizEditQuestion> editSave = new HashMap<>();
+    private static final List<Player> inEditConversation = new ArrayList<>();
+    private static final HashMap<Player,QuizEditQuestion> editSave = new HashMap<>();
     private Integer index;
     private QuestionType type;
     private AbstractQuestion question;
@@ -30,7 +28,7 @@ public class QuizEditQuestion {
     private String dText = null;
     private QuestionConversationType conType;
 
-    public QuizEditQuestion(ProxiedPlayer player,int index){
+    public QuizEditQuestion(Player player,int index){
         game = (QuizGame) PluginData.getGame("review");
         if(game != null){
             this.index = index;
@@ -45,11 +43,11 @@ public class QuizEditQuestion {
                 cText = ((ChoiceQuestion) question).getAnswers()[2];
                 dText = ((ChoiceQuestion) question).getAnswers()[3];
             }
-            player.sendMessage(new ComponentBuilder("[Question] "+question.getQuestion()).color(ChatColor.DARK_GREEN).create());
+            //player.sendMessage(new ComponentBuilder("[Question] "+question.getQuestion()).color(ChatColor.DARK_GREEN).create());
         }
     }
 
-    public static void cancel(ProxiedPlayer player){
+    public static void cancel(Player player){
         inEditConversation.remove(player);
         editSave.remove(player);
     }
@@ -101,11 +99,11 @@ public class QuizEditQuestion {
     public void setConType(QuestionConversationType conType){this.conType = conType;}
     public QuestionConversationType getConType(){return conType;}
 
-    public static boolean inConversation(ProxiedPlayer player){
+    public static boolean inConversation(Player player){
         return inEditConversation.contains(player);
     }
 
-    public static QuizEditQuestion getEditInstance(ProxiedPlayer player){
+    public static QuizEditQuestion getEditInstance(Player player){
         if(editSave.containsKey(player))
             return editSave.get(player);
         return null;

@@ -5,7 +5,6 @@ import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
 import com.mcmiddleearth.minigames.quiz.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.checkerframework.checker.units.qual.A;
 import org.json.simple.parser.ParseException;
 
@@ -22,9 +21,9 @@ import java.util.logging.Logger;
  */
 public class QuizSubmitQuestion {
 
-    private static final List<ProxiedPlayer> inSubmitConversation = new ArrayList<>();
-    private static final HashMap<ProxiedPlayer,QuizSubmitQuestion> submitSave = new HashMap<>();
-    private final QuestionType type;
+//    private static final List<ProxiedPlayer> inSubmitConversation = new ArrayList<>();
+//    private static final HashMap<ProxiedPlayer,QuizSubmitQuestion> submitSave = new HashMap<>();
+//    private final QuestionType type;
     private String questionText = null;
     private String aText = null;
     private String bText = null;
@@ -35,23 +34,23 @@ public class QuizSubmitQuestion {
     private Integer numberText = null;
     private Integer deviation = null;
     private String categories = null;
-    private final QuizGame game;
+//    private final QuizGame game;
     private QuestionConversationType conType;
 
-    public QuizSubmitQuestion(ProxiedPlayer player,QuestionType type){
-        inSubmitConversation.add(player);
-        submitSave.put(player,this);
-        this.type = type;
-        game = new QuizGame(null,"submitQuestions");
-        conType = QuestionConversationType.QUESTION;
-    }
+//    public QuizSubmitQuestion(ProxiedPlayer player,QuestionType type){
+//        inSubmitConversation.add(player);
+//        submitSave.put(player,this);
+//        this.type = type;
+//        game = new QuizGame(null,"submitQuestions");
+//        conType = QuestionConversationType.QUESTION;
+//    }
+//
+//    public static void cancel(ProxiedPlayer player){
+//        inSubmitConversation.remove(player);
+//        submitSave.remove(player);
+//    }
 
-    public static void cancel(ProxiedPlayer player){
-        inSubmitConversation.remove(player);
-        submitSave.remove(player);
-    }
-
-    public QuestionType getType(){return type;}
+//    public QuestionType getType(){return type;}
 
     public void setQuestionText(String text){questionText = text;}
 
@@ -80,49 +79,49 @@ public class QuizSubmitQuestion {
     public String getCategories(){return categories;}
     public void setCategories(String categories){this.categories = categories;}
 
-    public void saveQuestion(){
-        try {
-            game.loadQuestionsFromJson(PluginData.getSubmittedQuestionsFile());
-            (PluginData.getSubmittedQuestionsFile()).delete();
-        } catch (FileNotFoundException | ParseException ex) {
-            Logger.getLogger(PluginData.class.getName()).log(Level.INFO, "No submitted questions found.");
-        }
-        AbstractQuestion question = null;
-        String[] choiceText = new String[]{aText,bText,cText,dText};
-        switch (type){
-            case FREE:
-                question = new FreeQuestion(questionText,freeText,categories);
-                break;
-            case MULTI:
-                question = new ChoiceQuestion(questionText,choiceText,correctAnswer,categories);
-                break;
-            case SINGLE:
-                question = new SingleChoiceQuestion(questionText,choiceText,correctAnswer,categories);
-                break;
-            case NUMBER:
-                question = new NumberQuestion(questionText,numberText,deviation,categories);
-                break;
-        }
-        game.addQuestion(question,-1);
-        try{
-            game.saveQuestionsToJson(PluginData.getSubmittedQuestionsFile(),"Submitted quiz questions.");
-        }catch (IOException ex) {
-            Logger.getLogger(QuizSubmitQuestion.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void setConType(QuestionConversationType conType){this.conType = conType;}
-    public QuestionConversationType getConType(){return conType;}
-
-    public static boolean inConversation(ProxiedPlayer player){
-        return inSubmitConversation.contains(player);
-    }
-
-    public static QuizSubmitQuestion getSubmitInstance(ProxiedPlayer player){
-        if(submitSave.containsKey(player))
-            return submitSave.get(player);
-        return null;
-    }
+//    public void saveQuestion(){
+//        try {
+//            game.loadQuestionsFromJson(PluginData.getSubmittedQuestionsFile());
+//            (PluginData.getSubmittedQuestionsFile()).delete();
+//        } catch (FileNotFoundException | ParseException ex) {
+//            Logger.getLogger(PluginData.class.getName()).log(Level.INFO, "No submitted questions found.");
+//        }
+//        AbstractQuestion question = null;
+//        String[] choiceText = new String[]{aText,bText,cText,dText};
+//        switch (type){
+//            case FREE:
+//                question = new FreeQuestion(questionText,freeText,categories);
+//                break;
+//            case MULTI:
+//                question = new ChoiceQuestion(questionText,choiceText,correctAnswer,categories);
+//                break;
+//            case SINGLE:
+//                question = new SingleChoiceQuestion(questionText,choiceText,correctAnswer,categories);
+//                break;
+//            case NUMBER:
+//                question = new NumberQuestion(questionText,numberText,deviation,categories);
+//                break;
+//        }
+//        game.addQuestion(question,-1);
+//        try{
+//            game.saveQuestionsToJson(PluginData.getSubmittedQuestionsFile(),"Submitted quiz questions.");
+//        }catch (IOException ex) {
+//            Logger.getLogger(QuizSubmitQuestion.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
+//
+//    public void setConType(QuestionConversationType conType){this.conType = conType;}
+//    public QuestionConversationType getConType(){return conType;}
+//
+//    public static boolean inConversation(ProxiedPlayer player){
+//        return inSubmitConversation.contains(player);
+//    }
+//
+//    public static QuizSubmitQuestion getSubmitInstance(ProxiedPlayer player){
+//        if(submitSave.containsKey(player))
+//            return submitSave.get(player);
+//        return null;
+//    }
 
 
 }

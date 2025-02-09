@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.command.handler;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.minigames.command.MinigameCommandSender;
@@ -13,16 +13,15 @@ import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
 import com.mcmiddleearth.minigames.quiz.QuizSubmitQuestion;
 import com.mcmiddleearth.minigames.quiz.question.QuestionType;
 import com.mcmiddleearth.minigames.util.*;
+import com.velocitypowered.api.proxy.Player;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -58,7 +57,7 @@ public class QuizGameCommandHandler {
                 .then(HelpfulLiteralBuilder.literal("loadquiz")
                         .withHelpText("Loads questions from a quiz data file.")
                         .withTooltip("Loads all questions from the file <filename>. The questions will be appended to the existing questions.")
-                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)&& !PluginData.isAlreadyAnnounced(sender))
+                        .requires(sender -> PluginData.hasPermission(sender,Permission.MANAGER) && PluginData.isCorrectGameType(sender,type) && PluginData.isManager(sender)&& PluginData.isNotAnnounced(sender))
                         .then(HelpfulRequiredArgumentBuilder.argument("filename",word())
                                 .executes(context -> doCommand(context.getSource(),"loadquiz",context.getArgument("filename",String.class)))))
                 .then(HelpfulLiteralBuilder.literal("loadquestions")
@@ -155,9 +154,9 @@ public class QuizGameCommandHandler {
         File file;
         switch (command){
             case "acceptquestions":
-                AbstractGame.addConversation((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender());
+                AbstractGame.addConversation((Player) ((MinigameCommandSender)sender).getCommandSender());
                 quizgame = (QuizGame) PluginData.getGame(sender);
-                PluginData.getMessageUtil().sendInfoMessage(sender,"Are you sure to add all questions of this quiz to the MCME question data table?");
+//                PluginData.getMessageUtil().sendInfoMessage(sender,"Are you sure to add all questions of this quiz to the MCME question data table?");
                 quizgame.setAcceptConversation(true);
                 break;
             case "clear":
@@ -165,8 +164,8 @@ public class QuizGameCommandHandler {
                 quizgame.clearQuestions();
                 break;
             case "editquestion":
-                PluginData.getMessageUtil().sendInfoMessage(sender,ChatColor.YELLOW+"[Edit Question] This conversation will show you all details of the specified quiz question. You may type in new data or keep the current with '!keep'. You may cancel editing of the question with '!cancel'.");
-                new QuizEditQuestion((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender(),Integer.parseInt(args[0])-1);
+//                PluginData.getMessageUtil().sendInfoMessage(sender,ChatColor.YELLOW+"[Edit Question] This conversation will show you all details of the specified quiz question. You may type in new data or keep the current with '!keep'. You may cancel editing of the question with '!cancel'.");
+                new QuizEditQuestion((Player) ((MinigameCommandSender)sender).getCommandSender(),Integer.parseInt(args[0])-1);
                 break;
             case "listquestions":
                 quizgame = (QuizGame) PluginData.getGame(sender);
@@ -177,11 +176,11 @@ public class QuizGameCommandHandler {
                 file = new File(PluginData.getQuestionDir(),args[0]+".json");
                 try{
                     quizgame.loadQuestionsFromJson(file);
-                    PluginData.getMessageUtil().sendInfoMessage(sender,"Questions loaded from file.");
+//                    PluginData.getMessageUtil().sendInfoMessage(sender,"Questions loaded from file.");
                 }catch (FileNotFoundException ex) {
-                    PluginData.getMessageUtil().sendErrorMessage(sender,"File not found.");
+//                    PluginData.getMessageUtil().sendErrorMessage(sender,"File not found.");
                 } catch (ParseException ex) {
-                    PluginData.getMessageUtil().sendErrorMessage(sender,"The file contains invalid data.");
+//                    PluginData.getMessageUtil().sendErrorMessage(sender,"The file contains invalid data.");
                 }
                 break;
             case "loadquestions":
@@ -199,7 +198,7 @@ public class QuizGameCommandHandler {
                         int[] result = quizgame.loadQuestionsFromDataFile(PluginData.getQuestionDataTable(), questionIds);
                         sendQuestionsLoadedMessage(sender, result,questionIds.size());
                     } catch (FileNotFoundException ex) {
-                        PluginData.getMessageUtil().sendErrorMessage(sender,"Question table fine not found.");
+//                        PluginData.getMessageUtil().sendErrorMessage(sender,"Question table fine not found.");
                     }
                 }else if(argsLoad[0].indexOf("-")>0 && NumericUtil.isInt(argsLoad[0].substring(0, argsLoad[0].indexOf("-")))){
                     try {
@@ -213,10 +212,10 @@ public class QuizGameCommandHandler {
                             int[] result = quizgame.loadQuestionsFromDataFile(PluginData.getQuestionDataTable(), questionIds);
                             sendQuestionsLoadedMessage(sender, result,questionIds.size());
                         } catch (FileNotFoundException ex) {
-                            PluginData.getMessageUtil().sendErrorMessage(sender,"Question table fine not found.");
+//                            PluginData.getMessageUtil().sendErrorMessage(sender,"Question table fine not found.");
                         }
                     } catch(Exception e) {
-                        PluginData.getMessageUtil().sendErrorMessage(sender,"Invalid question ID range. Format must be <#first>-<#last>.");
+//                        PluginData.getMessageUtil().sendErrorMessage(sender,"Invalid question ID range. Format must be <#first>-<#last>.");
                     }
                 } else {
                     int maxNumber = 15;
@@ -243,29 +242,29 @@ public class QuizGameCommandHandler {
                 switch (args[0]){
                     case "off":
                         quizgame.setRandom(false,false);
-                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and choices will be presented in proper order.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and choices will be presented in proper order.");
                         break;
                     case "questions":
                         quizgame.setRandom(true,false);
-                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions will be sended in random order.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions will be sended in random order.");
                         break;
                     case "choices":
                         quizgame.setRandom(false,true);
-                        PluginData.getMessageUtil().sendInfoMessage(sender,"Choices will be presented in random order.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender,"Choices will be presented in random order.");
                         break;
                     case "all":
                         quizgame.setRandom(true,true);
-                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and Choises will be presented in random order.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions and Choises will be presented in random order.");
                         break;
                     default:
-                        PluginData.getMessageUtil().sendErrorMessage(sender,"Error: Try off|questions|choices|all");
+//                        PluginData.getMessageUtil().sendErrorMessage(sender,"Error: Try off|questions|choices|all");
                         break;
                 }
                 break;
             case "removequestion":
                 quizgame = (QuizGame) PluginData.getGame(sender);
                 quizgame.removeQuestion(Integer.parseInt(args[0])-1);
-                PluginData.getMessageUtil().sendInfoMessage(sender,"You removed question "+args[0]);
+//                PluginData.getMessageUtil().sendInfoMessage(sender,"You removed question "+args[0]);
                 break;
             case "reviewquestions":
                 if(!PluginData.isManager(sender)) {
@@ -287,12 +286,12 @@ public class QuizGameCommandHandler {
                         }
                         submittedFile.renameTo(file);
                         //PluginData.stopSpectating((Player) cs);
-                        QuizGame game = new QuizGame((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender(), "review");
+                        QuizGame game = new QuizGame((Player) ((MinigameCommandSender)sender).getCommandSender(), "review");
                         sendQuizGameCreateMessage(sender, filename);
                         PluginData.addGame(game);
                         doCommand(sender,"loadquiz",filename);
                     }else{
-                        PluginData.getMessageUtil().sendInfoMessage(sender, "There are no submitted questions to review.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender, "There are no submitted questions to review.");
                     }
                 }
                 break;
@@ -301,15 +300,15 @@ public class QuizGameCommandHandler {
                 file = new File(PluginData.getQuestionDir(),args[0]+".json");
                 String description = args[1];
                 if(file.exists()){
-                    AbstractGame.addConversation((ProxiedPlayer) ((MinigameCommandSender)sender).getCommandSender());
+                    AbstractGame.addConversation((Player) ((MinigameCommandSender)sender).getCommandSender());
                     quizgame.setSaveInfos(file,description);
-                    PluginData.getMessageUtil().sendInfoMessage(sender, "A question file with that name already exists. Overwrite it?");
+//                    PluginData.getMessageUtil().sendInfoMessage(sender, "A question file with that name already exists. Overwrite it?");
                 } else {
                     try{
                         quizgame.saveQuestionsToJson(file,description);
-                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions of the game were saved to disk.");
+//                        PluginData.getMessageUtil().sendInfoMessage(sender,"Questions of the game were saved to disk.");
                     }catch (IOException ex){
-                        PluginData.getMessageUtil().sendErrorMessage(sender,"There was an error. Nothing was saved.");
+//                        PluginData.getMessageUtil().sendErrorMessage(sender,"There was an error. Nothing was saved.");
                         Logger.getLogger(QuizGameCommandHandler.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -329,17 +328,17 @@ public class QuizGameCommandHandler {
             case "stat":
                 quizgame = (QuizGame) PluginData.getGame(sender);
                 if(quizgame.allAnswered()){
-                    PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.RED+"NO QUESTION running."+ChatColor.AQUA+" Online players:");
-                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toSet())));
+//                    PluginData.getMessageUtil().sendInfoMessage(sender, ChatColor.RED+"NO QUESTION running."+ChatColor.AQUA+" Online players:");
+//                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getPlayers().stream().map(Player::getName).collect(Collectors.toSet())));
                 }else{
-                    PluginData.getMessageUtil().sendInfoMessage(sender, "Players in question conversation:");
-                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getConversationPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toSet())));
+//                    PluginData.getMessageUtil().sendInfoMessage(sender, "Players in question conversation:");
+//                    PluginData.getMessageUtil().sendInfoMessage(sender, String.valueOf(quizgame.getConversationPlayers().stream().map(Player::getName).collect(Collectors.toSet())));
                 }
                 break;
             case "submitquestion":
                 QuestionType type = QuestionType.getQuestionType(args[0]);
-                new QuizSubmitQuestion((ProxiedPlayer) ((MinigameCommandSender) sender).getCommandSender(),type);
-                PluginData.getMessageUtil().sendInfoMessage(sender,"Enter the question.");
+//                new QuizSubmitQuestion((Player) ((MinigameCommandSender) sender).getCommandSender(),type);
+//                PluginData.getMessageUtil().sendInfoMessage(sender,"Enter the question.");
                 break;
             default:
                 sendNothereMessage(sender);
@@ -348,34 +347,34 @@ public class QuizGameCommandHandler {
     }
 
     private void sendNothereMessage(McmeCommandSender sender){
-        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
+//        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
     }
 
     private void sendNotImplementedYetMessage(McmeCommandSender sender){
-        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
+//        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
     }
 
     private void sendQuestionsLoadedMessage(McmeCommandSender cs, int[] result, int maxNumber) {
         if(result[0]==0) {
-            PluginData.getMessageUtil().sendErrorMessage(cs, "Sorry, no question found matching your query.");
+//            PluginData.getMessageUtil().sendErrorMessage(cs, "Sorry, no question found matching your query.");
         } else if(result[0]<10 && result[0]<maxNumber) {
-            PluginData.getMessageUtil().sendInfoMessage(cs, Style.HIGHLIGHT+"Warning!"+Style.INFO
-                    +" Only "+Style.STRESSED+result[0]+Style.INFO                                           +" questions were found matching your query.");
+//            PluginData.getMessageUtil().sendInfoMessage(cs, Style.HIGHLIGHT+"Warning!"+Style.INFO
+//                    +" Only "+Style.STRESSED+result[0]+Style.INFO                                           +" questions were found matching your query.");
         } else if(result[0]>result[1]) {
-            PluginData.getMessageUtil().sendInfoMessage(cs, "Found "+Style.STRESSED+result[0]+Style.INFO
-                    +" Questions. "+Style.STRESSED+result[1]+Style.INFO
-                    +" questions loaded.");
+//            PluginData.getMessageUtil().sendInfoMessage(cs, "Found "+Style.STRESSED+result[0]+Style.INFO
+//                    +" Questions. "+Style.STRESSED+result[1]+Style.INFO
+//                    +" questions loaded.");
         } else if(result[0]<maxNumber) {
-            PluginData.getMessageUtil().sendInfoMessage(cs, "Only "+Style.STRESSED+result[0]+Style.INFO
-                    +" questions found and loaded.");
+//            PluginData.getMessageUtil().sendInfoMessage(cs, "Only "+Style.STRESSED+result[0]+Style.INFO
+//                    +" questions found and loaded.");
         } else {
-            PluginData.getMessageUtil().sendInfoMessage(cs, ""+Style.STRESSED+result[0]+Style.INFO
-                    +" questions loaded from MCME question table.");
+//            PluginData.getMessageUtil().sendInfoMessage(cs, ""+Style.STRESSED+result[0]+Style.INFO
+//                    +" questions loaded from MCME question table.");
         }
     }
 
     public void sendQuizGameCreateMessage(McmeCommandSender cs, String filename) {
-        PluginData.getMessageUtil().sendInfoMessage(cs, "A quiz game with all submitted questions was created to review.");
+//        PluginData.getMessageUtil().sendInfoMessage(cs, "A quiz game with all submitted questions was created to review.");
         cs.sendMessage(new ComponentBuilder("Submitted questions saved in file: "+ filename).color(ChatColor.AQUA).create());
         cs.sendMessage(new ComponentBuilder("Don't forget to delete when no loger needed:").color(ChatColor.AQUA).create());
         cs.sendMessage(new ComponentBuilder("/game delete quiz "+filename).color(ChatColor.DARK_AQUA).create());

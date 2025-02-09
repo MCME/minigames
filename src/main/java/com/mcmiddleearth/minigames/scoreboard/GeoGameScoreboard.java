@@ -1,6 +1,8 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
-public class GeoGameScoreboard extends AbstractGameScoreboard{
+import com.mcmiddleearth.minigames.scoreboard.generics.AbstractGameScoreboard;
+
+public class GeoGameScoreboard extends AbstractGameScoreboard {
 
     public GeoGameScoreboard(){
 

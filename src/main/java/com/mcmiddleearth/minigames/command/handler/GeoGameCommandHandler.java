@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.command.handler;
 
-import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.minigames.game.GameType;
@@ -91,10 +91,10 @@ public class GeoGameCommandHandler {
     }
 
     private void sendNothereMessage(McmeCommandSender sender){
-        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
+//        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
     }
 
     private void sendNotImplementedYetMessage(McmeCommandSender sender){
-        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
+//        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
     }
 }

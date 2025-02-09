@@ -9,11 +9,11 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Jubo
  */
-public class MinigameMessageListener implements PluginMessageListener {
+public class MiniGameMessageListener implements PluginMessageListener {
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message) {
-        if(!channel.equals(Channel.MAIN)){
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
+        if(!channel.equals(Channel.MAIN.getId())){
             return;
         }
     }

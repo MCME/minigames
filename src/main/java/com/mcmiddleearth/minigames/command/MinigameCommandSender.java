@@ -1,9 +1,9 @@
 package com.mcmiddleearth.minigames.command;
 
-import com.mcmiddleearth.command.McmeCommandSender;
-import net.md_5.bungee.api.CommandSender;
+import com.mcmiddleearth.command.sender.McmeCommandSender;
+import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -14,37 +14,37 @@ import java.util.UUID;
  */
 public class MinigameCommandSender implements McmeCommandSender {
 
-    private final CommandSender sender;
+    private final Player sender;
 
     public static HashMap<UUID,MinigameCommandSender> players = new HashMap<>();
 
-    public MinigameCommandSender(CommandSender sender){
+    public MinigameCommandSender(Player sender){
         this.sender = sender;
     }
 
-    public CommandSender getCommandSender(){
+    public Player getCommandSender(){
         return sender;
     }
 
     @Override
     public void sendMessage(BaseComponent[] baseComponents) {
-        sender.sendMessage(baseComponents);
+        sender.sendMessage(Component.text(BaseComponent.toLegacyText(baseComponents)));
+    }
+
+    @Override
+    public boolean hasPermission(String s) {
+        return sender.hasPermission(s);
     }
 
     public static String getName(MinigameCommandSender sender){
-        return sender.getCommandSender().getName();
+        return sender.getCommandSender().getUsername();
     }
 
-    public static MinigameCommandSender getOrCreateMcmePlayer(ProxiedPlayer player){
-        MinigameCommandSender result = players.get(player.getUniqueId());
-        if(result == null){
-            result = new MinigameCommandSender(player);
-            players.put(player.getUniqueId(),result);
-        }
-        return result;
+    public static MinigameCommandSender getOrCreateMcmePlayer(Player player){
+        return players.computeIfAbsent(player.getUniqueId(), k -> new MinigameCommandSender(player));
     }
 
-    public static void removeMcmePlayer(ProxiedPlayer player){
+    public static void removeMcmePlayer(Player player){
         players.remove(player.getUniqueId());
     }
 }

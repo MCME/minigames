@@ -1,15 +1,14 @@
 package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.scoreboard.AbstractGameScoreboard;
+import com.mcmiddleearth.minigames.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.util.ChatRanks;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,13 +22,13 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractGame {
 
-    private ProxiedPlayer manager;
+    private Player manager;
     private final String name;
     private final GameType type;
     private final AbstractGameScoreboard board;
-    private final List<ProxiedPlayer> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
 
-    private static List<ProxiedPlayer> inConversation = new ArrayList<>();
+    private static List<Player> inConversation = new ArrayList<>();
 
     private boolean saveConversation = false;
     private File saveFile;
@@ -60,30 +59,30 @@ public abstract class AbstractGame {
         toggleConfig.put("points",true);
     }
 
-    public AbstractGame(ProxiedPlayer manager, String name, GameType type, AbstractGameScoreboard board){
+    public AbstractGame(Player manager, String name, GameType type, AbstractGameScoreboard board){
         this.manager = manager;
         this.name = name;
         this.type = type;
         this.board = board;
     }
 
-    public void addPlayer(ProxiedPlayer player){
+    public void addPlayer(Player player){
         players.add(player);
-        getBoard().addPlayer(player);
-        notifyGame("Everybody welcome "+player.getName()+" to the game!");
-        PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
+//        getBoard().addPlayer(player);
+//        notifyGame("Everybody welcome "+player.getUsername()+" to the game!");
+//        PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
     }
 
     public void selfDestruction(){
         notifyGame("The host was disconnected from the server. This tour will destroy itself in 60 seconds.");
         task = true;
-        cleanup = ProxyServer.getInstance().getScheduler().schedule(MiniGamesPlugin.getInstance(),() -> {
-            if(!manager.isConnected())
+        cleanup = MiniGamesPlugin.getInstance().getProxyServer().getScheduler().buildTask(MiniGamesPlugin.getInstance(),() -> {
+            if(!manager.isActive())
                 endGame();
-        }, 60, TimeUnit.SECONDS);
+        }).delay(60, TimeUnit.SECONDS).schedule();
     }
 
-    public void returnedManager(ProxiedPlayer player){
+    public void returnedManager(Player player){
         this.manager = player;
         players.add(player);
         cleanup.cancel();
@@ -93,31 +92,31 @@ public abstract class AbstractGame {
 
     public void endGame(){
         notifyGame("The game has ended.");
-        PluginData.getMessageUtil().sendInfoMessage(manager,"You ended the game.");
-        for(ProxiedPlayer player: players)
-            getBoard().removePlayer(player);
+//        PluginData.getMessageUtil().sendInfoMessage(manager,"You ended the game.");
+//        for(Player player: players)
+//            getBoard().removePlayer(player);
         players.clear();
         PluginData.removeGame(this);
     }
 
-    public void removePlayer(ProxiedPlayer player){
+    public void removePlayer(Player player){
         if(player == manager){
             endGame();
             return;
         }
-        getBoard().removePlayer(player);
+//        getBoard().removePlayer(player);
         players.remove(player);
-        notifyGame(player.getName()+" has left the game.");
-        PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
+        notifyGame(player.getUsername()+" has left the game.");
+//        PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
     }
 
-    public void kickPlayer(ProxiedPlayer player){
+    public void kickPlayer(Player player){
         if(player != manager){
             removePlayer(player);
-            PluginData.getMessageUtil().sendErrorMessage(player,"You were kicked from the game. Think about it!");
-            PluginData.getMessageUtil().sendInfoMessage(manager,"You kicked " + player.getName() + " from the game.");
-        }else{
-            PluginData.getMessageUtil().sendErrorMessage(player,"You can´t kick yourself idiot.");
+//            PluginData.getMessageUtil().sendErrorMessage(player,"You were kicked from the game. Think about it!");
+//            PluginData.getMessageUtil().sendInfoMessage(manager,"You kicked " + player.getUsername() + " from the game.");
+//        }else{
+//            PluginData.getMessageUtil().sendErrorMessage(player,"You can´t kick yourself idiot.");
         }
     }
 
@@ -128,11 +127,11 @@ public abstract class AbstractGame {
 
     public static boolean deleteConversation(){return deleteConversation; }
 
-    public static void addConversation(ProxiedPlayer player){inConversation.add(player);}
+    public static void addConversation(Player player){inConversation.add(player);}
 
-    public static List<ProxiedPlayer> getInConversation(){return inConversation;}
+    public static List<Player> getInConversation(){return inConversation;}
 
-    public static void removeConversation(ProxiedPlayer player){inConversation.remove(player);}
+    public static void removeConversation(Player player){inConversation.remove(player);}
 
 
     public void setSaveConversation(boolean saveConversation){this.saveConversation = saveConversation;}
@@ -148,32 +147,32 @@ public abstract class AbstractGame {
     public String getSaveDescription(){return saveDescription;}
     public File getSaveFile(){return saveFile;}
 
-    public void setManager(ProxiedPlayer manager){
+    public void setManager(Player manager){
         this.manager = manager;
     }
 
     public int countPlayer(){return players.size();}
 
     protected void notifyGame(String message){
-        for(ProxiedPlayer player: players){
-            PluginData.getMessageUtil().sendInfoMessage(player,message);
-        }
+//        for(Player player: players){
+//            PluginData.getMessageUtil().sendInfoMessage(player,message);
+//        }
     }
 
-    public void gameChat(ProxiedPlayer player, String message){
+    public void gameChat(Player player, String message){
         String chatMessage;
-        if(player.getName().equals("Jubo"))
-            chatMessage = ChatRanks.GAME_MASTER.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
+        if(player.getUsername().equals("Jubo"))
+            chatMessage = ChatRanks.GAME_MASTER.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
         else if(player.equals(manager))
-            chatMessage = ChatRanks.MANAGER.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
+            chatMessage = ChatRanks.MANAGER.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
         else
-            chatMessage = ChatRanks.Participant.getChatPrefix() + player.getName() + ChatColor.WHITE + ": " + message;
-        for(ProxiedPlayer receiver: players){
-            receiver.sendMessage(new ComponentBuilder(chatMessage).create());
+            chatMessage = ChatRanks.Participant.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
+        for(Player receiver: players){
+            receiver.sendMessage(Component.text(chatMessage));
         }
     }
 
-    public String getGameChatTag(ProxiedPlayer player) {
+    public String getGameChatTag(Player player) {
         if(player == manager) {
             return ChatColor.DARK_AQUA + "<Manager ";
         }
@@ -184,19 +183,19 @@ public abstract class AbstractGame {
 
     public void announceGame(){
         announced = true;
-        String message = Style.INFO+PluginData.getMessageUtil().getPREFIX()+Style.STRESSED+manager.getName()+Style.INFO+
+        String message = Style.INFO+PluginData.getMessageUtil().getPREFIX()+Style.STRESSED+manager.getUsername()+Style.INFO+
                 " started a new game "+Style.STRESSED+type.toString()+Style.INFO+" game. To play that game, type in chat: "+
                 Style.STRESSED+"/game join "+name+Style.INFO+" or "+Style.HIGHLIGHT+"Click here";
-        for(ProxiedPlayer player: ProxyServer.getInstance().getPlayers())
-            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
+//        for(Player player: MiniGamesPlugin.getInstance().getProxyServer().getAllPlayers())
+//            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
     }
 
     public static Map<String,Boolean> getConfig(){return toggleConfig;}
     public AbstractGameScoreboard getBoard(){return board;}
     public String getName(){return name;}
     public GameType getType(){return type;}
-    public List<ProxiedPlayer> getPlayers(){return players;}
-    public ProxiedPlayer getManager(){return manager;}
+    public List<Player> getPlayers(){return players;}
+    public Player getManager(){return manager;}
     public boolean isAnnounced(){return announced;}
 
 }
