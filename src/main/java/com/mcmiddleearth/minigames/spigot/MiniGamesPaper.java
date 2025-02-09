@@ -35,7 +35,7 @@ public class MiniGamesPaper extends JavaPlugin implements Listener {
         Logger.getLogger("MiniGames").log(Level.INFO, "Join event done.");
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(e.getPlayer().getName());
-        this.getServer().sendPluginMessage(this, Channel.MAIN_PAPER,
+        e.getPlayer().sendPluginMessage(this, Channel.MAIN_PAPER,
                 out.toByteArray());
     }
 }
