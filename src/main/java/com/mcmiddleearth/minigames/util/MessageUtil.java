@@ -1,11 +1,10 @@
 package com.mcmiddleearth.minigames.util;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ProxyServer;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 
 /**
  *
@@ -16,33 +15,33 @@ public class MessageUtil {
     private final String PREFIX = "[MCME-Minigames] ";
 
 
-//    public void sendErrorMessage(Player sender, String message){
-//        sender.sendMessage(new ComponentBuilder(PREFIX+message).color(Style.ERROR).create());
-//    }
-//
-//    public void sendInfoMessage(Player sender, String message){
-//        sender.sendMessage(new ComponentBuilder(PREFIX+message).color(Style.INFO).create());
-//    }
-//
-//    public void sendBroadcastMessage(String message){
-//        for(Player player: ProxyServer.getAllPlayers()){
-//            player.sendMessage(new ComponentBuilder(PREFIX+message).color(Style.INFO).create());
-//        }
-//    }
-//
-//    public void sendErrorMessage(McmeCommandSender sender, String message){
-//        sender.sendMessage(new ComponentBuilder(PREFIX+message).color(Style.ERROR).create());
-//    }
-//
-//    public void sendInfoMessage(McmeCommandSender sender, String message){
-//        sender.sendMessage(new ComponentBuilder(PREFIX+message).color(Style.INFO).create());
-//    }
-//
-//    public void sendClickableInfoMessage(Player sender, String message, String clickable){
-//        TextComponent text = new TextComponent(message);
-//        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,clickable));
-//        sender.sendMessage(text);
-//    }
+    public void sendErrorMessage(Player sender, String message){
+        sender.sendMessage(Component.text(PREFIX+message).color(Style.ERROR));
+    }
+
+    public void sendInfoMessage(Player sender, String message){
+        sender.sendMessage(Component.text(PREFIX+message).color(Style.INFO));
+    }
+
+    public void sendBroadcastMessage(String message){
+        for(Player player: MiniGamesPlugin.getInstance().getProxyServer().getAllPlayers()){
+            player.sendMessage(Component.text(PREFIX+message));
+        }
+    }
+
+    public void sendErrorMessage(McmeCommandSender sender, String message){
+        //sender.sendMessage(Component.text(PREFIX+message).color(Style.ERROR));
+    }
+
+    public void sendInfoMessage(McmeCommandSender sender, String message){
+        //sender.sendMessage(Component.text(PREFIX+message).color(Style.INFO));
+    }
+
+    public void sendClickableInfoMessage(Player sender, String message, String clickable){
+        Component text = Component.text(message);
+        text.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND,clickable));
+        sender.sendMessage(text);
+    }
 
     public String getPREFIX(){return PREFIX;}
 }

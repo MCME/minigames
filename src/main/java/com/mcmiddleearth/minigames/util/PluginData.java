@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
 
 /**
  *
@@ -54,7 +53,7 @@ public class PluginData {
                 }
             }
         } catch (FileNotFoundException ex) {
-            MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);
+            MiniGamesPlugin.getInstance().getLogger().error(null, ex);
         }
     }
 

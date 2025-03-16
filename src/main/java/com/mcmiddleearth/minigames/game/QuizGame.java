@@ -388,7 +388,7 @@ public class QuizGame extends AbstractGame{
                 //((QuizGameScoreboard)getBoard()).updateQuiz(questions.size());
             }
         } catch (FileNotFoundException ex) {
-            MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);
+            MiniGamesPlugin.getInstance().getLogger().error(null, ex);
             throw ex;
         }
         return new int[]{found,newQuestions.size()};
@@ -653,7 +653,7 @@ public class QuizGame extends AbstractGame{
                 }
             }
         } catch (FileNotFoundException ex) {
-            MiniGamesPlugin.getInstance().getLogger().log(Level.SEVERE, null, ex);
+            MiniGamesPlugin.getInstance().getLogger().error(null, ex);
             throw ex;
         }
         return new int[]{found,found};

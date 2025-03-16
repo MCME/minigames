@@ -4,9 +4,10 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.spigot.listener.MiniGameMessageListener;
 import com.mcmiddleearth.minigames.util.Channel;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -31,11 +32,11 @@ public class MiniGamesPaper extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Logger.getLogger("MiniGames").log(Level.INFO, "Join event done.");
+    public void onJoin(AsyncChatEvent e) {
+        Player player = e.getPlayer();
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(e.getPlayer().getName());
-        e.getPlayer().sendPluginMessage(this, Channel.MAIN_PAPER,
-                out.toByteArray());
+        out.writeUTF(player.getName());
+        player.sendPluginMessage(this, Channel.MAIN_PAPER, out.toByteArray());
     }
 }

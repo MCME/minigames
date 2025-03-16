@@ -1,48 +1,32 @@
 package com.mcmiddleearth.minigames.scoreboard.generics;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
-
-import java.util.Locale;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ScoreboardObjective {
     public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("minigames:scoreboard_objective");
 
-    private String name;
-    private Component value;
-    private HealthDisplay type;
+    private String objectiveName;
+    private Component displayName;
 
-    private CRUD action;
-
-    public void setName(String name){
-        this.name = name;
+    public void setObjectiveName(String objectiveName){
+        this.objectiveName = objectiveName;
     }
-    public void setValue(Component value){
-        this.value = value;
+    public void setDisplayName(Component displayName){
+        this.displayName = displayName;
     }
 
-    public void setType(HealthDisplay type){
-        this.type = type;
-    }
-
-    public void setAction(CRUD action){
-        this.action = action;
-    }
-
-    public enum HealthDisplay
-    {
-
-        INTEGER, HEARTS;
-
-        @Override
-        public String toString()
-        {
-            return super.toString().toLowerCase( Locale.ROOT );
-        }
-
-        public static HealthDisplay fromString(String s)
-        {
-            return valueOf( s.toUpperCase( Locale.ROOT ) );
-        }
+    public byte[] toByteArray(String scoreboardName, CUD action){
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeInt(action.ordinal());
+        if(action == CUD.DELETE)
+            return out.toByteArray();
+        out.writeUTF(scoreboardName);
+        out.writeUTF(objectiveName);
+        out.writeUTF(LegacyComponentSerializer.legacySection().serialize(displayName));
+        return out.toByteArray();
     }
 }

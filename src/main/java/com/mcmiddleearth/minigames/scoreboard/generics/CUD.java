@@ -1,8 +1,7 @@
 package com.mcmiddleearth.minigames.scoreboard.generics;
 
-public enum CRUD {
+public enum CUD {
     CREATE,
-    READ,
     UPDATE,
     DELETE
 }

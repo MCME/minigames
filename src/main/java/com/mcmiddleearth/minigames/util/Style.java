@@ -1,20 +1,21 @@
 package com.mcmiddleearth.minigames.util;
 
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 /**
- * @author Jubo
+ * @author Jubo, NicovicTheSixth
  */
 public class Style {
 
-    public static final ChatColor INFO = ChatColor.AQUA;
-    public static final ChatColor ERROR = ChatColor.RED;
-    public static final ChatColor ERROR_STRESSED = ChatColor.DARK_RED;
-    public static final ChatColor STRESSED = ChatColor.GREEN;
-    public static final ChatColor HIGHLIGHT = ChatColor.GOLD;
-    public static final ChatColor HIGHLIGHT_STRESSED = ChatColor.YELLOW;
-    public static final ChatColor NOTYET = ChatColor.STRIKETHROUGH;
-    public static final ChatColor BOLD = ChatColor.BOLD;
-    public static final ChatColor CURSIVE = ChatColor.ITALIC;
-    public static final ChatColor EMPHASIZE = ChatColor.UNDERLINE;
+    public static final NamedTextColor INFO = NamedTextColor.AQUA;
+    public static final NamedTextColor ERROR = NamedTextColor.RED;
+    public static final NamedTextColor ERROR_STRESSED = NamedTextColor.DARK_RED;
+    public static final NamedTextColor STRESSED = NamedTextColor.GREEN;
+    public static final NamedTextColor HIGHLIGHT = NamedTextColor.GOLD;
+    public static final NamedTextColor HIGHLIGHT_STRESSED = NamedTextColor.YELLOW;
+    public static final TextDecoration NOTYET = TextDecoration.STRIKETHROUGH;
+    public static final TextDecoration BOLD = TextDecoration.BOLD;
+    public static final TextDecoration CURSIVE = TextDecoration.ITALIC;
+    public static final TextDecoration EMPHASIZE = TextDecoration.UNDERLINED;
 }
