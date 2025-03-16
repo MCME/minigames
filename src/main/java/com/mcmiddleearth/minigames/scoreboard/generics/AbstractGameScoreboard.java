@@ -16,7 +16,7 @@ import java.util.*;
  */
 public abstract class AbstractGameScoreboard {
     public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("minigames:scoreboard");
-    protected enum AR {ADD, REMOVE}
+    protected enum CAR {CREATE, ADD, REMOVE}
 
     protected String name;
     protected final List<Player> players = new ArrayList<>();
@@ -37,7 +37,7 @@ public abstract class AbstractGameScoreboard {
     public void removePlayer(Player player){
         players.remove(player);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeInt(AR.REMOVE.ordinal());
+        out.writeInt(CAR.REMOVE.ordinal());
         player.sendPluginMessage(IDENTIFIER, out.toByteArray());
         playerCountScore.updateValue(-1);
         updateScore(playerCountScore);
@@ -46,7 +46,7 @@ public abstract class AbstractGameScoreboard {
     public void addPlayer(Player player){
         players.add(player);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeInt(AR.ADD.ordinal());
+        out.writeInt(CAR.ADD.ordinal());
         out.writeUTF(name);
         player.sendPluginMessage(IDENTIFIER, out.toByteArray());
         playerCountScore.updateValue(+1);
