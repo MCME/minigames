@@ -34,8 +34,8 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
 
     private Supplier<Component> questionCounter = () -> Component.text(String.format("Question %d / %d", currentQuestion, questionCount));
 
-    public QuizGameScoreboard(String name) {
-        super(name);
+    public QuizGameScoreboard(String name, Player creator) {
+        super(name, creator);
 
         timerObjective.setObjectiveName("timer");
         timerObjective.setDisplayName(questionCounter.get());
@@ -54,6 +54,13 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
         scoresObjective.setObjectiveName("scores");
         scoresObjective.setDisplayName(questionCounter.get());
         scoresObjective.setPosition(ScoreboardObjective.Position.SIDE);
+
+        creator.getCurrentServer().ifPresent(connection -> {
+            connection.sendPluginMessage(ScoreboardObjective.IDENTIFIER, timerObjective.toByteArray(name, CUD.CREATE));
+            connection.sendPluginMessage(ScoreboardScore.IDENTIFIER, playersUnfinishedScore.toByteArray(name, CUD.CREATE));
+            connection.sendPluginMessage(ScoreboardScore.IDENTIFIER, answerTime.toByteArray(name, CUD.CREATE));
+            connection.sendPluginMessage(ScoreboardObjective.IDENTIFIER, scoresObjective.toByteArray(name, CUD.CREATE));
+        });
     }
 
     public void startQuestion(int time, int players){

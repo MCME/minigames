@@ -19,8 +19,11 @@ public abstract class AbstractGameScoreboard {
     protected final String name;
     protected final List<Player> players = new ArrayList<>();
 
-    public AbstractGameScoreboard(String name){
+    public AbstractGameScoreboard(String name, Player creator){
         this.name = name;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeInt(CAR.CREATE.ordinal());
+        creator.getCurrentServer().ifPresent(connection -> connection.sendPluginMessage(IDENTIFIER,out.toByteArray()));
     }
 
     public void removePlayer(Player player){
