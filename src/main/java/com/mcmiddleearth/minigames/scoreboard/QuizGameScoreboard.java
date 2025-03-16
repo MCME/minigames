@@ -2,105 +2,95 @@ package com.mcmiddleearth.minigames.scoreboard;
 
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.scoreboard.generics.*;
-import com.mcmiddleearth.minigames.util.Style;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  *
  * @author Jubo
  */
 public class QuizGameScoreboard extends AbstractGameScoreboard {
+    protected MiniMessage mm = MiniMessage.miniMessage();
+    private final ScoreboardObjective scoresObjective = new ScoreboardObjective(),timerObjective = new ScoreboardObjective();
 
-    private ScoreboardObjective quizObjective,timerObjective;
+    private final ScoreboardScore answerTime = new ScoreboardScore(), playersUnfinishedScore = new ScoreboardScore();
 
-    private ScoreboardDisplay quizDisplay,timerDisplay;
-
-    private HashMap<Player, ScoreboardScore> scores = new HashMap<>();
-
-    private ScoreboardScore answerTime, unfinishedScore;
+    private final  HashMap<Player, ScoreboardScore> scores = new HashMap<>();
 
     private int questionCount = 0;
     private int currentQuestion = 0;
 
-    private final List<String> players = new ArrayList<>();
-
     private ScheduledTask timerTask;
 
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/ddHH:mm:ss");
-    private String currentName;
+    private Supplier<Component> questionCounter = () -> Component.text(String.format("Question %d / %d", currentQuestion, questionCount));
 
-    private final String name = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz"));
-    private final String name2 = ComponentSerializer.toString(TextComponent.fromLegacyText("Quiz2"));
+    public QuizGameScoreboard(String name) {
+        super(name);
 
-    public QuizGameScoreboard() {
+        timerObjective.setObjectiveName("timer");
+        timerObjective.setDisplayName(questionCounter.get());
+        timerObjective.setPosition(ScoreboardObjective.Position.DISABLED);
 
-        quizObjective = new ScoreboardObjective();
-        quizObjective.setName(name);
-        quizObjective.setAction(CUD.CREATE);
-        quizObjective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
+        answerTime.setObjectiveName(timerObjective.getObjectiveName());
+        answerTime.setScoreName("answerTime");
+        answerTime.setDisplayName(mm.deserialize("<yellow>Time remaining:</yellow>"));
+        answerTime.setValue(0);
 
-        timerObjective = new ScoreboardObjective();
-        timerObjective.setName(name2);
-        timerObjective.setAction(CUD.CREATE);
-        timerObjective.setDisplayName(Component.text("Question "+currentQuestion+" / " + questionCount));
-        timerObjective.setType(ScoreboardObjective.HealthDisplay.INTEGER);
+        playersUnfinishedScore.setObjectiveName(timerObjective.getObjectiveName());
+        playersUnfinishedScore.setScoreName("playersUnfinished");
+        playersUnfinishedScore.setDisplayName(mm.deserialize("<red>Players thinking:</red>"));
+        playersUnfinishedScore.setValue(0);
 
-        answerTime = new ScoreboardScore();
-        answerTime.setScoreName(name2);
-        answerTime.setItemName(Style.HIGHLIGHT+"time remaining: ");
-        unfinishedScore = new ScoreboardScore();
-        unfinishedScore.setScoreName(name2);
-        unfinishedScore.setItemName("players thinking ");
-
-        quizDisplay = new ScoreboardDisplay();
-        quizDisplay.setPosition(ScoreboardDisplay.Position.SIDE);
-        quizDisplay.setName(name);
-
-        timerDisplay = new ScoreboardDisplay();
-        timerDisplay.setPosition(ScoreboardDisplay.Position.SIDE);
-        timerDisplay.setName(name2);
+        scoresObjective.setObjectiveName("scores");
+        scoresObjective.setDisplayName(questionCounter.get());
+        scoresObjective.setPosition(ScoreboardObjective.Position.SIDE);
     }
 
     public void startQuestion(int time, int players){
         currentQuestion++;
-        updateTimer();
-        timerObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        answerTime.setValue(time);
-        unfinishedScore.setValue(players);
+        updateQuestionCounters();
+
+        timerObjective.setPosition(ScoreboardObjective.Position.SIDE);
         updateObjective(timerObjective);
-        updateDisplay(timerDisplay);
+
+        scoresObjective.setPosition(ScoreboardObjective.Position.DISABLED);
+        updateObjective(scoresObjective);
+
+        answerTime.setValue(time);
         updateScore(answerTime);
-        updateScore(unfinishedScore);
-        timerTask = ProxyServer.getInstance().getScheduler().schedule(MiniGamesPlugin.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                answerTime.setValue(answerTime.getValue()-1);
-                updateScore(answerTime);
-                if(answerTime.getValue()<1){
-                    cancelTimerTask();
-                }
+
+        playersUnfinishedScore.setValue(players);
+        updateScore(playersUnfinishedScore);
+        timerTask = MiniGamesPlugin.getInstance().getProxyServer().getScheduler().buildTask(MiniGamesPlugin.getInstance(), () -> {
+            answerTime.setValue(answerTime.getValue()-1);
+            updateScore(answerTime);
+            if(answerTime.getValue()<1){
+                cancelTimerTask();
             }
-        },0,1,TimeUnit.SECONDS);
+        }).repeat(1,TimeUnit.SECONDS).schedule();
     }
 
     private void cancelTimerTask(){
-        updateQuiz();
-        quizObjective.setDisplayName(Component.text("Question "+currentQuestion+" / " + questionCount));
-        updateObjective(quizObjective);
+        updateQuestionCounters();
+        scoresObjective.setPosition(ScoreboardObjective.Position.SIDE);
+        updateObjective(scoresObjective);
+
+        timerObjective.setPosition(ScoreboardObjective.Position.DISABLED);
+        updateObjective(timerObjective);
+
         for(ScoreboardScore score: scores.values())
             updateScore(score);
-        updateDisplay(quizDisplay);
+
         if(timerTask != null)
             timerTask.cancel();
     }
@@ -109,18 +99,14 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
     public void addPlayer(Player player){
         super.addPlayer(player);
         ScoreboardScore score = new ScoreboardScore();
+        score.setObjectiveName(scoresObjective.getObjectiveName());
         score.setScoreName(name);
         score.setValue(0);
-        score.setItemName(player.getDisplayName());
+        score.setDisplayName(Component.text(player.getUsername()));
         scores.put(player,score);
 
-        updateQuiz();
-        quizObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        updateObjective(quizObjective);
-        updateDisplay(quizDisplay);
-        for(ScoreboardScore scoreUpdate: scores.values()){
-            updateScore(scoreUpdate);
-        }
+        updateQuestionCounters();
+        createScore(score);
     }
 
     @Override
@@ -135,54 +121,31 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
             updateScore(score);
     }
 
-    private void updateTimer(){
-        setCurrentName();
-        timerDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-        timerObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-        answerTime.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-        unfinishedScore.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-    }
-
-    private void updateQuiz(){
-        setCurrentName();
-        quizObjective.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-        quizDisplay.setName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
-        for(ScoreboardScore score: scores.values())
-            score.setScoreName(ComponentSerializer.toString(TextComponent.fromLegacyText(currentName)));
+    private void updateQuestionCounters(){
+        scoresObjective.setDisplayName(questionCounter.get());
+        timerObjective.setDisplayName(questionCounter.get());
+        updateObjective(scoresObjective);
+        updateObjective(timerObjective);
     }
 
     public void addQuestion(){
         questionCount++;
-        updateQuiz();
-        quizObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        //timerObjective.setValue(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        updateObjective(quizObjective);
-        for(ScoreboardScore score: scores.values())
-            updateScore(score);
-        updateDisplay(quizDisplay);
+        updateQuestionCounters();
     }
 
     public void removeQuestion(){
         questionCount--;
-        updateQuiz();
-        quizObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        updateObjective(quizObjective);
-        for(ScoreboardScore score: scores.values())
-            updateScore(score);
-        updateDisplay(quizDisplay);
+        updateQuestionCounters();
     }
 
     public void restart(){
         currentQuestion = 0;
         questionCount = 0;
-        updateQuiz();
-        quizObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        updateObjective(quizObjective);
+        updateQuestionCounters();
         for(ScoreboardScore score: scores.values()) {
             score.setValue(0);
             updateScore(score);
         }
-        updateDisplay(quizDisplay);
     }
 
     public void clearQuestions(){
@@ -192,38 +155,31 @@ public class QuizGameScoreboard extends AbstractGameScoreboard {
 
     public void updateQuiz(Integer questionCount){
         this.questionCount = questionCount;
-        updateQuiz();
-        quizObjective.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText("Question "+currentQuestion+" / " + questionCount)));
-        updateObjective(quizObjective);
+        updateQuestionCounters();
         for(ScoreboardScore score: scores.values()) {
             score.setValue(0);
             updateScore(score);
         }
-        updateDisplay(quizDisplay);
-    }
-
-    private void setCurrentName(){
-        currentName = ComponentSerializer.toString(TextComponent.fromLegacyText(dtf.format(LocalDateTime.now())));
     }
 
     public void stopQuestion(){
         cancelTimerTask();
     }
 
-    public int getScore(ProxiedPlayer player){
+    public int getScore(Player player){
         return scores.get(player).getValue();
     }
 
     public void playerFinished(){
-        unfinishedScore.setValue(unfinishedScore.getValue()-1);
-        updateScore(unfinishedScore);
+        playersUnfinishedScore.setValue(playersUnfinishedScore.getValue()-1);
+        updateScore(playersUnfinishedScore);
     }
 
-    @Override
-    public void switchServer(ProxiedPlayer player){
-        super.switchServer(player);
-        player.unsafe().sendPacket(quizObjective);
-        player.unsafe().sendPacket(quizDisplay);
-        player.unsafe().sendPacket(scores.get(player));
+    //TODO: add server switching
+    public void switchServer(Player player){
+//        super.switchServer(player);
+//        player.unsafe().sendPacket(quizObjective);
+//        player.unsafe().sendPacket(quizDisplay);
+//        player.unsafe().sendPacket(scores.get(player));
     }
 }

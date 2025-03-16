@@ -26,25 +26,25 @@ public class PlayerListener{
     public void playerSwitchServer(ServerConnectedEvent event){
         if(PluginData.isInGame(event.getPlayer())){
             AbstractGame game = PluginData.getGame(event.getPlayer());
-            game.getBoard().switchServer(event.getPlayer());
+            //game.getBoard().switchServer(event.getPlayer());
         }
     }
 
-    @Subscribe
-    public void playerLeave(PlayerDisconnectEvent event){
-        if(PluginData.isInGame(event.getPlayer())){
-            AbstractGame game = PluginData.getGame(event.getPlayer());
-            if(event.getPlayer().equals(game.getManager())){
-                game.selfDestruction();
-            }else{
-                game.removePlayer(event.getPlayer());
-            }
-        }
-        MinigameCommandSender.removeMcmePlayer(event.getPlayer());
-    }
-
-    @Override
-    public void execute(PluginMessageEvent pluginMessageEvent) {
-
-    }
+//    @Subscribe
+//    public void playerLeave(PlayerDisconnectEvent event){
+//        if(PluginData.isInGame(event.getPlayer())){
+//            AbstractGame game = PluginData.getGame(event.getPlayer());
+//            if(event.getPlayer().equals(game.getManager())){
+//                game.selfDestruction();
+//            }else{
+//                game.removePlayer(event.getPlayer());
+//            }
+//        }
+//        MinigameCommandSender.removeMcmePlayer(event.getPlayer());
+//    }
+//
+//    @Override
+//    public void execute(PluginMessageEvent pluginMessageEvent) {
+//
+//    }
 }

@@ -2,11 +2,14 @@ package com.mcmiddleearth.minigames.scoreboard.generics;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ScoreboardScore {
 
     private String objectiveName;
     private String scoreName;
+    private Component displayName;
     private Integer value;
 
     public void setObjectiveName(String objectiveName){
@@ -17,8 +20,16 @@ public class ScoreboardScore {
         this.scoreName = scoreName;
     }
 
+    public void setDisplayName(Component displayName){
+        this.displayName = displayName;
+    }
+
     public void setValue(Integer value){
         this.value = value;
+    }
+
+    public Integer getValue(){
+        return value;
     }
 
     public void updateValue(Integer update){
@@ -33,6 +44,7 @@ public class ScoreboardScore {
         out.writeUTF(scoreboardName);
         out.writeUTF(objectiveName);
         out.writeUTF(scoreName);
+        out.writeUTF(LegacyComponentSerializer.legacySection().serialize(displayName));
         out.writeInt(value);
         return out.toByteArray();
     }

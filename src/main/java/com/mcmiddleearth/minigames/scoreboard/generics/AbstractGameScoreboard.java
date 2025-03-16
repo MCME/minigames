@@ -18,20 +18,11 @@ public abstract class AbstractGameScoreboard {
     public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("minigames:scoreboard");
     protected enum CAR {CREATE, ADD, REMOVE}
 
-    protected String name;
+    protected final String name;
     protected final List<Player> players = new ArrayList<>();
-    protected ScoreboardObjective playerCountObjective;
-    protected ScoreboardScore playerCountScore;
 
     public AbstractGameScoreboard(String name){
         this.name = name;
-        playerCountObjective = new ScoreboardObjective();
-        playerCountObjective.setDisplayName(Component.text(this.name));
-        playerCountObjective.setObjectiveName("PlayerCount");
-        playerCountScore = new ScoreboardScore();
-        playerCountScore.setObjectiveName("PlayerCount");
-        playerCountScore.setScoreName(NamedTextColor.BLUE + "players ");
-        playerCountScore.setValue(0);
     }
 
     public void removePlayer(Player player){
@@ -39,8 +30,6 @@ public abstract class AbstractGameScoreboard {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeInt(CAR.REMOVE.ordinal());
         player.sendPluginMessage(IDENTIFIER, out.toByteArray());
-        playerCountScore.updateValue(-1);
-        updateScore(playerCountScore);
     }
 
     public void addPlayer(Player player){
@@ -49,8 +38,13 @@ public abstract class AbstractGameScoreboard {
         out.writeInt(CAR.ADD.ordinal());
         out.writeUTF(name);
         player.sendPluginMessage(IDENTIFIER, out.toByteArray());
-        playerCountScore.updateValue(+1);
-        updateScore(playerCountScore);
+    }
+
+    protected void createObjective(ScoreboardObjective objective){
+        List<Optional<ServerConnection>> connections = players.parallelStream().map(Player::getCurrentServer).distinct().toList();
+        connections.forEach(connection ->
+                connection.ifPresent(serverConnection ->
+                        serverConnection.sendPluginMessage(ScoreboardObjective.IDENTIFIER, objective.toByteArray(name, CUD.CREATE))));
     }
 
     protected void updateObjective(ScoreboardObjective objective){
@@ -58,6 +52,13 @@ public abstract class AbstractGameScoreboard {
         connections.forEach(connection ->
                 connection.ifPresent(serverConnection ->
                         serverConnection.sendPluginMessage(ScoreboardObjective.IDENTIFIER, objective.toByteArray(name, CUD.UPDATE))));
+    }
+
+    protected void createScore(ScoreboardScore score){
+        List<Optional<ServerConnection>> connections = players.parallelStream().map(Player::getCurrentServer).distinct().toList();
+        connections.forEach(connection ->
+                connection.ifPresent(serverConnection ->
+                        serverConnection.sendPluginMessage(ScoreboardObjective.IDENTIFIER, score.toByteArray(name, CUD.CREATE))));
     }
 
     protected void updateScore(ScoreboardScore score){
