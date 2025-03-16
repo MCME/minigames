@@ -14,6 +14,8 @@ import java.util.*;
  *
  * @author Jubo
  */
+//TODO: fix, as player.sendPluginMessage doesn't work the way I thought it does, Nic
+
 public abstract class AbstractGameScoreboard {
     public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("minigames:scoreboard");
     protected enum CAR {CREATE, ADD, REMOVE}
