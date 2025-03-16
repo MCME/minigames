@@ -5,16 +5,12 @@ import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.util.*;
 
 /**
- *
- * @author Jubo
+ * @author Jubo, NicovicTheSixth
  */
-//TODO: fix, as player.sendPluginMessage doesn't work the way I thought it does, Nic
 
 public abstract class AbstractGameScoreboard {
     public static final MinecraftChannelIdentifier IDENTIFIER = MinecraftChannelIdentifier.from("minigames:scoreboard");
@@ -31,7 +27,8 @@ public abstract class AbstractGameScoreboard {
         players.remove(player);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeInt(CAR.REMOVE.ordinal());
-        player.sendPluginMessage(IDENTIFIER, out.toByteArray());
+        out.writeUTF(player.getUsername());
+        player.getCurrentServer().ifPresent(connection -> connection.sendPluginMessage(IDENTIFIER, out.toByteArray()));
     }
 
     public void addPlayer(Player player){
@@ -39,7 +36,8 @@ public abstract class AbstractGameScoreboard {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeInt(CAR.ADD.ordinal());
         out.writeUTF(name);
-        player.sendPluginMessage(IDENTIFIER, out.toByteArray());
+        out.writeUTF(player.getUsername());
+        player.getCurrentServer().ifPresent(connection -> connection.sendPluginMessage(IDENTIFIER, out.toByteArray()));
     }
 
     protected void createObjective(ScoreboardObjective objective){
