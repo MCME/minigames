@@ -47,6 +47,7 @@ public abstract class AbstractGameScoreboard {
         players.add(player);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeInt(AR.ADD.ordinal());
+        out.writeUTF(name);
         player.sendPluginMessage(IDENTIFIER, out.toByteArray());
         playerCountScore.updateValue(+1);
         updateScore(playerCountScore);
