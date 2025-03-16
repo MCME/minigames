@@ -8,13 +8,10 @@ import com.mcmiddleearth.minigames.util.Style;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +25,7 @@ public abstract class AbstractGame {
     private final AbstractGameScoreboard board;
     private final List<Player> players = new ArrayList<>();
 
-    private static List<Player> inConversation = new ArrayList<>();
+    private static final List<Player> inConversation = new ArrayList<>();
 
     private boolean saveConversation = false;
     private File saveFile;
@@ -47,7 +44,7 @@ public abstract class AbstractGame {
     static {
         toggleConfig.put("flight",false);
         toggleConfig.put("teleport",false);
-        toggleConfig.put("privat",false);
+        toggleConfig.put("private",false);
         toggleConfig.put("warp",false);
         toggleConfig.put("spectate",true);
         toggleConfig.put("save",true);
@@ -68,9 +65,9 @@ public abstract class AbstractGame {
 
     public void addPlayer(Player player){
         players.add(player);
-//        getBoard().addPlayer(player);
-//        notifyGame("Everybody welcome "+player.getUsername()+" to the game!");
-//        PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
+        getBoard().addPlayer(player);
+        notifyGame("Everybody welcome "+player.getUsername()+" to the game!");
+        PluginData.getMessageUtil().sendInfoMessage(player,"Welcome to the game.");
     }
 
     public void selfDestruction(){
@@ -92,9 +89,9 @@ public abstract class AbstractGame {
 
     public void endGame(){
         notifyGame("The game has ended.");
-//        PluginData.getMessageUtil().sendInfoMessage(manager,"You ended the game.");
-//        for(Player player: players)
-//            getBoard().removePlayer(player);
+        PluginData.getMessageUtil().sendInfoMessage(manager,"You ended the game.");
+        for(Player player: players)
+            getBoard().removePlayer(player);
         players.clear();
         PluginData.removeGame(this);
     }
@@ -104,19 +101,19 @@ public abstract class AbstractGame {
             endGame();
             return;
         }
-//        getBoard().removePlayer(player);
+        getBoard().removePlayer(player);
         players.remove(player);
         notifyGame(player.getUsername()+" has left the game.");
-//        PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
+        PluginData.getMessageUtil().sendInfoMessage(player,"You left the game.");
     }
 
     public void kickPlayer(Player player){
-        if(player != manager){
+        if(player != null && player != manager){
             removePlayer(player);
-//            PluginData.getMessageUtil().sendErrorMessage(player,"You were kicked from the game. Think about it!");
-//            PluginData.getMessageUtil().sendInfoMessage(manager,"You kicked " + player.getUsername() + " from the game.");
-//        }else{
-//            PluginData.getMessageUtil().sendErrorMessage(player,"You can´t kick yourself idiot.");
+            PluginData.getMessageUtil().sendErrorMessage(player,"You were kicked from the game. Think about it!");
+            PluginData.getMessageUtil().sendInfoMessage(manager,"You kicked " + player.getUsername() + " from the game.");
+        }else{
+            PluginData.getMessageUtil().sendErrorMessage(player,"You can´t kick yourself idiot.");
         }
     }
 
@@ -154,19 +151,19 @@ public abstract class AbstractGame {
     public int countPlayer(){return players.size();}
 
     protected void notifyGame(String message){
-//        for(Player player: players){
-//            PluginData.getMessageUtil().sendInfoMessage(player,message);
-//        }
+        for(Player player: players){
+            PluginData.getMessageUtil().sendInfoMessage(player,message);
+        }
     }
 
     public void gameChat(Player player, String message){
         String chatMessage;
         if(player.getUsername().equals("Jubo"))
-            chatMessage = ChatRanks.GAME_MASTER.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
+            chatMessage = ChatRanks.GAME_MASTER.getChatPrefix() + player.getUsername() + NamedTextColor.WHITE + ": " + message;
         else if(player.equals(manager))
-            chatMessage = ChatRanks.MANAGER.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
+            chatMessage = ChatRanks.MANAGER.getChatPrefix() + player.getUsername() + NamedTextColor.WHITE + ": " + message;
         else
-            chatMessage = ChatRanks.Participant.getChatPrefix() + player.getUsername() + ChatColor.WHITE + ": " + message;
+            chatMessage = ChatRanks.Participant.getChatPrefix() + player.getUsername() + NamedTextColor.WHITE + ": " + message;
         for(Player receiver: players){
             receiver.sendMessage(Component.text(chatMessage));
         }
@@ -174,10 +171,10 @@ public abstract class AbstractGame {
 
     public String getGameChatTag(Player player) {
         if(player == manager) {
-            return ChatColor.DARK_AQUA + "<Manager ";
+            return NamedTextColor.DARK_AQUA + "<Manager ";
         }
         else {
-            return ChatColor.BLUE + "<Participant ";
+            return NamedTextColor.BLUE + "<Participant ";
         }
     }
 
@@ -186,8 +183,8 @@ public abstract class AbstractGame {
         String message = Style.INFO+PluginData.getMessageUtil().getPREFIX()+Style.STRESSED+manager.getUsername()+Style.INFO+
                 " started a new game "+Style.STRESSED+type.toString()+Style.INFO+" game. To play that game, type in chat: "+
                 Style.STRESSED+"/game join "+name+Style.INFO+" or "+Style.HIGHLIGHT+"Click here";
-//        for(Player player: MiniGamesPlugin.getInstance().getProxyServer().getAllPlayers())
-//            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
+        for(Player player: MiniGamesPlugin.getInstance().getProxyServer().getAllPlayers())
+            PluginData.getMessageUtil().sendClickableInfoMessage(player,message,"/game join "+name);
     }
 
     public static Map<String,Boolean> getConfig(){return toggleConfig;}

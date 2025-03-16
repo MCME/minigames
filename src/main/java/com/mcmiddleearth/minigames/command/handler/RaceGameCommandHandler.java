@@ -163,10 +163,10 @@ public class RaceGameCommandHandler {
     }
 
     private void sendNothereMessage(McmeCommandSender sender){
-//        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
+        PluginData.getMessageUtil().sendErrorMessage(sender,"You shouldn't be here. Try Again!");
     }
 
     private void sendNotImplementedYetMessage(McmeCommandSender sender){
-//        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
+        PluginData.getMessageUtil().sendErrorMessage(sender,"This is not yet implemented.");
     }
 }

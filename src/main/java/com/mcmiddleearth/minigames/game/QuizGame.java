@@ -48,9 +48,9 @@ public class QuizGame extends AbstractGame{
 
     private int answerTime = 30;
 
-    private List<Player> inQuizConversation = new ArrayList<>();
+    private final List<Player> inQuizConversation = new ArrayList<>();
 
-    private HashMap<Player,Integer> scores = new HashMap<>();
+    private final HashMap<Player,Integer> scores = new HashMap<>();
 
     private boolean acceptConversation = false;
 
@@ -59,7 +59,7 @@ public class QuizGame extends AbstractGame{
     private boolean allAnswered = false;
 
     public QuizGame(Player manager, String name) {
-        super(manager, name,GameType.LORE_QUIZ,new QuizGameScoreboard());
+        super(manager, name,GameType.LORE_QUIZ,new QuizGameScoreboard(name, manager));
     }
 
     public List<AbstractQuestion> getQuestions() {
@@ -81,14 +81,14 @@ public class QuizGame extends AbstractGame{
     }
 
     public void setAllAnswered(){
-//        allAnswered = true;
-//        ((QuizGameScoreboard)getBoard()).stopQuestion();
-//        if(!hasNextQuestion()) {
-//            if(!announceWinner(false)) {
-//                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
-//            }
-//        }
-//        cancelTimerTask();
+        allAnswered = true;
+        ((QuizGameScoreboard)getBoard()).stopQuestion();
+        if(!hasNextQuestion()) {
+            if(!announceWinner(false)) {
+                PluginData.getMessageUtil().sendInfoMessage(getManager(),"There is no single winner. You can add more questions or announce multiple winners with /game winner");
+            }
+        }
+        cancelTimerTask();
     }
 
     public List<Player> getConversationPlayers(){return inQuizConversation;}
@@ -98,7 +98,7 @@ public class QuizGame extends AbstractGame{
     }
 
     public void removeQuizConversation(Player player){
-        //((QuizGameScoreboard)getBoard()).playerFinished();
+        ((QuizGameScoreboard)getBoard()).playerFinished();
         inQuizConversation.remove(player);
     }
 
@@ -108,10 +108,10 @@ public class QuizGame extends AbstractGame{
 
     public void listQuestions(){
         if(questions.isEmpty()){
-            //PluginData.getMessageUtil().sendInfoMessage(getManager(),"No Questions in this game.");
+            PluginData.getMessageUtil().sendInfoMessage(getManager(),"No Questions in this game.");
             return;
         }
-        //PluginData.getMessageUtil().sendInfoMessage(getManager(),"Questions in this game:");
+        PluginData.getMessageUtil().sendInfoMessage(getManager(),"Questions in this game:");
         int id = 1;
         for(AbstractQuestion question: questions){
             String questionText = question.getQuestion();
@@ -119,7 +119,7 @@ public class QuizGame extends AbstractGame{
             String message = ChatColor.DARK_GREEN+String.valueOf(id)+ChatColor.AQUA+" ["+(question.getId()==0?"-":question.getId())+"]: "+ChatColor.WHITE+questionText;
             TextComponent text = new TextComponent(message);
             text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ComponentBuilder(Arrays.toString(detailText)).create()));
-            //getManager().sendMessage(text);
+            getManager().sendMessage(text);
             id++;
         }
     }
@@ -134,7 +134,7 @@ public class QuizGame extends AbstractGame{
 
     public void removeQuestion(int index) {
         questions.remove(index);
-        //((QuizGameScoreboard)getBoard()).removeQuestion();
+        ((QuizGameScoreboard)getBoard()).removeQuestion();
     }
 
     public void resetQuestions() {
@@ -142,7 +142,7 @@ public class QuizGame extends AbstractGame{
         for(AbstractQuestion search: questions) {
             search.setAnswered(false);
         }
-        //((QuizGameScoreboard)getBoard()).restart();
+        ((QuizGameScoreboard)getBoard()).restart();
     }
 
     public boolean hasNextQuestion() {
@@ -195,16 +195,12 @@ public class QuizGame extends AbstractGame{
             nextQuestion++;
             question.setAnswered(true);
             currentQuestion = question;
-            //((QuizGameScoreboard)getBoard()).startQuestion(answerTime, getPlayers().size());
-            /*
+            ((QuizGameScoreboard)getBoard()).startQuestion(answerTime, getPlayers().size());
             AskQuestionConversationFactory askQuestionFactory
                     = new AskQuestionConversationFactory(MiniGamesPlugin.getPluginInstance(),answerTime);
-
-             */
             for (Player player : getPlayers()) {
                 inQuizConversation.add(player);
-                //sendQuestionToPlayer(player,question);
-                /*
+                sendQuestionToPlayer(player,question);
                 if(player.isConversing()) {
                     PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
                 } else {
@@ -212,21 +208,19 @@ public class QuizGame extends AbstractGame{
                     Conversation newConvo = askQuestionFactory.start(player, this, question);
                     playersInQuestion.put(player,newConvo);
                 }
-
-                 */
             }
             timerTask = MiniGamesPlugin.getInstance().getProxyServer().getScheduler().buildTask(MiniGamesPlugin.getInstance(), new Runnable() {
                 @Override
                 public void run() {
                     answerTime--;
                     if(answerTime < 1){
-//                        for(Player player: inQuizConversation){
-//                            if(currentQuestion instanceof NumberQuestion)
-//                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: "
-//                                        +question.getCorrectAnswer()+"."+" Allowed deviation from correct answer was "+((NumberQuestion)question).getPrecision()+".");
-//                            else
-//                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: " +currentQuestion.getCorrectAnswer());
-//                        }
+                        for(Player player: inQuizConversation){
+                            if(currentQuestion instanceof NumberQuestion)
+                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: "
+                                        +question.getCorrectAnswer()+"."+" Allowed deviation from correct answer was "+((NumberQuestion)question).getPrecision()+".");
+                            else
+                                PluginData.getMessageUtil().sendInfoMessage(player,"Time to answer expired. Correct answer: " +currentQuestion.getCorrectAnswer());
+                        }
                         cancelTimerTask();
                     }
                 }
@@ -241,7 +235,7 @@ public class QuizGame extends AbstractGame{
     }
 
     @Override
-    public void kickPlayer(Player player){
+    public void kickPlayer(Optional<Player> player){
         super.kickPlayer(player);
         removeQuizConversation(player);
         scores.remove(player);
@@ -267,15 +261,15 @@ public class QuizGame extends AbstractGame{
             else
                 questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
         }
-        //String test = ChoiceQuestion.getAnswerCharacter();
+        String test = ChoiceQuestion.getAnswerCharacter();
 
-        //player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
+        player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
         if(questionAnswer != null){
             for(String answer: questionAnswer){
-                //player.sendMessage(new ComponentBuilder(answer).create());
+                player.sendMessage(new ComponentBuilder(answer).create());
                 char answerIndex = answer.charAt(0);
                 String answerTemp = answer.substring(1);
-                //player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT+"["+answerIndex+"] "+Style.INFO+answerTemp).create());
+                player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT+"["+answerIndex+"] "+Style.INFO+answerTemp).create());
             }
         }
         String hint = "";
@@ -288,7 +282,7 @@ public class QuizGame extends AbstractGame{
         }else if(question instanceof ChoiceQuestion){
             hint = ChatColor.DARK_GREEN+"Type in the letters of the correct answers. \n"+ChatColor.LIGHT_PURPLE+Style.BOLD+"More than one"+ChatColor.RESET+ChatColor.DARK_GREEN+" answer may be correct.";
         }
-        //player.sendMessage(new ComponentBuilder(ChatColor.DARK_GREEN+"[Hint] "+hint).create());
+        player.sendMessage(new ComponentBuilder(ChatColor.DARK_GREEN+"[Hint] "+hint).create());
     }
 
     private void cancelTimerTask(){
@@ -317,8 +311,8 @@ public class QuizGame extends AbstractGame{
         if(winner.size()>0 && (allowEqual || winner.size()==1)) {
             String winnerNames = "";
             for(Player player: winner) {
-                //getWinHighscore().setQuizWin(player.getUniqueId());
-                //PluginData.getMessageUtil().sendInfoMessage(player,ChatColor.GOLD+"Congrats, You won the quiz game.");
+                getWinHighscore().setQuizWin(player.getUniqueId());
+                PluginData.getMessageUtil().sendInfoMessage(player,ChatColor.GOLD+"Congrats, You won the quiz game.");
                 winnerNames = winner.get(0).getUsername();
                 for(int i=1;i<winner.size()-1;i++) {
                     winnerNames = winnerNames + ", "+winner.get(i).getUsername();
@@ -339,14 +333,14 @@ public class QuizGame extends AbstractGame{
         for(Player player: scores.keySet())
             scores.replace(player,0);
         questions.clear();
-        //((QuizGameScoreboard)getBoard()).clearQuestions();
+        ((QuizGameScoreboard)getBoard()).clearQuestions();
         resetQuestions();
-        //PluginData.getMessageUtil().sendInfoMessage(getManager(),"You removed all questions from this Lore Quiz.");
+        PluginData.getMessageUtil().sendInfoMessage(getManager(),"You removed all questions from this Lore Quiz.");
     }
 
     public void incrementScore(Player player) {
         scores.replace(player,scores.get(player)+1);
-        //((QuizGameScoreboard)getBoard()).score(player);
+        ((QuizGameScoreboard)getBoard()).score(player);
     }
 
     public int[] loadQuestionsFromDataFile(File file, String quizCategories,
@@ -375,7 +369,7 @@ public class QuizGame extends AbstractGame{
                 }
                 found=newQuestions.size();
                 while(newQuestions.size()>maxNumber) {
-                    //int random = new Double(Math.floor(Math.random()*newQuestions.size())).intValue();
+                    int random = new Double(Math.floor(Math.random()*newQuestions.size())).intValue();
                     int random = NumericUtil.getRandom(0, newQuestions.size()-1);
                     if(random >= newQuestions.size()) {
                         random = newQuestions.size()-1;
@@ -385,7 +379,7 @@ public class QuizGame extends AbstractGame{
                 for(AbstractQuestion question: newQuestions) {
                     addQuestion(question,-1);
                 }
-                //((QuizGameScoreboard)getBoard()).updateQuiz(questions.size());
+                ((QuizGameScoreboard)getBoard()).updateQuiz(questions.size());
             }
         } catch (FileNotFoundException ex) {
             MiniGamesPlugin.getInstance().getLogger().error(null, ex);
@@ -404,17 +398,12 @@ public class QuizGame extends AbstractGame{
                 nextQuestion++;
             }
         }
-        //((QuizGameScoreboard)getBoard()).addQuestion();
+        ((QuizGameScoreboard)getBoard()).addQuestion();
     }
-
-
 
     public void saveQuestionsToJson(File file, String description) throws IOException {
         saveQuestionsToJson(file, description, questions);
     }
-
-
-
 
     public static void saveQuestionsToJson(File file, String description, List<AbstractQuestion> questions)
             throws IOException {
@@ -506,7 +495,7 @@ public class QuizGame extends AbstractGame{
                 questions.add(newQuestion);
             }
         } catch (FileNotFoundException | ParseException ex) {
-            //MiniGamesPlugin.getPluginInstance().getLogger().log(Level.SEVERE, null, ex);
+            MiniGamesPlugin.getInstance().getLogger().error(null, ex);
             throw ex;
         }
     }
@@ -523,39 +512,30 @@ public class QuizGame extends AbstractGame{
         return answers.toArray(new String[0]);
     }
 
-
-
-
-
     private int getQuestionTypeNumber(QuestionType type) {
-        switch(type) {
-            case FREE: return 1;
-            case NUMBER: return 2;
-            case SINGLE: return 3;
-            case MULTI: return 4;
-            default: return 1;
-        }
+        return switch (type) {
+            case FREE -> 1;
+            case NUMBER -> 2;
+            case SINGLE -> 3;
+            case MULTI -> 4;
+            default -> 1;
+        };
     }
 
     private String questionToString(AbstractQuestion question) {
         String line = question.getCategories()+";"+
                 +getQuestionTypeNumber(question.getType())+";"
                 +question.getQuestion()+";";
-        switch(question.getType()) {
-            case FREE:
-                line = line+question.getCorrectAnswer();
-                break;
-            case NUMBER:
-                line = line+question.getCorrectAnswer()+";"+((NumberQuestion)question).getPrecision();
-                break;
-            case SINGLE:
-            case MULTI:
-                for(String choice: ((ChoiceQuestion)question).getAnswers()) {
-                    line = line+choice+";";
+        line = switch (question.getType()) {
+            case FREE -> line + question.getCorrectAnswer();
+            case NUMBER -> line + question.getCorrectAnswer() + ";" + ((NumberQuestion) question).getPrecision();
+            case SINGLE, MULTI -> {
+                for (String choice : ((ChoiceQuestion) question).getAnswers()) {
+                    line = line + choice + ";";
                 }
-                line = line+((ChoiceQuestion)question).getCorrectAnswer();
-                break;
-        }
+                yield line + ((ChoiceQuestion) question).getCorrectAnswer();
+            }
+        };
         return line;
     }
 
@@ -735,7 +715,7 @@ public class QuizGame extends AbstractGame{
 
     public void QuizGameWinner(Player player){
         if(!announceWinner(true)){
-            //PluginData.getMessageUtil().sendErrorMessage(player,"There is no winner.");
+            PluginData.getMessageUtil().sendErrorMessage(player,"There is no winner.");
         }
     }
 

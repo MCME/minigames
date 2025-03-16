@@ -17,7 +17,7 @@ public class CommandAllowDenyArgument extends AbstractPlayerArgumentType {
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
         String o = reader.readUnquotedString();
-        if(AbstractGame.getConfig().keySet().contains(o)){
+        if(AbstractGame.getConfig().containsKey(o)){
             return o;
         }
         throw new CommandSyntaxException(new SimpleCommandExceptionType(new LiteralMessage("Failed parsing of CommandAllowDenyArgument")),

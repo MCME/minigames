@@ -41,27 +41,26 @@ public enum GameType {
 
     @Override
     public String toString() {
-        switch(this) {
-            case HIDE_AND_SEEK: return "Hide and Seek";
-            case RACE: return "Race";
-            case LORE_QUIZ: return "Lore Quiz";
-            case GEO_GUESSR: return "GeoGuessr";
-            case MANHUNT: return "Manhunt";
-            case WEREWOLF: return "Werewolf";
-        }
-        return "Illegal type";
+        return switch (this) {
+            case HIDE_AND_SEEK -> "Hide and Seek";
+            case RACE -> "Race";
+            case LORE_QUIZ -> "Lore Quiz";
+            case GEO_GUESSR -> "GeoGuessr";
+            case MANHUNT -> "Manhunt";
+            case WEREWOLF -> "Werewolf";
+        };
     }
 
     public Class associatedClass() {
         try {
-            switch(this) {
-                case HIDE_AND_SEEK: return Class.forName("com.mcmiddleearth.minigames.game.HideAndSeekGame");
-                case RACE: return Class.forName("com.mcmiddleearth.minigames.game.RaceGame");
-                case LORE_QUIZ: return Class.forName("com.mcmiddleearth.minigames.game.QuizGame");
-                case GEO_GUESSR: return Class.forName("com.mcmiddleearth.minigames.game.GeoGuessrGame");
-                case MANHUNT: return Class.forName("com.mcmiddleearth.minigames.game.ManhuntGame");
-                case WEREWOLF: return Class.forName("com.mcmiddleearth.minigames.game.WerewolfGame");
-            }
+            return switch (this) {
+                case HIDE_AND_SEEK -> Class.forName("com.mcmiddleearth.minigames.game.HideAndSeekGame");
+                case RACE -> Class.forName("com.mcmiddleearth.minigames.game.RaceGame");
+                case LORE_QUIZ -> Class.forName("com.mcmiddleearth.minigames.game.QuizGame");
+                case GEO_GUESSR -> Class.forName("com.mcmiddleearth.minigames.game.GeoGuessrGame");
+                case MANHUNT -> Class.forName("com.mcmiddleearth.minigames.game.ManhuntGame");
+                case WEREWOLF -> Class.forName("com.mcmiddleearth.minigames.game.WerewolfGame");
+            };
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(GameType.class.getName()).log(Level.SEVERE, null, ex);
         }

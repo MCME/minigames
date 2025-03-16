@@ -1,6 +1,5 @@
 package com.mcmiddleearth.minigames.listener;
 
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.util.Channel;
 import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.Subscribe;
