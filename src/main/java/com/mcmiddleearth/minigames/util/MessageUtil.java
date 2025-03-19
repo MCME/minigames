@@ -1,7 +1,7 @@
 package com.mcmiddleearth.minigames.util;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;

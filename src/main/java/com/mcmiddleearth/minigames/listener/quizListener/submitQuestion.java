@@ -1,18 +1,6 @@
 package com.mcmiddleearth.minigames.listener.quizListener;
 
 
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
-import com.mcmiddleearth.minigames.quiz.QuizSubmitQuestion;
-import com.mcmiddleearth.minigames.quiz.question.AbstractQuestion;
-import com.mcmiddleearth.minigames.quiz.question.NumberQuestion;
-import com.mcmiddleearth.minigames.quiz.question.QuestionType;
-import com.mcmiddleearth.minigames.util.NumericUtil;
-import com.mcmiddleearth.minigames.util.PluginData;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-
 /**
  * @author Jubo
  */

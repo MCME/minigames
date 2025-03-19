@@ -1,16 +1,12 @@
-package com.mcmiddleearth.minigames.scoreboard;
+package com.mcmiddleearth.minigames.velocity.scoreboard;
 
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.scoreboard.generics.*;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.*;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;

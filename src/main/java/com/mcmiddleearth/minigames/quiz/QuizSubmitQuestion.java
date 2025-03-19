@@ -89,20 +89,12 @@ public class QuizSubmitQuestion {
         }
         AbstractQuestion question = null;
         String[] choiceText = new String[]{aText,bText,cText,dText};
-        switch (type){
-            case FREE:
-                question = new FreeQuestion(questionText,freeText,categories);
-                break;
-            case MULTI:
-                question = new ChoiceQuestion(questionText,choiceText,correctAnswer,categories);
-                break;
-            case SINGLE:
-                question = new SingleChoiceQuestion(questionText,choiceText,correctAnswer,categories);
-                break;
-            case NUMBER:
-                question = new NumberQuestion(questionText,numberText,deviation,categories);
-                break;
-        }
+        question = switch (type) {
+            case FREE -> new FreeQuestion(questionText, freeText, categories);
+            case MULTI -> new ChoiceQuestion(questionText, choiceText, correctAnswer, categories);
+            case SINGLE -> new SingleChoiceQuestion(questionText, choiceText, correctAnswer, categories);
+            case NUMBER -> new NumberQuestion(questionText, numberText, deviation, categories);
+        };
         game.addQuestion(question,-1);
         try{
             game.saveQuestionsToJson(PluginData.getSubmittedQuestionsFile(),"Submitted quiz questions.");

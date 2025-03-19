@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.SimpleTabCompleteRequest;
 import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.handler.AbstractCommandHandler;
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mojang.brigadier.Command;
 import com.velocitypowered.api.proxy.Player;
 import org.bukkit.command.TabExecutor;

@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.scoreboard.generics;
+package com.mcmiddleearth.minigames.velocity.scoreboard.generics;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

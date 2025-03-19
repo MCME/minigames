@@ -1,7 +1,7 @@
 package com.mcmiddleearth.minigames.game;
 
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.scoreboard.generics.AbstractGameScoreboard;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.util.ChatRanks;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.Style;

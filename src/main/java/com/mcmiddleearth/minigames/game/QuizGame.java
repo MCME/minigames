@@ -1,8 +1,8 @@
 package com.mcmiddleearth.minigames.game;
 
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.quiz.question.*;
-import com.mcmiddleearth.minigames.scoreboard.QuizGameScoreboard;
+import com.mcmiddleearth.minigames.velocity.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.util.NumericUtil;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.util.StringUtil;

@@ -1,16 +1,20 @@
-package com.mcmiddleearth.minigames;
+package com.mcmiddleearth.minigames.velocity;
 
 import com.google.inject.Inject;
 import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.listener.ConfirmationListener;
-import com.mcmiddleearth.minigames.listener.MiniGamesPluginListener;
 import com.mcmiddleearth.minigames.listener.PlayerListener;
 import com.mcmiddleearth.minigames.listener.quizListener.askQuestion;
 import com.mcmiddleearth.minigames.listener.quizListener.editQuestion;
 import com.mcmiddleearth.minigames.listener.quizListener.submitQuestion;
-import com.mcmiddleearth.minigames.util.Channel;
+import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
+import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -18,6 +22,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -52,19 +57,26 @@ public final class MiniGamesPlugin {
         // Do some operation demanding access to the Velocity API here.
         // For instance, we could register an event:
         instance = this;
+        EventManager eventManager = server.getEventManager();
+        CommandManager commandManager = server.getCommandManager();
+        ChannelRegistrar channelRegistrar = server.getChannelRegistrar();
 
         PluginData.load();
 
-        server.getEventManager().register(this, new MiniGamesPluginListener());
-        server.getEventManager().register(this, new PlayerListener());
-        server.getEventManager().register(this, new ConfirmationListener());
-        server.getEventManager().register(this, new submitQuestion());
-        server.getEventManager().register(this, new editQuestion());
-        server.getEventManager().register(this, new askQuestion());
-        server.getChannelRegistrar().register(Channel.MAIN);
+        eventManager.register(this, new MiniGamesPluginListener());
+        eventManager.register(this, new PlayerListener());
+        eventManager.register(this, new ConfirmationListener());
+        eventManager.register(this, new submitQuestion());
+        eventManager.register(this, new editQuestion());
+        eventManager.register(this, new askQuestion());
 
-//        server.getCommandManager().register(new MinigamesPluginCommand(new GcCommandHandler("gc"), "gc"));
-//        server.getCommandManager().register(new MinigamesPluginCommand(new GameCommandHandler("game"),"game"));
+        channelRegistrar.register(Channels.MAIN);
+        channelRegistrar.register(AbstractGameScoreboard.IDENTIFIER);
+        channelRegistrar.register(ScoreboardObjective.IDENTIFIER);
+        channelRegistrar.register(ScoreboardScore.IDENTIFIER);
+
+//        commandManager.register(new MinigamesPluginCommand(new GcCommandHandler("gc"), "gc"));
+//        commandManager.register(new MinigamesPluginCommand(new GameCommandHandler("game"),"game"));
     }
 
     @Subscribe

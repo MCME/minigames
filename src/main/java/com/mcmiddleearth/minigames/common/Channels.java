@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.util;
+package com.mcmiddleearth.minigames.common;
 
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 
@@ -6,7 +6,7 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
  *
  * @author Jubo
  */
-public class Channel {
+public class Channels {
     public static final String MAIN_PAPER = "mcme:minigames";
     public static final MinecraftChannelIdentifier MAIN = MinecraftChannelIdentifier.from(MAIN_PAPER);
 }

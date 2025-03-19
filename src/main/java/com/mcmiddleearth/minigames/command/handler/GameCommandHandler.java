@@ -4,7 +4,7 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.command.handler.AbstractCommandHandler;
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.command.argument.*;
 import com.mcmiddleearth.minigames.game.*;

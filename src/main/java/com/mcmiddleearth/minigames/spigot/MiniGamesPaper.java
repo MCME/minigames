@@ -3,7 +3,7 @@ package com.mcmiddleearth.minigames.spigot;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.spigot.listener.MiniGameMessageListener;
-import com.mcmiddleearth.minigames.util.Channel;
+import com.mcmiddleearth.minigames.common.Channels;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 public class MiniGamesPaper extends JavaPlugin implements Listener {
     @Override
     public void onEnable(){
-        getServer().getMessenger().registerIncomingPluginChannel(this, Channel.MAIN_PAPER,new MiniGameMessageListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, Channels.MAIN_PAPER,new MiniGameMessageListener());
         getServer().getPluginManager().registerEvents(this, this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this,Channel.MAIN_PAPER);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, Channels.MAIN_PAPER);
         Logger.getLogger("MiniGames").log(Level.INFO, "Loaded paper plugin.");
     }
 
@@ -37,6 +37,6 @@ public class MiniGamesPaper extends JavaPlugin implements Listener {
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(player.getName());
-        player.sendPluginMessage(this, Channel.MAIN_PAPER, out.toByteArray());
+        player.sendPluginMessage(this, Channels.MAIN_PAPER, out.toByteArray());
     }
 }

@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.scoreboard;
 
-import com.mcmiddleearth.minigames.scoreboard.generics.AbstractGameScoreboard;
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 
 public class HideGameScoreboard extends AbstractGameScoreboard {
 

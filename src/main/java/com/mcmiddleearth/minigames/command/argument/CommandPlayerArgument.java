@@ -1,8 +1,7 @@
 package com.mcmiddleearth.minigames.command.argument;
 
 import com.mcmiddleearth.command.argument.AbstractPlayerArgumentType;
-import com.mcmiddleearth.minigames.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.command.MinigameCommandSender;
+import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
