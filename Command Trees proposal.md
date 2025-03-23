@@ -50,8 +50,9 @@ graph LR
     
     game --> stats
     game --> leaderboard --> G1([gametype]) --> G2([#per page])
+    game --> files --> G3([quiz,race,marker])
+    game --> ready
 
-    Rgame --> R03[ready]
     Rgame --> start
     Rgame --> stop
     Rgame --> tpstart
@@ -63,36 +64,32 @@ graph LR
     Rgame --> savemarker --> R6([filename])
     Rgame --> marker --> R7([filename]) --> R8([start,finish,checkpoint,all])
     Rgame --> raceset --> R9([start, finish, checkpoint]) --> R10([#checkpoint])
-    Rgame --> R04[remove] --> R11([#checkpoint])
-    Rgame --> show --> R12([start, finish, #checkpoint])
-    Rgame --> R01[files] --> R13([race, marker])
+    Rgame --> R11[remove] --> R12([#checkpoint])
+    Rgame --> show --> R13([start, finish, #checkpoint])
 
     Qgame --> showCategories
     Qgame --> question --> Q2([single, multi, free, number])
               question --> list --> Q3([#page])
-              question --> Q04[remove] --> Q4([#question])
-              question --> edit --> Q5([#question])
-              question --> submit --> Q6([single, multi, free, number])
-              question --> review --> Q7([check])
+              question --> Q4[remove] --> Q5([#question])
+              question --> edit --> Q6([#question])
+              question --> submit --> Q7([single, multi, free, number])
+              question --> review --> Q8([check])
               question --> accept
-              question --> Load --> Q8([categories]) --> Q9([matchAll]) --> Q10([#questions])
-    Qgame --> Q03[ready]
-    Qgame --> send --> Q11([timelimit])
-    Qgame --> Q05[restart]
+              question --> Load --> Q9([categories]) --> Q10([matchAll]) --> Q11([#questions])
+    Qgame --> send --> Q12([timelimit])
     Qgame --> stat
-    Qgame --> savequiz --> Q12([filename]) --> Q13([description])
-    Qgame --> loadquiz --> Q14([filename])
-    Qgame --> loadquestions --> Q15([categories]) --> Q16([matchAll])
+    Qgame --> savequiz --> Q13([filename]) --> Q14([description])
+    Qgame --> loadquiz --> Q15([filename])
+    Qgame --> loadquestions --> Q16([categories]) --> matchAll
     Qgame --> clear
-    Qgame --> random --> Q17([off,questions,choices])
-    Qgame --> Q02[winner]
-    Qgame --> Q01[files] --> quiz
+    Qgame --> random --> Q18([off,questions,choices])
+    Qgame --> winner
+    Qgame --> restart
 
-    GGgame --> GG03[ready]
+    GGgame --> winner
+    GGgame --> restart
     GGgame --> setarea --> GG2([area])
     GGgame --> setrounds --> GG3([#rounds])
     GGgame --> round --> GG4([radius]) --> GG5([time])
-    GGgame --> G05[restart]
-    GGgame --> G02[winner]
     GGgame --> restoreSigns
 ```
