@@ -33,7 +33,7 @@ graph LR
     Mgame --> hunter --> M5([player])
     hunter --> M6([#amount])
     Mgame --> hunterlist
-    Mgame --> HS06[hiddenlist]
+    Mgame --> M06[hiddenlist]
     
     Rgame --> R00[create] --> Race --> R1([name])
     Rgame --> R03[ready]
