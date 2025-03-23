@@ -13,6 +13,7 @@ import com.mcmiddleearth.minigames.util.PluginData;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
+import com.mcmiddleearth.minigames.velocity.util.GameManager;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
@@ -28,13 +29,14 @@ import org.slf4j.Logger;
 import java.nio.file.Path;
 
 @Plugin(id = "mini_games_plugin", name = "Mini Games Plugin", version = "3.0",
-        url = "https://github.com/MCME", description = "A plugin to run mini games on the MCME server.", authors = {"NicovicTheSixth", "Jubo"})
+        url = "https://github.com/MCME", description = "A plugin to run mini games on the MCME server.", authors = {"Nic", "Jubo", "Eriol"})
 public final class MiniGamesPlugin {
 
     private static MiniGamesPlugin instance;
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
+    private final GameManager gameManager = new GameManager();
 
     /*
     TODO:
@@ -74,6 +76,7 @@ public final class MiniGamesPlugin {
         channelRegistrar.register(AbstractGameScoreboard.IDENTIFIER);
         channelRegistrar.register(ScoreboardObjective.IDENTIFIER);
         channelRegistrar.register(ScoreboardScore.IDENTIFIER);
+        channelRegistrar.register(GameManager.GAMEMANAGER);
 
 //        commandManager.register(new MinigamesPluginCommand(new GcCommandHandler("gc"), "gc"));
 //        commandManager.register(new MinigamesPluginCommand(new GameCommandHandler("game"),"game"));
