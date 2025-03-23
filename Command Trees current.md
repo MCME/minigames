@@ -13,7 +13,7 @@ graph LR
     game --> allow --> A8([allow permissions])
     game --> deny --> A8
     game --> switchables
-    game --> AS1([end])
+    game --> UNICODE_TEXT(end)
     game --> kick --> A9([player])
     game --> ban --> A9
     game --> unban --> A9
@@ -81,8 +81,6 @@ graph LR
     Ggame --> G05[restart]
     Ggame --> G02[winner]
     Ggame --> restoreSigns
-    
-    
     
     gc --> B1([message])
     gc --> !off
