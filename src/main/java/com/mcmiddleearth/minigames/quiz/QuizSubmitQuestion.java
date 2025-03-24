@@ -1,12 +1,10 @@
 package com.mcmiddleearth.minigames.quiz;
 
-import com.mcmiddleearth.minigames.game.AbstractGame;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
-import com.mcmiddleearth.minigames.quiz.question.*;
+import com.mcmiddleearth.minigames.velocity.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.velocitypowered.api.proxy.Player;
-import org.checkerframework.checker.units.qual.A;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;

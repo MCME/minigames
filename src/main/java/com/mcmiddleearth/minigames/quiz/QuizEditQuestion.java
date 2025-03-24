@@ -2,11 +2,10 @@ package com.mcmiddleearth.minigames.quiz;
 
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
-import com.mcmiddleearth.minigames.quiz.question.*;
+import com.mcmiddleearth.minigames.velocity.question.*;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.velocitypowered.api.proxy.Player;
 
-import javax.swing.text.Position;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

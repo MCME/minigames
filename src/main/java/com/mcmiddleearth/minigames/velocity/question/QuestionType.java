@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.quiz.question;
+package com.mcmiddleearth.minigames.velocity.question;
 
 import java.util.ArrayList;
 import java.util.List;

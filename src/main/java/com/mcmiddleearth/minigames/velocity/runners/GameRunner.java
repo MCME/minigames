@@ -1,5 +1,6 @@
 package com.mcmiddleearth.minigames.velocity.runners;
 
+import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.velocitypowered.api.proxy.Player;
 
 import java.util.HashSet;
@@ -9,8 +10,9 @@ public abstract class GameRunner {
     protected Player manager;
     protected Set<Player> players = new HashSet<>();
     protected Set<Player> spectators = new HashSet<>();
+    protected AbstractGameScoreboard scoreboard;
 
-    abstract public void initialise(String name);
+    abstract public void initialise(String name, Player manager);
     abstract public boolean canStart();
     abstract public void start();
     abstract public void restart();

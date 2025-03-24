@@ -1,8 +1,9 @@
-package com.mcmiddleearth.minigames.quiz.question;
+package com.mcmiddleearth.minigames.velocity.question;
 
 import com.mcmiddleearth.minigames.util.Style;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,41 +52,31 @@ public class ChoiceQuestion extends AbstractQuestion {
 
     public void setCorrectAnswers(String correctLetters) {
         correctLetters = correctLetters.trim();
-        for(int i = 0; i<answerCount;i++) {
-            correctAnswers[i] = false;
-        }
-        while(correctLetters.length()>0) {
-            if(isLetterValid(correctLetters.charAt(0))) {
-                correctAnswers[getAnswerIndex(correctLetters.charAt(0))] = true;
-            }
-            correctLetters = correctLetters.substring(1).trim();
+        Arrays.fill(correctAnswers, false);
+        for (char i : correctLetters.toCharArray()) {
+            if(isLetterValid(i))
+                correctAnswers[getAnswerIndex(i)] = true;
         }
     }
 
     @Override
     public String getCorrectAnswer() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(int i = 0;i<answerCount;i++) {
-            if(correctAnswers[i]) {
-                result = result+getAnswerCharacter(i);
-            }
+            if(correctAnswers[i])
+                result.append(getAnswerCharacter(i));
         }
-        return result;
+        return result.toString();
     }
 
     public static int getAnswerIndex(char answer) {
-        switch(answer) {
-            case 'A': case'a':
-                return 0;
-            case 'B': case'b':
-                return 1;
-            case 'C': case'c':
-                return 2;
-            case 'D': case'd':
-                return 3;
-            default:
-                return -1;
-        }
+        return switch (answer) {
+            case 'A', 'a' -> 0;
+            case 'B', 'b' -> 1;
+            case 'C', 'c' -> 2;
+            case 'D', 'd' -> 3;
+            default -> -1;
+        };
     }
 
     public static boolean isLetterValid(char answer) {
@@ -93,9 +84,9 @@ public class ChoiceQuestion extends AbstractQuestion {
     }
 
     public static boolean isAnswerValid(String answer) {
-        String answerCopy = answer+"";
+        String answerCopy = answer;
         answerCopy = answerCopy.trim();
-        while(answerCopy.length()>0) {
+        while(!answerCopy.isEmpty()) {
             if(!isLetterValid(answerCopy.charAt(0))) {
                 return false;
             }
@@ -105,18 +96,13 @@ public class ChoiceQuestion extends AbstractQuestion {
     }
 
     public static char getAnswerCharacter(int index) {
-        switch(index) {
-            case 0:
-                return 'A';
-            case 1:
-                return 'B';
-            case 2:
-                return 'C';
-            case 3:
-                return 'D';
-            default:
-                return 'x';
-        }
+        return switch (index) {
+            case 0 -> 'A';
+            case 1 -> 'B';
+            case 2 -> 'C';
+            case 3 -> 'D';
+            default -> 'x';
+        };
     }
 
     private boolean isIn(Character letter, Character[] answers) {
@@ -147,7 +133,7 @@ public class ChoiceQuestion extends AbstractQuestion {
     public static Character[] parseAnswer(String answer) {
         answer = answer.trim();
         List<Character> answerList = new ArrayList<>();
-        while(answer.length()>0) {
+        while(!answer.isEmpty()) {
             answerList.add(answer.charAt(0));
             answer = answer.substring(1).trim();
         }

@@ -11,7 +11,7 @@ import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.quiz.QuizEditQuestion;
 import com.mcmiddleearth.minigames.quiz.QuizShowCategories;
 import com.mcmiddleearth.minigames.quiz.QuizSubmitQuestion;
-import com.mcmiddleearth.minigames.quiz.question.QuestionType;
+import com.mcmiddleearth.minigames.velocity.question.QuestionType;
 import com.mcmiddleearth.minigames.util.*;
 import com.velocitypowered.api.proxy.Player;
 import net.md_5.bungee.api.ChatColor;

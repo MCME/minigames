@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.quiz.question;
+package com.mcmiddleearth.minigames.velocity.question;
 
 /**
  *

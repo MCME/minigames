@@ -4,7 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 
 public class RaceRunner extends GameRunner{
     @Override
-    public void initialise(String name) {
+    public void initialise(String name, Player manager) {
 
     }
 

@@ -2,9 +2,9 @@ package com.mcmiddleearth.minigames.listener.quizListener;
 
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.QuizGame;
-import com.mcmiddleearth.minigames.quiz.question.AbstractQuestion;
-import com.mcmiddleearth.minigames.quiz.question.NumberQuestion;
-import com.mcmiddleearth.minigames.quiz.question.SingleChoiceQuestion;
+import com.mcmiddleearth.minigames.velocity.question.AbstractQuestion;
+import com.mcmiddleearth.minigames.velocity.question.NumberQuestion;
+import com.mcmiddleearth.minigames.velocity.question.SingleChoiceQuestion;
 import com.mcmiddleearth.minigames.util.PluginData;
 import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.Subscribe;

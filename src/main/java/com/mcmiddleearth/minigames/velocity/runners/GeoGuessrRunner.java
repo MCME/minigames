@@ -4,7 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 
 public class GeoGuessrRunner extends GameRunner{
     @Override
-    public void initialise(String name) {
+    public void initialise(String name, Player manager) {
 
     }
 
