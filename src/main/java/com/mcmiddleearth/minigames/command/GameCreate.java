@@ -58,13 +58,13 @@ public class GameCreate extends AbstractGameCommand{
                     sendRaceGameCreateMessage(cs);
                     break;
                 case LORE_QUIZ:
-                    PluginData.getMessageUtil().sendInfoMessage(cs, "Please use /newgame. This quiz is deactived.");
-                    return;
-                    /*
+                    //PluginData.getMessageUtil().sendInfoMessage(cs, "Please use /newgame. This quiz is deactived.");
+                    //return;
+
                     PluginData.stopSpectating((Player)cs);
                     game = new QuizGame((Player) cs, args[1]);
                     sendQuizGameCreateMessage(cs);
-                     */
+                    break;
                 case GOLF:
                     PluginData.stopSpectating((Player)cs);
                     game = new GolfGame((Player) cs, args[1]);
