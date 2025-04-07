@@ -261,7 +261,7 @@ public class QuizGame extends AbstractGame{
                 questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
         }
 //        String test = ChoiceQuestion.getAnswerCharacter();
-
+//
 //        player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
 //        if(questionAnswer != null){
 //            for(String answer: questionAnswer){

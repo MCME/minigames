@@ -27,6 +27,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import com.velocitypowered.api.scheduler.Scheduler;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
@@ -99,8 +100,8 @@ public final class MiniGamesPlugin {
         getInstance().getProxyServer().getEventManager().unregisterListener(getInstance(), handler);
     }
 
-    static public ScheduledTask schedule(Runnable runnable, int delay, TimeUnit unit){
-        return getInstance().getProxyServer().getScheduler().buildTask(getInstance(), runnable).delay(delay, unit).schedule();
+    static public Scheduler.TaskBuilder createTask(Runnable runnable){
+        return getInstance().getProxyServer().getScheduler().buildTask(getInstance(), runnable);
     }
 
     public Logger getLogger(){return logger;}

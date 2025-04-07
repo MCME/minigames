@@ -6,6 +6,7 @@ import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScor
 import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
+import net.kyori.adventure.audience.Audience;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -30,11 +31,11 @@ public abstract class GameRunner {
     abstract public boolean canJoin(Player player);
 
     protected void initSelfDestruct() {
-        MessageUtil.sendMessage(players, "The host was disconnected from the server. This quiz will end in 60 seconds.");
-        selfDestruct = MiniGamesPlugin.schedule(() -> {
+        MessageUtil.sendErrorMessage(Audience.audience(players), "The host was disconnected from the server. This quiz will end in 60 seconds.");
+        selfDestruct = MiniGamesPlugin.createTask(() -> {
             if (!manager.isActive())
                 end();
-        }, 60, TimeUnit.SECONDS);
+        }).delay(60, TimeUnit.SECONDS).schedule();
     }
 
     public void cancelSelfDestruct(){
@@ -42,12 +43,12 @@ public abstract class GameRunner {
     }
 
     protected void sendJoinMessage(@NotNull Player player){
-        MessageUtil.sendMessage(players, "Everybody welcome " + player.getUsername() + " to the game!");
-        MessageUtil.sendMessage(player, "Welcome to the game!");
+        MessageUtil.sendInfoMessage(Audience.audience(players), "Everybody welcome " + player.getUsername() + " to the game!");
+        MessageUtil.sendInfoMessage(player, "Welcome to the game!");
     }
 
     protected void sendLeaveMessage(@NotNull Player player){
-        MessageUtil.sendMessage(players, player.getUsername() + " has left the game.");
+        MessageUtil.sendInfoMessage(Audience.audience(players), player.getUsername() + " has left the game.");
     }
 
     public Player getManager(){return manager;}
