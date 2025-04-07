@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.util;
+package com.mcmiddleearth.minigames.spigot.util;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

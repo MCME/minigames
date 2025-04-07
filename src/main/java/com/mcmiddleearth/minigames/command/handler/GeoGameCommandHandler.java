@@ -5,8 +5,8 @@ import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.GeoGame;
-import com.mcmiddleearth.minigames.util.Permission;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Permission;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;

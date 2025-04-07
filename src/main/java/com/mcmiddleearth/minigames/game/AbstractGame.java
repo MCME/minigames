@@ -2,9 +2,9 @@ package com.mcmiddleearth.minigames.game;
 
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
-import com.mcmiddleearth.minigames.util.ChatRanks;
-import com.mcmiddleearth.minigames.util.PluginData;
-import com.mcmiddleearth.minigames.util.Style;
+import com.mcmiddleearth.minigames.spigot.util.ChatRanks;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;

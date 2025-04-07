@@ -9,9 +9,9 @@ import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.command.argument.*;
 import com.mcmiddleearth.minigames.game.*;
 import com.mcmiddleearth.minigames.game.otherCommands.GameCheck;
-import com.mcmiddleearth.minigames.util.Permission;
-import com.mcmiddleearth.minigames.util.PluginData;
-import com.mcmiddleearth.minigames.util.Style;
+import com.mcmiddleearth.minigames.spigot.util.Permission;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.velocitypowered.api.proxy.Player;
 
 import java.io.File;

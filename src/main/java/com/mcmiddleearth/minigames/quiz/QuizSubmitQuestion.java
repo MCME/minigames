@@ -3,7 +3,7 @@ package com.mcmiddleearth.minigames.quiz;
 import com.mcmiddleearth.minigames.game.QuizGame;
 import com.mcmiddleearth.minigames.listener.quizListener.QuestionConversationType;
 import com.mcmiddleearth.minigames.velocity.question.*;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
 import com.velocitypowered.api.proxy.Player;
 import org.json.simple.parser.ParseException;
 

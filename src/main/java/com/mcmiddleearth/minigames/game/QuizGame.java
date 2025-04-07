@@ -3,10 +3,10 @@ package com.mcmiddleearth.minigames.game;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.question.*;
 import com.mcmiddleearth.minigames.velocity.scoreboard.QuizGameScoreboard;
-import com.mcmiddleearth.minigames.util.NumericUtil;
-import com.mcmiddleearth.minigames.util.PluginData;
-import com.mcmiddleearth.minigames.util.StringUtil;
-import com.mcmiddleearth.minigames.util.Style;
+import com.mcmiddleearth.minigames.spigot.util.NumericUtil;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.StringUtil;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.ChatColor;
@@ -119,7 +119,7 @@ public class QuizGame extends AbstractGame{
             String message = ChatColor.DARK_GREEN+String.valueOf(id)+ChatColor.AQUA+" ["+(question.getId()==0?"-":question.getId())+"]: "+ChatColor.WHITE+questionText;
             TextComponent text = new TextComponent(message);
             text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ComponentBuilder(Arrays.toString(detailText)).create()));
-            getManager().sendMessage(text);
+            //getManager().sendMessage(text);
             id++;
         }
     }
@@ -196,18 +196,18 @@ public class QuizGame extends AbstractGame{
             question.setAnswered(true);
             currentQuestion = question;
             ((QuizGameScoreboard)getBoard()).startQuestion(answerTime, getPlayers().size());
-            AskQuestionConversationFactory askQuestionFactory
-                    = new AskQuestionConversationFactory(MiniGamesPlugin.getPluginInstance(),answerTime);
+            //AskQuestionConversationFactory askQuestionFactory
+            //        = new AskQuestionConversationFactory(MiniGamesPlugin.getPluginInstance(),answerTime);
             for (Player player : getPlayers()) {
                 inQuizConversation.add(player);
                 sendQuestionToPlayer(player,question);
-                if(player.isConversing()) {
-                    PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
-                } else {
-                    player.playEffect(player.getLocation(), Effect.CLICK1,0);
-                    Conversation newConvo = askQuestionFactory.start(player, this, question);
-                    playersInQuestion.put(player,newConvo);
-                }
+//                if(player.isConversing()) {
+//                    PluginData.getMessageUtil().sendErrorMessage(player, "Can't send the next quiz question to you as you are already in another conversation.");
+//                } else {
+//                    player.playEffect(player.getLocation(), Effect.CLICK1,0);
+//                    Conversation newConvo = askQuestionFactory.start(player, this, question);
+//                    playersInQuestion.put(player,newConvo);
+//                }
             }
             timerTask = MiniGamesPlugin.getInstance().getProxyServer().getScheduler().buildTask(MiniGamesPlugin.getInstance(), new Runnable() {
                 @Override
@@ -234,10 +234,9 @@ public class QuizGame extends AbstractGame{
         scores.put(player,0);
     }
 
-    @Override
     public void kickPlayer(Optional<Player> player){
-        super.kickPlayer(player);
-        removeQuizConversation(player);
+//        super.kickPlayer(player);
+//        removeQuizConversation(player);
         scores.remove(player);
         if(!allAnswered)
             setAllAnswered();
@@ -261,17 +260,17 @@ public class QuizGame extends AbstractGame{
             else
                 questionAnswer = ((ChoiceQuestion) question).getInProperOrder();
         }
-        String test = ChoiceQuestion.getAnswerCharacter();
+//        String test = ChoiceQuestion.getAnswerCharacter();
 
-        player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
-        if(questionAnswer != null){
-            for(String answer: questionAnswer){
-                player.sendMessage(new ComponentBuilder(answer).create());
-                char answerIndex = answer.charAt(0);
-                String answerTemp = answer.substring(1);
-                player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT+"["+answerIndex+"] "+Style.INFO+answerTemp).create());
-            }
-        }
+//        player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT_STRESSED+"[Question] "+Style.HIGHLIGHT+questionText).create());
+//        if(questionAnswer != null){
+//            for(String answer: questionAnswer){
+//                player.sendMessage(new ComponentBuilder(answer).create());
+//                char answerIndex = answer.charAt(0);
+//                String answerTemp = answer.substring(1);
+//                player.sendMessage(new ComponentBuilder(Style.HIGHLIGHT+"["+answerIndex+"] "+Style.INFO+answerTemp).create());
+//            }
+//        }
         String hint = "";
         if(question instanceof SingleChoiceQuestion){
             hint = ChatColor.DARK_GREEN+"Type in chat the letter of the correct answer. \n"+ChatColor.GREEN+Style.BOLD+"Only one"+ChatColor.RESET+ChatColor.DARK_GREEN+" answer is correct.";
@@ -282,7 +281,7 @@ public class QuizGame extends AbstractGame{
         }else if(question instanceof ChoiceQuestion){
             hint = ChatColor.DARK_GREEN+"Type in the letters of the correct answers. \n"+ChatColor.LIGHT_PURPLE+Style.BOLD+"More than one"+ChatColor.RESET+ChatColor.DARK_GREEN+" answer may be correct.";
         }
-        player.sendMessage(new ComponentBuilder(ChatColor.DARK_GREEN+"[Hint] "+hint).create());
+//        player.sendMessage(new ComponentBuilder(ChatColor.DARK_GREEN+"[Hint] "+hint).create());
     }
 
     private void cancelTimerTask(){
@@ -311,7 +310,7 @@ public class QuizGame extends AbstractGame{
         if(winner.size()>0 && (allowEqual || winner.size()==1)) {
             String winnerNames = "";
             for(Player player: winner) {
-                getWinHighscore().setQuizWin(player.getUniqueId());
+//                getWinHighscore().setQuizWin(player.getUniqueId());
                 PluginData.getMessageUtil().sendInfoMessage(player,ChatColor.GOLD+"Congrats, You won the quiz game.");
                 winnerNames = winner.get(0).getUsername();
                 for(int i=1;i<winner.size()-1;i++) {
@@ -369,12 +368,12 @@ public class QuizGame extends AbstractGame{
                 }
                 found=newQuestions.size();
                 while(newQuestions.size()>maxNumber) {
-                    int random = new Double(Math.floor(Math.random()*newQuestions.size())).intValue();
-                    int random = NumericUtil.getRandom(0, newQuestions.size()-1);
-                    if(random >= newQuestions.size()) {
-                        random = newQuestions.size()-1;
-                    }
-                    newQuestions.remove(random);
+//                    int random = new Double(Math.floor(Math.random()*newQuestions.size())).intValue();
+//                    int random = NumericUtil.getRandom(0, newQuestions.size()-1);
+//                    if(random >= newQuestions.size()) {
+//                        random = newQuestions.size()-1;
+//                    }
+//                    newQuestions.remove(random);
                 }
                 for(AbstractQuestion question: newQuestions) {
                     addQuestion(question,-1);

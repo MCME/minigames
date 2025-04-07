@@ -7,8 +7,8 @@ import com.mcmiddleearth.minigames.command.argument.CommandPlayerArgument;
 import com.mcmiddleearth.minigames.command.argument.CommandWerewolfRolesArgument;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.WerewolfGame;
-import com.mcmiddleearth.minigames.util.Permission;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Permission;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
 
 public class WerewolfGameCommandHandler {
 

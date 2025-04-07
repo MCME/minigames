@@ -1,9 +1,8 @@
 package com.mcmiddleearth.minigames.listener;
 
-import com.mcmiddleearth.minigames.command.MinigameCommandSender;
 import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.util.PluginData;
-import com.mcmiddleearth.minigames.util.Style;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;

@@ -1,9 +1,6 @@
 package com.mcmiddleearth.minigames.game.otherCommands;
 
 import com.mcmiddleearth.command.sender.McmeCommandSender;
-import com.mcmiddleearth.minigames.command.MinigameCommandSender;
-import com.mcmiddleearth.minigames.util.PluginData;
-import com.mcmiddleearth.minigames.util.Style;
 
 /**
  * @author Jubo

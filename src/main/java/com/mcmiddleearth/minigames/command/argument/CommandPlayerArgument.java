@@ -2,7 +2,7 @@ package com.mcmiddleearth.minigames.command.argument;
 
 import com.mcmiddleearth.command.argument.AbstractPlayerArgumentType;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

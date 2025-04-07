@@ -1,6 +1,6 @@
 package com.mcmiddleearth.minigames.velocity.question;
 
-import com.mcmiddleearth.minigames.util.Style;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 
 import java.util.ArrayList;
 import java.util.Arrays;

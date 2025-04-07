@@ -6,8 +6,8 @@ import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.minigames.command.argument.CommandPlayerArgument;
 import com.mcmiddleearth.minigames.game.GameType;
 import com.mcmiddleearth.minigames.game.ManhuntGame;
-import com.mcmiddleearth.minigames.util.Permission;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.Permission;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 

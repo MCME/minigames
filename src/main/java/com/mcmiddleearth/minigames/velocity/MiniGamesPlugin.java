@@ -9,12 +9,14 @@ import com.mcmiddleearth.minigames.listener.quizListener.askQuestion;
 import com.mcmiddleearth.minigames.listener.quizListener.editQuestion;
 import com.mcmiddleearth.minigames.listener.quizListener.submitQuestion;
 import com.mcmiddleearth.minigames.common.Channels;
-import com.mcmiddleearth.minigames.util.PluginData;
+import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
 import com.mcmiddleearth.minigames.velocity.util.GameManager;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -24,9 +26,11 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "mini_games_plugin", name = "Mini Games Plugin", version = "3.0",
         url = "https://github.com/MCME", description = "A plugin to run mini games on the MCME server.", authors = {"Nic", "Jubo", "Eriol"})
@@ -85,6 +89,18 @@ public final class MiniGamesPlugin {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         PluginData.clearGames();
+    }
+
+    static public void registerEvent(GameListener handler ){
+        getInstance().getProxyServer().getEventManager().register(getInstance(), handler);
+    }
+
+    static public void unregisterEvent(GameListener handler ){
+        getInstance().getProxyServer().getEventManager().unregisterListener(getInstance(), handler);
+    }
+
+    static public ScheduledTask schedule(Runnable runnable, int delay, TimeUnit unit){
+        return getInstance().getProxyServer().getScheduler().buildTask(getInstance(), runnable).delay(delay, unit).schedule();
     }
 
     public Logger getLogger(){return logger;}

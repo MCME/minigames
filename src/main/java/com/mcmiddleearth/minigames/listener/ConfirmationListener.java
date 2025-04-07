@@ -1,16 +1,5 @@
 package com.mcmiddleearth.minigames.listener;
 
-import com.mcmiddleearth.minigames.command.handler.QuizGameCommandHandler;
-import com.mcmiddleearth.minigames.game.AbstractGame;
-import com.mcmiddleearth.minigames.game.GameType;
-import com.mcmiddleearth.minigames.game.QuizGame;
-import com.mcmiddleearth.minigames.game.RaceGame;
-import com.mcmiddleearth.minigames.util.PluginData;
-
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class ConfirmationListener //implements Listener
  {
 
