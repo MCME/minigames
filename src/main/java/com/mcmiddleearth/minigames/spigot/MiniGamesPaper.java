@@ -1,12 +1,7 @@
 package com.mcmiddleearth.minigames.spigot;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import com.mcmiddleearth.minigames.spigot.listener.MiniGameMessageListener;
 import com.mcmiddleearth.minigames.common.Channels;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
+import com.mcmiddleearth.minigames.spigot.listener.QuizListener;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,11 +13,16 @@ import java.util.logging.Logger;
  * @author Jubo
  */
 public class MiniGamesPaper extends JavaPlugin implements Listener {
+    static MiniGamesPaper instance;
+    private final QuizListener quizListener = new QuizListener();
+
     @Override
     public void onEnable(){
-        getServer().getMessenger().registerIncomingPluginChannel(this, Channels.MAIN_PAPER,new MiniGameMessageListener());
-        getServer().getPluginManager().registerEvents(this, this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this, Channels.MAIN_PAPER);
+        if(MiniGamesPaper.instance == null)
+            MiniGamesPaper.instance = this;
+        getServer().getMessenger().registerOutgoingPluginChannel(this, Channels.QUIZ.getNamespace());
+        getServer().getMessenger().registerIncomingPluginChannel(this, Channels.QUIZ.getNamespace(), quizListener);
+        getServer().getPluginManager().registerEvents(quizListener, this);
         Logger.getLogger("MiniGames").log(Level.INFO, "Loaded paper plugin.");
     }
 
@@ -31,12 +31,5 @@ public class MiniGamesPaper extends JavaPlugin implements Listener {
 
     }
 
-    @EventHandler
-    public void onJoin(AsyncChatEvent e) {
-        Player player = e.getPlayer();
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(player.getName());
-        player.sendPluginMessage(this, Channels.MAIN_PAPER, out.toByteArray());
-    }
+    static public MiniGamesPaper getInstance(){return instance;}
 }

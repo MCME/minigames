@@ -6,6 +6,7 @@ import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.question.*;
+import com.mcmiddleearth.minigames.velocity.runners.listeners.AnswerListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerJoinListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerLeaveListener;
@@ -17,6 +18,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,7 @@ public class QuizRunner extends GameRunner{
         this.manager = manager;
         listeners.add(new PlayerLeaveListener(this));
         listeners.add(new PlayerJoinListener(this));
+        listeners.add(new AnswerListener(this));
     }
 
     @Override
@@ -84,7 +87,6 @@ public class QuizRunner extends GameRunner{
                 player.getCurrentServer().ifPresent(connection ->{
                             ByteArrayDataOutput out = ByteStreams.newDataOutput();
                             out.writeUTF("start_conversation");
-                            out.writeUTF(player.getUsername());
                         connection.sendPluginMessage(Channels.QUIZ, out.toByteArray());
                 }));
     }
@@ -126,6 +128,52 @@ public class QuizRunner extends GameRunner{
         };
         Audience.audience(players).sendMessage(Component.text("[Hint] ").color(NamedTextColor.DARK_GREEN).append(hint));
     }
+    public void Answer(Player player, String answer){
+        switch(currentQuestion){
+            case SingleChoiceQuestion _ : if(answer.length() != 1) {
+                MessageUtil.sendErrorMessage(player, "Invalid answer. You did not type in a single answer letter.");
+                player.getCurrentServer().ifPresent(connection ->{
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("start_conversation");
+                    connection.sendPluginMessage(Channels.QUIZ, out.toByteArray());
+                });
+                return;
+            }
+            break;
+            case NumberQuestion _ : if(!StringUtils.isNumeric(answer)){
+                MessageUtil.sendErrorMessage(player, "Invalid answer. You did not type in a whole number.");
+                player.getCurrentServer().ifPresent(connection ->{
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("start_conversation");
+                    connection.sendPluginMessage(Channels.QUIZ, out.toByteArray());
+                });
+                return;
+            }
+            default: break;
+        }
+        inQuizConversation.remove(player);
+        player.sendMessage(Component.text("[Your answer] "+answer).color(NamedTextColor.AQUA));
+        boolean correctAnswer = currentQuestion.isCorrectAnswer(answer);
+        if (correctAnswer) {
+            scores.put(player, scores.get(player) + 1);
+            if (currentQuestion instanceof NumberQuestion && !answer.equals(currentQuestion.getCorrectAnswer()))
+                MessageUtil.sendInfoMessage(player, "Almost! The right answer was " + currentQuestion.getCorrectAnswer() + " but you were close enough.");
+            else
+                MessageUtil.sendInfoMessage(player, "You answered this Question correctly.");
+        } else {
+            if (currentQuestion instanceof NumberQuestion)
+                MessageUtil.sendInfoMessage(player, "You failed to answer this Question correctly. Correct answer was "
+                        + currentQuestion.getCorrectAnswer() + ". Allowed deviation from correct answer was " + ((NumberQuestion) currentQuestion).getPrecision() + ".");
+            else
+                MessageUtil.sendInfoMessage(player, "You failed to answer this Question correctly. Correct answer: " + currentQuestion.getCorrectAnswer());
+        }
+        if(inQuizConversation.isEmpty())
+            allAnswered();
+    }
+
+    private void allAnswered(){
+        //TODO: Implement allAnswered
+    }
 
     @Override
     public void restart() {
@@ -153,6 +201,8 @@ public class QuizRunner extends GameRunner{
             return;
         }
         sendLeaveMessage(player);
+        if(inQuizConversation.remove(player) && inQuizConversation.isEmpty())
+            allAnswered();
     }
 
     @Override

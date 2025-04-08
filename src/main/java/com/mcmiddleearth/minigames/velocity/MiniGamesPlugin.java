@@ -16,7 +16,6 @@ import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObject
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
 import com.mcmiddleearth.minigames.velocity.util.GameManager;
 import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.event.EventHandler;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -26,12 +25,10 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.ChannelRegistrar;
-import com.velocitypowered.api.scheduler.ScheduledTask;
 import com.velocitypowered.api.scheduler.Scheduler;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "mini_games_plugin", name = "Mini Games Plugin", version = "3.0",
         url = "https://github.com/MCME", description = "A plugin to run mini games on the MCME server.", authors = {"Nic", "Jubo", "Eriol"})
@@ -70,7 +67,6 @@ public final class MiniGamesPlugin {
 
         PluginData.load();
 
-        eventManager.register(this, new MiniGamesPluginListener());
         eventManager.register(this, new PlayerListener());
         eventManager.register(this, new ConfirmationListener());
         eventManager.register(this, new submitQuestion());
@@ -82,6 +78,7 @@ public final class MiniGamesPlugin {
         channelRegistrar.register(ScoreboardObjective.IDENTIFIER);
         channelRegistrar.register(ScoreboardScore.IDENTIFIER);
         channelRegistrar.register(GameManager.GAMEMANAGER);
+        channelRegistrar.register(Channels.QUIZ);
 
 //        commandManager.register(new MinigamesPluginCommand(new GcCommandHandler("gc"), "gc"));
 //        commandManager.register(new MinigamesPluginCommand(new GameCommandHandler("game"),"game"));
