@@ -3,9 +3,9 @@ package com.mcmiddleearth.minigames.velocity.runners;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.common.Channels;
+import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.velocity.question.AbstractQuestion;
-import com.mcmiddleearth.minigames.velocity.question.NumberQuestion;
+import com.mcmiddleearth.minigames.velocity.question.*;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerJoinListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerLeaveListener;
@@ -14,6 +14,9 @@ import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -21,12 +24,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 //TODO: Add plugin listener so the quiz conversations can be checked
 public class QuizRunner extends GameRunner{
+    private final int ANSWER_TIME_SEC = 30;
     private final List<AbstractQuestion> allQuestions = new ArrayList<>();
     private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
 
     private int nextQuestion = 0;
-    private int ANSWER_TIME_SEC = 30;
+    private boolean randomChoices = false;
     private final List<Player> inQuizConversation = new ArrayList<>();
     private final HashMap<Player, Integer> scores = new HashMap<>();
     private ScheduledTask questionCountDown;
@@ -87,7 +91,40 @@ public class QuizRunner extends GameRunner{
 
     private void sendQuestionToPlayers(){
         String question = currentQuestion.getQuestion();
-        //TODO: Finish question sending to players
+        String[] questionAnswer = null;
+        if(currentQuestion instanceof ChoiceQuestion){
+            if(randomChoices)
+                questionAnswer = ((ChoiceQuestion) currentQuestion).getInRandomOrder();
+            else
+                questionAnswer = ((ChoiceQuestion) currentQuestion).getInProperOrder();
+        }
+        if(questionAnswer != null) {
+            for(String answer: questionAnswer){
+                Audience.audience(players).sendMessage(Component.text(question));
+                char answerIndex = answer.charAt(0);
+                String answerTemp = answer.substring(1);
+                Audience.audience(players).sendMessage(
+                        Component.text("["+answerIndex+"] ").color(Style.HIGHLIGHT).append(
+                                Component.text(answerTemp).color(Style.INFO)));
+            }
+        }
+        Component hint = switch(currentQuestion){
+            case SingleChoiceQuestion _ :
+                yield Component.text("Type in chat the letter of the correct answer. \n").color(NamedTextColor.DARK_GREEN).append(
+                        Component.text("Only one").color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD).append(
+                                Component.text(" answer is correct.").color(NamedTextColor.DARK_GREEN)));
+            case NumberQuestion _ :
+                yield Component.text("Type in chat a whole number.").color(NamedTextColor.DARK_GREEN);
+            case FreeQuestion _ :
+                yield Component.text("Type your answer in chat.").color(NamedTextColor.DARK_GREEN);
+            case ChoiceQuestion _ :
+                yield Component.text("Type in the letters of the correct answers. \n").color(NamedTextColor.DARK_GREEN).append(
+                        Component.text("More than one").color(NamedTextColor.LIGHT_PURPLE).decorate(TextDecoration.BOLD).append(
+                                Component.text(" answer may be correct.").color(NamedTextColor.DARK_GREEN)));
+            default:
+                throw new IllegalStateException("Unexpected value: " + currentQuestion);
+        };
+        Audience.audience(players).sendMessage(Component.text("[Hint] ").color(NamedTextColor.DARK_GREEN).append(hint));
     }
 
     @Override
