@@ -307,7 +307,7 @@ public class QuizGame extends AbstractGame{
                 winner.add(player);
             }
         }
-        if(winner.size()>0 && (allowEqual || winner.size()==1)) {
+        if(!winner.isEmpty() && (allowEqual || winner.size()==1)) {
             String winnerNames = "";
             for(Player player: winner) {
 //                getWinHighscore().setQuizWin(player.getUniqueId());

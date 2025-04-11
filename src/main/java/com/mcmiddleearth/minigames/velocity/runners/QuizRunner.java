@@ -23,19 +23,21 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-//TODO: Add plugin listener so the quiz conversations can be checked
+//TODO: add scoreboard stuff
 public class QuizRunner extends GameRunner{
     private final int ANSWER_TIME_SEC = 30;
     private final List<AbstractQuestion> allQuestions = new ArrayList<>();
     private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
 
-    private int nextQuestion = 0;
-    private boolean randomChoices = false;
     private final List<Player> inQuizConversation = new ArrayList<>();
     private final HashMap<Player, Integer> scores = new HashMap<>();
     private ScheduledTask questionCountDown;
+
+    private boolean randomChoices = false;
+    private boolean canMultipleWin = false;
 
     @Override
     public void initialise(String name, Player manager) {
@@ -77,7 +79,11 @@ public class QuizRunner extends GameRunner{
                 else
                     MessageUtil.sendInfoMessage(Audience.audience(inQuizConversation), "Time to answer expired. Correct answer: "
                             + currentQuestion.getCorrectAnswer());
+                inQuizConversation.clear();
                 questionCountDown.cancel();
+                currentQuestion = questionQueue.poll();
+                if(currentQuestion == null)
+                    finishQuiz();
             }
         }).delay(0, TimeUnit.SECONDS).repeat(1,TimeUnit.SECONDS).schedule();
     }
@@ -172,7 +178,25 @@ public class QuizRunner extends GameRunner{
     }
 
     private void allAnswered(){
-        //TODO: Implement allAnswered
+        questionCountDown.cancel();
+        currentQuestion = questionQueue.poll();
+        if(currentQuestion == null)
+            finishQuiz();
+    }
+
+    private void finishQuiz(){
+        Integer maxScore = scores.values().stream().max(Integer::compare).orElseThrow();
+        Set<Player> winners = players.stream().filter(player ->
+                Objects.equals(scores.getOrDefault(player, -1), maxScore)).collect(Collectors.toSet());
+        if(winners.isEmpty()){
+            MessageUtil.sendErrorMessage(manager, "There is no winner, something went wrong, please report this in dev-public.");
+        }
+        if(winners.size() > 1 && !canMultipleWin){
+            MessageUtil.sendInfoMessage(manager, "There's multiple winners, add another question or use /quiz winners.");
+        }
+        Audience.audience(winners).sendMessage(Component.text("Congrats, You won the quiz.").color(NamedTextColor.GOLD));
+        MessageUtil.sendInfoMessage(Audience.audience(players),
+                "Game Over, "+String.join(", ", players.stream().map(Player::getUsername).collect(Collectors.toSet()))+" won the quiz.");
     }
 
     @Override
@@ -208,5 +232,12 @@ public class QuizRunner extends GameRunner{
     @Override
     public boolean canJoin(Player player) {
         return false;
+    }
+
+    public void toggleMultipleWinners(){
+        canMultipleWin = !canMultipleWin;
+    }
+    public void toggleRandomChoices(){
+        randomChoices = !randomChoices;
     }
 }
