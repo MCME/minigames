@@ -26,4 +26,13 @@ public class VelocitySuggester {
         });
         return builder.buildFuture();
     }
+
+    public static CompletableFuture<Suggestions> QuestionTypeArgument(CommandContext<CommandSource> c, SuggestionsBuilder builder) {
+        Set<String> options = Set.of("single", "multi", "free", "number");
+        options.forEach(option ->{
+            if(option.startsWith(builder.getRemaining()))
+                builder.suggest(option);
+        });
+        return builder.buildFuture();
+    }
 }

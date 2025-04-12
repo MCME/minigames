@@ -5,7 +5,17 @@ import com.mojang.brigadier.context.CommandContext;
 import com.velocitypowered.api.command.CommandSource;
 
 public class QuizExecutor {
-    public static int ShowCategories(CommandContext<CommandSource> commandSourceCommandContext) {
+    public static int CreateQuiz(CommandContext<CommandSource> c) {
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static int ShowCategories(CommandContext<CommandSource> c) {
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static int CreateQuestion(CommandContext<CommandSource> c) {
 
         return Command.SINGLE_SUCCESS;
     }

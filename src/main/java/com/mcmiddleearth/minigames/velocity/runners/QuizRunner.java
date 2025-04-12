@@ -159,9 +159,8 @@ public class QuizRunner extends GameRunner{
         }
         inQuizConversation.remove(player);
         player.sendMessage(Component.text("[Your answer] "+answer).color(NamedTextColor.AQUA));
-        boolean correctAnswer = currentQuestion.isCorrectAnswer(answer);
-        if (correctAnswer) {
-            scores.put(player, scores.get(player) + 1);
+        if (currentQuestion.isCorrectAnswer(answer)) {
+            scores.put(player, scores.getOrDefault(player, 0) + 1);
             if (currentQuestion instanceof NumberQuestion && !answer.equals(currentQuestion.getCorrectAnswer()))
                 MessageUtil.sendInfoMessage(player, "Almost! The right answer was " + currentQuestion.getCorrectAnswer() + " but you were close enough.");
             else
@@ -201,6 +200,9 @@ public class QuizRunner extends GameRunner{
 
     @Override
     public void restart() {
+        questionCountDown.cancel();
+        scores.clear();
+        inQuizConversation.clear();
 
     }
 
@@ -231,7 +233,7 @@ public class QuizRunner extends GameRunner{
 
     @Override
     public boolean canJoin(Player player) {
-        return false;
+        return inQuizConversation.isEmpty();
     }
 
     public void toggleMultipleWinners(){

@@ -10,12 +10,15 @@ import com.mcmiddleearth.minigames.listener.quizListener.editQuestion;
 import com.mcmiddleearth.minigames.listener.quizListener.submitQuestion;
 import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.spigot.util.PluginData;
+import com.mcmiddleearth.minigames.velocity.command.gameCommands.QuizCommand;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
 import com.mcmiddleearth.minigames.velocity.util.GameManager;
+import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -80,8 +83,9 @@ public final class MiniGamesPlugin {
         channelRegistrar.register(GameManager.GAMEMANAGER);
         channelRegistrar.register(Channels.QUIZ);
 
-//        commandManager.register(new MinigamesPluginCommand(new GcCommandHandler("gc"), "gc"));
-//        commandManager.register(new MinigamesPluginCommand(new GameCommandHandler("game"),"game"));
+        BrigadierCommand quizCommand = QuizCommand.getQuizCommand(getProxyServer());
+        CommandMeta quizMeta = commandManager.metaBuilder(quizCommand).build();
+        commandManager.register(quizMeta, quizCommand);
     }
 
     @Subscribe
