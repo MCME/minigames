@@ -15,6 +15,7 @@ import com.mcmiddleearth.minigames.utils.GameChatUtil;
 import com.mcmiddleearth.pluginutil.PlayerUtil;
 import com.mcmiddleearth.pluginutil.message.FancyMessage;
 import com.mcmiddleearth.pluginutil.message.MessageType;
+import com.mcmiddleearth.minigames.utils.DiscordUtil;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -544,6 +545,7 @@ public abstract class AbstractGame {
                             + PluginData.getMessageUtil().STRESSED + "click here "
                             + PluginData.getMessageUtil().INFO + "or type in chat: /game join " + getName(), "/game join " + getName()));
         }
+        DiscordUtil.sendGameStart(this);
     }
     
     public void sendGameEndMessage(Player sender) {

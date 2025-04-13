@@ -2,8 +2,13 @@
 
 #sql connection
 sqlConnection:
-  user: mywarp
-  password: mywarp
-  name: mywarp
+  user: minigames
+  password: minigames
+  name: minigames
   ip: localhost
   port: 3306
+discord:
+  channel: "Global"
+  emoji: "ringmcme"
+  tag: ""
+

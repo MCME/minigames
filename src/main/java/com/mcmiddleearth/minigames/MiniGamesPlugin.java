@@ -21,6 +21,11 @@ public class MiniGamesPlugin extends JavaPlugin{
  
     private static MiniGamesPlugin pluginInstance;
 
+    static String discordChannel;
+    static String discordEmoji;
+    static String discordTag;
+    static boolean discordEnabled;
+
     @Override
     public void onEnable() {
         pluginInstance = this;
@@ -28,6 +33,10 @@ public class MiniGamesPlugin extends JavaPlugin{
         PluginData.getMessageUtil().setPluginName("MiniGames");
         PluginData.cleanup();
         PluginData.load();
+        discordEnabled = getConfig().contains("discord");
+        discordChannel = getConfig().getString("discord.channel", null);
+        discordEmoji = getConfig().getString("discord.emoji", "");
+        discordTag = getConfig().getString("discord.tag", "");
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getCommand("game").setExecutor(new GameCommandExecutor());
         getCommand("game").setTabCompleter(new TabComplete());
@@ -40,4 +49,21 @@ public class MiniGamesPlugin extends JavaPlugin{
     public static MiniGamesPlugin getPluginInstance() {
         return pluginInstance;
     }
+
+    public static String getDiscordChannel() {
+        return discordChannel;
+    }
+
+    public static String getDiscordEmoji() {
+        return discordEmoji;
+    }
+
+    public static String getDiscordTag() {
+        return discordTag;
+    }
+
+    public static boolean isDiscordEnabled() {
+        return discordEnabled;
+    }
+
 }
