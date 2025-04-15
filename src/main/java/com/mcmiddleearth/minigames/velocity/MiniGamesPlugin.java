@@ -41,7 +41,7 @@ public final class MiniGamesPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
-    private final GameManager gameManager = new GameManager();
+//    public final GameManager gameManager = new GameManager();
 
     /*
     TODO:
@@ -63,7 +63,8 @@ public final class MiniGamesPlugin {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         // Do some operation demanding access to the Velocity API here.
         // For instance, we could register an event:
-        instance = this;
+        if(instance == null)
+            instance = this;
         EventManager eventManager = server.getEventManager();
         CommandManager commandManager = server.getCommandManager();
         ChannelRegistrar channelRegistrar = server.getChannelRegistrar();
@@ -80,7 +81,7 @@ public final class MiniGamesPlugin {
         channelRegistrar.register(AbstractGameScoreboard.IDENTIFIER);
         channelRegistrar.register(ScoreboardObjective.IDENTIFIER);
         channelRegistrar.register(ScoreboardScore.IDENTIFIER);
-        channelRegistrar.register(GameManager.GAMEMANAGER);
+//        channelRegistrar.register(Channels.GAMEMANAGER);
         channelRegistrar.register(Channels.QUIZ);
 
         BrigadierCommand quizCommand = QuizCommand.getQuizCommand(getProxyServer());

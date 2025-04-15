@@ -10,4 +10,6 @@ public class Channels {
     public static final MinecraftChannelIdentifier MAIN = MinecraftChannelIdentifier.from("mcme:minigames");
 
     public static final MinecraftChannelIdentifier QUIZ = MinecraftChannelIdentifier.from("quiz:main");
+
+    public static final MinecraftChannelIdentifier GAMEMANAGER = MinecraftChannelIdentifier.from("minigames:gamemanager");
 }

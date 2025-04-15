@@ -191,7 +191,7 @@ public class QuizRunner extends GameRunner{
             MessageUtil.sendErrorMessage(manager, "There is no winner, something went wrong, please report this in dev-public.");
         }
         if(winners.size() > 1 && !canMultipleWin){
-            MessageUtil.sendInfoMessage(manager, "There's multiple winners, add another question or use /quiz winners.");
+            MessageUtil.sendInfoMessage(manager, "There's multiple winners, add another question or use /quiz winner.");
         }
         Audience.audience(winners).sendMessage(Component.text("Congrats, You won the quiz.").color(NamedTextColor.GOLD));
         MessageUtil.sendInfoMessage(Audience.audience(players),
