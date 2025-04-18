@@ -3,9 +3,10 @@ package com.mcmiddleearth.minigames.velocity.runners;
 import com.velocitypowered.api.proxy.Player;
 
 public class GeoGuessrRunner extends GameRunner{
-    @Override
-    public void initialise(String name, Player manager) {
 
+
+    public GeoGuessrRunner(String name, Player manager) {
+        super(name, manager);
     }
 
     @Override
@@ -30,6 +31,11 @@ public class GeoGuessrRunner extends GameRunner{
 
     @Override
     public void join(Player player) {
+
+    }
+
+    @Override
+    public void leave(Player player) {
 
     }
 

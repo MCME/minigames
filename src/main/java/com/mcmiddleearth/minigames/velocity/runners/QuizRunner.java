@@ -39,10 +39,9 @@ public class QuizRunner extends GameRunner{
     private boolean randomChoices = false;
     private boolean canMultipleWin = false;
 
-    @Override
-    public void initialise(String name, Player manager) {
+    public QuizRunner(String name, Player manager) {
+        super(name, manager);
         scoreboard = new QuizGameScoreboard(name, manager);
-        this.manager = manager;
         listeners.add(new PlayerLeaveListener(this));
         listeners.add(new PlayerJoinListener(this));
         listeners.add(new AnswerListener(this));
@@ -61,13 +60,17 @@ public class QuizRunner extends GameRunner{
     }
 
     public void sendQuestion(){
+        sendQuestion(ANSWER_TIME_SEC);
+    }
+
+    public void sendQuestion(int answer_time_sec){
         currentQuestion = questionQueue.poll();
         if(currentQuestion == null)
             return;
         inQuizConversation.addAll(players);
         sendConversationStarter();
         sendQuestionToPlayers();
-        AtomicInteger countdown = new AtomicInteger(ANSWER_TIME_SEC);
+        AtomicInteger countdown = new AtomicInteger(answer_time_sec);
         questionCountDown = MiniGamesPlugin.createTask(() -> {
             countdown.getAndDecrement();
             if(countdown.get() < 1) {
@@ -86,6 +89,7 @@ public class QuizRunner extends GameRunner{
                     finishQuiz();
             }
         }).delay(0, TimeUnit.SECONDS).repeat(1,TimeUnit.SECONDS).schedule();
+
     }
 
     private void sendConversationStarter(){

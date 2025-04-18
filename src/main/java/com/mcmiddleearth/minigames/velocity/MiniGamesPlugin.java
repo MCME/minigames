@@ -11,11 +11,12 @@ import com.mcmiddleearth.minigames.listener.quizListener.submitQuestion;
 import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.spigot.util.PluginData;
 import com.mcmiddleearth.minigames.velocity.command.gameCommands.QuizCommand;
+import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
-import com.mcmiddleearth.minigames.velocity.util.GameManager;
+import com.mcmiddleearth.minigames.velocity.util.BackendGame;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
@@ -32,10 +33,14 @@ import com.velocitypowered.api.scheduler.Scheduler;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(id = "mini_games_plugin", name = "Mini Games Plugin", version = "3.0",
         url = "https://github.com/MCME", description = "A plugin to run mini games on the MCME server.", authors = {"Nic", "Jubo", "Eriol"})
 public final class MiniGamesPlugin {
+    static public final HashMap<String, GameRunner> proxyGames = new HashMap<>();
+    static public final Map<String, BackendGame> backendGames = new HashMap<>();
 
     private static MiniGamesPlugin instance;
     private final ProxyServer server;

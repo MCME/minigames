@@ -20,7 +20,10 @@ public abstract class GameRunner {
     protected Set<GameListener> listeners = new HashSet<>();
     protected ScheduledTask selfDestruct;
 
-    abstract public void initialise(String name, Player manager);
+    public GameRunner(String name, Player manager){
+        this.manager = manager;
+    }
+
     abstract public boolean canStart();
     abstract public void start();
     abstract public void restart();

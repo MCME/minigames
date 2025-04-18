@@ -16,7 +16,8 @@ public class QuizCommand {
     public static BrigadierCommand getQuizCommand(ProxyServer server){
         LiteralArgumentBuilder<CommandSource> game = BrigadierCommand.literalArgumentBuilder("quiz")
                 .then(BrigadierCommand.literalArgumentBuilder("create")
-                        .executes(QuizExecutor::CreateQuiz))
+                        .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.GAME_NAME, StringArgumentType.word())
+                            .executes(QuizExecutor::CreateQuiz)))
                 .then(BrigadierCommand.literalArgumentBuilder("showcategories")
                         .executes(QuizExecutor::ShowCategories))
                 //TODO: Add question branch

@@ -11,4 +11,5 @@ public class ArgumentNames {
     public static final String MATCH_ALL = "match_all";
     public static final String QUESTION_AMOUNT = "question_amount";
     public static final String QUESTION_RANDOM_TYPES = "question_random_types";
+    public static final String GAME_NAME = "game_name";
 }
