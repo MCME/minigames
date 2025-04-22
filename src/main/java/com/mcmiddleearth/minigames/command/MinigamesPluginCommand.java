@@ -13,25 +13,25 @@ import org.bukkit.command.TabExecutor;
  *
  * @author Jubo
  */
-public class MinigamesPluginCommand implements Command, TabExecutor
+public class MinigamesPluginCommand //implements Command, TabExecutor
  {
 
     private AbstractCommandHandler handler;
     private String name;
 
     public MinigamesPluginCommand(AbstractCommandHandler handler, String name){
-        super(name);
+        //super(name);
         this.name = name;
         this.handler = handler;
     }
 
-    @Override
+    //@Override
     public void execute(Player sender, String[] args) {
         McmeCommandSender wrappedSender = MiniGamesPlugin.wrapCommandSender(sender);
         handler.execute(wrappedSender,args);
     }
 
-    @Override
+   // @Override
     public Iterable<String> onTabComplete(Player sender, String[] args) {
         TabCompleteRequest request = new SimpleTabCompleteRequest(MiniGamesPlugin.wrapCommandSender(sender),String.format("/%s %s",name,String.join(" ",args)));
         handler.onTabComplete(request);
