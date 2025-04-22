@@ -10,6 +10,7 @@ import com.mcmiddleearth.minigames.velocity.runners.listeners.AnswerListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerJoinListener;
 import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerLeaveListener;
+import com.mcmiddleearth.minigames.velocity.runners.util.QuizRandomness;
 import com.mcmiddleearth.minigames.velocity.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 //TODO: add scoreboard stuff
 public class QuizRunner extends GameRunner{
-    private final int ANSWER_TIME_SEC = 30;
+    public int ANSWER_TIME_SEC = 30;
     private final List<AbstractQuestion> allQuestions = new ArrayList<>();
     private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
@@ -36,7 +37,7 @@ public class QuizRunner extends GameRunner{
     private final HashMap<Player, Integer> scores = new HashMap<>();
     private ScheduledTask questionCountDown;
 
-    private boolean randomChoices = false;
+    public QuizRandomness randomness = QuizRandomness.OFF;
     private boolean canMultipleWin = false;
 
     public QuizRunner(String name, Player manager) {
@@ -55,8 +56,8 @@ public class QuizRunner extends GameRunner{
     @Override
     public void start() {
         questionQueue.addAll(allQuestions);
-        Collections.shuffle((LinkedList<AbstractQuestion>)questionQueue);
-        sendQuestion();
+        if(randomness == QuizRandomness.ALL || randomness == QuizRandomness.QUESTION_ORDER)
+            Collections.shuffle((LinkedList<AbstractQuestion>)questionQueue);
     }
 
     public void sendQuestion(){
@@ -105,7 +106,7 @@ public class QuizRunner extends GameRunner{
         String question = currentQuestion.getQuestion();
         String[] questionAnswer = null;
         if(currentQuestion instanceof ChoiceQuestion){
-            if(randomChoices)
+            if(randomness == QuizRandomness.ALL || randomness == QuizRandomness.ANSWER_ORDER)
                 questionAnswer = ((ChoiceQuestion) currentQuestion).getInRandomOrder();
             else
                 questionAnswer = ((ChoiceQuestion) currentQuestion).getInProperOrder();
@@ -207,7 +208,12 @@ public class QuizRunner extends GameRunner{
         questionCountDown.cancel();
         scores.clear();
         inQuizConversation.clear();
+        start();
+    }
 
+    public void clearQuestions(){
+        questionQueue.clear();
+        allQuestions.clear();
     }
 
     @Override
@@ -242,8 +248,5 @@ public class QuizRunner extends GameRunner{
 
     public void toggleMultipleWinners(){
         canMultipleWin = !canMultipleWin;
-    }
-    public void toggleRandomChoices(){
-        randomChoices = !randomChoices;
     }
 }

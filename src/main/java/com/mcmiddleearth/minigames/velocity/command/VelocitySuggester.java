@@ -73,7 +73,7 @@ public class VelocitySuggester {
     }
 
     public static CompletableFuture<Suggestions> QuestionRandomTYpeArgument(CommandContext<CommandSource> c, SuggestionsBuilder builder) {
-        Set<String> options = Set.of("off", "questions", "choices");
+        Set<String> options = Set.of("off", "questions", "choices", "all");
         options.forEach(option ->{
             if(option.startsWith(builder.getRemaining()))
                 builder.suggest(option);

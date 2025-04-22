@@ -56,6 +56,12 @@ public class QuizCommand {
                         .executes(QuizExecutor::AnnounceWinners))
                 .then(BrigadierCommand.literalArgumentBuilder("restart")
                         .executes(QuizExecutor::RestartQuiz))
+                .then(BrigadierCommand.literalArgumentBuilder("start")
+                        .executes(QuizExecutor::StartQuiz))
+                .then(BrigadierCommand.literalArgumentBuilder("setanswertime")
+                        .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.TIME_LIMIT, IntegerArgumentType.integer(1))
+                                .suggests(VelocitySuggester::TimeLimitArgument)
+                                .executes(QuizExecutor::SetTimeLimit)))
                 ;
         return new BrigadierCommand(game
                 .build());

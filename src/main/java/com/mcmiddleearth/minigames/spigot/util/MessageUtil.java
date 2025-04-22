@@ -3,6 +3,7 @@ package com.mcmiddleearth.minigames.spigot.util;
 import com.mcmiddleearth.command.sender.McmeCommandSender;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 
@@ -15,11 +16,11 @@ public class MessageUtil {
     static private final String PREFIX = "[MCME-Minigames] ";
 
 
-    static public void sendErrorMessage(Player sender, String message){
+    static public void sendErrorMessage(Audience sender, String message){
         sender.sendMessage(Component.text(PREFIX+message).color(Style.ERROR));
     }
 
-    static public void sendInfoMessage(Player sender, String message){
+    static public void sendInfoMessage(Audience sender, String message){
         sender.sendMessage(Component.text(PREFIX+message).color(Style.INFO));
     }
 
