@@ -137,6 +137,15 @@ public class QuizExecutor {
     }
 
     public static int AnnounceWinners(CommandContext<CommandSource> c) {
+        Player manager = (Player)c.getSource();
+        Optional<QuizRunner> optionalQuizRunner = MiniGamesPlugin.proxyGames.values().stream()
+                .filter(gameRunner -> gameRunner.getManager().equals(manager) && gameRunner instanceof QuizRunner)
+                .findFirst().map(gameRunner -> (QuizRunner) gameRunner);
+        if(optionalQuizRunner.isEmpty()){
+            MessageUtil.sendErrorMessage(manager, "You are not a manager of a quiz game.");
+            return Command.SINGLE_SUCCESS;
+        }
+        optionalQuizRunner.get().announceWinners();
 
         return Command.SINGLE_SUCCESS;
     }

@@ -203,6 +203,18 @@ public class QuizRunner extends GameRunner{
                 "Game Over, "+String.join(", ", players.stream().map(Player::getUsername).collect(Collectors.toSet()))+" won the quiz.");
     }
 
+    public void announceWinners(){
+        Integer maxScore = scores.values().stream().max(Integer::compare).orElseThrow();
+        Set<Player> winners = players.stream().filter(player ->
+                Objects.equals(scores.getOrDefault(player, -1), maxScore)).collect(Collectors.toSet());
+        Audience.audience(winners).sendMessage(Component.text("Congrats, You won the quiz.").color(NamedTextColor.GOLD));
+        if(winners.isEmpty()){
+            MessageUtil.sendErrorMessage(manager, "There is no winner, something went wrong, please report this in dev-public.");
+        }
+        MessageUtil.sendInfoMessage(Audience.audience(players),
+                "Game Over, "+String.join(", ", players.stream().map(Player::getUsername).collect(Collectors.toSet()))+" won the quiz.");
+    }
+
     @Override
     public void restart() {
         questionCountDown.cancel();
