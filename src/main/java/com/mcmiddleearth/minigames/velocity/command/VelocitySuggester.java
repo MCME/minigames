@@ -62,13 +62,15 @@ public class VelocitySuggester {
     }
 
     public static CompletableFuture<Suggestions> CategoryArgument(CommandContext<CommandSource> c, SuggestionsBuilder builder) {
-        String options = "abcdefghijklmnopqrstuvwxyz";
+        String options = "abcdefghijklmnopqrstuvwxyz-";
         String current = builder.getRemaining();
 
         for(char option : options.toCharArray()){
             if(!current.contains(option + ""))
                 builder.suggest(current + option);
         }
+        if("all".startsWith(current))
+           builder.suggest("all");
         return builder.buildFuture();
     }
 

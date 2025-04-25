@@ -27,8 +27,6 @@ public class GeneralGameCommand {
                         .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.HELP_TYPE, StringArgumentType.word())
                                 .suggests(VelocitySuggester::HelpArgument)
                                 .executes(GameExecutor::SendHelp)))
-                .then(BrigadierCommand.literalArgumentBuilder("showCategories")
-                        .executes(QuizExecutor::ShowCategories))
                 .then(BrigadierCommand.literalArgumentBuilder("create")
                         .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.GAME_TYPE, StringArgumentType.word())
                                 .suggests(VelocitySuggester::GameTypeArgument)

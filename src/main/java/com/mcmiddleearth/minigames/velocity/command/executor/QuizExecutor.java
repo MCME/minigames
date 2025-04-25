@@ -5,12 +5,20 @@ import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.command.ArgumentNames;
 import com.mcmiddleearth.minigames.velocity.runners.QuizRunner;
 import com.mcmiddleearth.minigames.velocity.runners.util.QuizRandomness;
+import com.mcmiddleearth.minigames.velocity.util.QuestionLoader;
 import com.mcmiddleearth.minigames.velocity.util.QuizLoader;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ParsedArgument;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.Optional;
 
 public class QuizExecutor {
@@ -22,11 +30,9 @@ public class QuizExecutor {
         MiniGamesPlugin.proxyGames.put(quizName, runner);
         MessageUtil.sendInfoMessage(manager, "Quiz created!");
 
-        return Command.SINGLE_SUCCESS;
-    }
-
-    public static int ShowCategories(CommandContext<CommandSource> c) {
-
+        Audience.audience(MiniGamesPlugin.getInstance().server.getAllPlayers()).sendMessage(
+                Component.text(manager.getUsername() + " started a quiz do '/quiz join " + quizName + "' to join!")
+                        .color(NamedTextColor.AQUA));
         return Command.SINGLE_SUCCESS;
     }
 
@@ -40,16 +46,9 @@ public class QuizExecutor {
             return Command.SINGLE_SUCCESS;
         }
         QuizRunner runner = optionalQuizRunner.get();
-        try {
-            int timeLimit = c.getArgument(ArgumentNames.TIME_LIMIT, Integer.class);
-            runner.sendQuestion(timeLimit);
-        } catch(IllegalArgumentException e){
-            if(e.getMessage().startsWith("No such argument"))
-                runner.sendQuestion();
-            else
-                MessageUtil.sendErrorMessage(manager, "Something went wrong, send in dev-public: 'SendQuestion" +
-                        " casts to the wrong class in the minigames plugin.'");
-        }
+        runner.sendQuestion(Optional.ofNullable(c.getArguments().get(ArgumentNames.TIME_LIMIT))
+                .map(arg -> (Integer) arg.getResult())
+                .orElse(runner.ANSWER_TIME_SEC));
 
         return Command.SINGLE_SUCCESS;
     }
@@ -84,16 +83,48 @@ public class QuizExecutor {
             MessageUtil.sendErrorMessage(manager, "You are not a manager of a quiz game.");
             return Command.SINGLE_SUCCESS;
         }
+
         String name = c.getArgument(ArgumentNames.FILE_NAME, String.class);
-        QuizLoader.loadQuiz(optionalQuizRunner.get(), name);
+
+        try {
+            QuizLoader.loadQuiz(optionalQuizRunner.get(), name);
+        } catch( ParseException | FileNotFoundException exception){
+            MessageUtil.sendErrorMessage(manager, "Quiz failed to load, send in dev-public to check the logs.");
+            MiniGamesPlugin.getInstance().getLogger().error("Quiz failed to load: {}", name, exception);
+            return Command.SINGLE_SUCCESS;
+        }
         MessageUtil.sendInfoMessage(manager, "Loaded quiz, ready to start.");
 
         return Command.SINGLE_SUCCESS;
     }
 
     public static int LoadQuestions(CommandContext<CommandSource> c) {
-        //TODO: branching path with 2 optional arguments
+        Player manager = (Player) c.getSource();
+        Optional<QuizRunner> optionalQuizRunner = MiniGamesPlugin.proxyGames.values().stream()
+                .filter(gameRunner -> gameRunner.getManager().equals(manager) && gameRunner instanceof QuizRunner)
+                .findFirst().map(gameRunner -> (QuizRunner) gameRunner);
+        if (optionalQuizRunner.isEmpty()) {
+            MessageUtil.sendErrorMessage(manager, "You are not a manager of a quiz game.");
+            return Command.SINGLE_SUCCESS;
+        }
 
+        QuizRunner runner = optionalQuizRunner.get();
+        Map<String, ParsedArgument<CommandSource, ?>> arguments = c.getArguments();
+        String categories = Optional.ofNullable(arguments.get(ArgumentNames.CATEGORIES))
+                .map(arg -> (String) arg.getResult())
+                .orElse(null);
+        Boolean matchAll = Optional.ofNullable(arguments.get(ArgumentNames.MATCH_ALL))
+                .map(arg -> (Boolean) arg.getResult())
+                .orElse(false);
+        Integer questionAmount = Optional.ofNullable(arguments.get(ArgumentNames.QUESTION_AMOUNT))
+                .map(arg -> (Integer) arg.getResult())
+                .orElse(15);
+        if (categories == null){
+            MessageUtil.sendErrorMessage(manager, "Something went wrong with the categories, did you leave this empty? If not report this in dev-public!");
+            return Command.SINGLE_SUCCESS;
+        }
+        QuestionLoader.loadQuestions(runner, categories, matchAll, questionAmount);
+        MessageUtil.sendInfoMessage(manager, "Questions loaded!");
         return Command.SINGLE_SUCCESS;
     }
 

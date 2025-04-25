@@ -43,9 +43,9 @@ public final class MiniGamesPlugin {
     static public final Map<String, BackendGame> backendGames = new HashMap<>();
 
     private static MiniGamesPlugin instance;
-    private final ProxyServer server;
-    private final Logger logger;
-    private final Path dataDirectory;
+    public final ProxyServer server;
+    public final Logger logger;
+    public final Path dataDirectory;
 //    public final GameManager gameManager = new GameManager();
 
     /*

@@ -18,8 +18,6 @@ public class QuizCommand {
                 .then(BrigadierCommand.literalArgumentBuilder("create")
                         .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.GAME_NAME, StringArgumentType.word())
                             .executes(QuizExecutor::CreateQuiz)))
-                .then(BrigadierCommand.literalArgumentBuilder("showcategories")
-                        .executes(QuizExecutor::ShowCategories))
                 //TODO: Add question branch
                 .then(BrigadierCommand.literalArgumentBuilder("send")
                         .executes(QuizExecutor::SendQuestion)

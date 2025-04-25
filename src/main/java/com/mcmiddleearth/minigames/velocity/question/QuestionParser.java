@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 import org.json.simple.parser.ParseException;
 
 public class QuestionParser {
-    static AbstractQuestion parseQuestionFromString(String questionData) throws ParseException, ArrayIndexOutOfBoundsException {
+    public static AbstractQuestion parseQuestionFromString(String questionData) throws ParseException, ArrayIndexOutOfBoundsException {
         StringTokenizer tokenizer = new StringTokenizer(questionData,";");
         String categories = tokenizer.nextToken();
         QuestionType type = QuestionType.values()[Integer.parseInt(tokenizer.nextToken())-1];

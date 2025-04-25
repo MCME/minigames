@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 //TODO: add scoreboard stuff
 public class QuizRunner extends GameRunner{
     public int ANSWER_TIME_SEC = 30;
-    private final List<AbstractQuestion> allQuestions = new ArrayList<>();
+    public final List<AbstractQuestion> allQuestions = new ArrayList<>();
     private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
 
