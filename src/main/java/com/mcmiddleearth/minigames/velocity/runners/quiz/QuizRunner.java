@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.velocity.runners;
+package com.mcmiddleearth.minigames.velocity.runners.quiz;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -6,11 +6,11 @@ import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.spigot.util.Style;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.question.*;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.AnswerListener;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerJoinListener;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.PlayerLeaveListener;
-import com.mcmiddleearth.minigames.velocity.runners.util.QuizRandomness;
+import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.AnswerListener;
+import com.mcmiddleearth.minigames.velocity.runners.GameListener;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.PlayerJoinListener;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.PlayerLeaveListener;
 import com.mcmiddleearth.minigames.velocity.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
@@ -27,22 +27,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 //TODO: add scoreboard stuff
-public class QuizRunner extends GameRunner{
+public class QuizRunner extends GameRunner {
     public int ANSWER_TIME_SEC = 30;
     public final List<AbstractQuestion> allQuestions = new ArrayList<>();
     private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
 
-    private final List<Player> inQuizConversation = new ArrayList<>();
-    private final HashMap<Player, Integer> scores = new HashMap<>();
+    public final List<Player> inQuizConversation = new ArrayList<>();
+    public final HashMap<Player, Integer> scores = new HashMap<>();
     private ScheduledTask questionCountDown;
+
+    private QuizScoreboardEditor scoreboardEditor;
 
     public QuizRandomness randomness = QuizRandomness.OFF;
     private boolean canMultipleWin = false;
 
     public QuizRunner(String name, Player manager) {
         super(name, manager);
-        scoreboard = new QuizGameScoreboard(name, manager);
+        scoreboardEditor = new QuizScoreboardEditor(this);
         listeners.add(new PlayerLeaveListener(this));
         listeners.add(new PlayerJoinListener(this));
         listeners.add(new AnswerListener(this));
@@ -236,14 +238,14 @@ public class QuizRunner extends GameRunner{
     @Override
     public void join(Player player) {
         players.add(player);
-        scoreboard.addPlayer(player);
+        scoreboardEditor.addPlayer(player);
         sendJoinMessage(player);
     }
 
     @Override
     public void leave(Player player){
         players.remove(player);
-        scoreboard.removePlayer(player);
+        scoreboardEditor.removePlayer(player);
         if(player == manager) {
             initSelfDestruct();
             return;

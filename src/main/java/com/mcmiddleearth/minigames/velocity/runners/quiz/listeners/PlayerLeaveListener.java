@@ -1,6 +1,7 @@
-package com.mcmiddleearth.minigames.velocity.runners.listeners;
+package com.mcmiddleearth.minigames.velocity.runners.quiz.listeners;
 
 import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
+import com.mcmiddleearth.minigames.velocity.runners.GameListener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.proxy.Player;

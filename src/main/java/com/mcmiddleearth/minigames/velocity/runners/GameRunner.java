@@ -1,8 +1,6 @@
 package com.mcmiddleearth.minigames.velocity.runners;
 
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
-import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
@@ -16,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class GameRunner {
     protected Player manager;
     protected Set<Player> players = new HashSet<>();
-    protected AbstractGameScoreboard scoreboard;
     protected Set<GameListener> listeners = new HashSet<>();
     protected ScheduledTask selfDestruct;
 

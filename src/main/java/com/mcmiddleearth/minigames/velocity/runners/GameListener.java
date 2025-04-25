@@ -1,11 +1,10 @@
-package com.mcmiddleearth.minigames.velocity.runners.listeners;
+package com.mcmiddleearth.minigames.velocity.runners;
 
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class GameListener {
-    final @NotNull GameRunner runner;
+    final protected @NotNull GameRunner runner;
 
     private GameListener(){
         runner = null;

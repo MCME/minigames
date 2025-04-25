@@ -12,7 +12,7 @@ import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.spigot.util.PluginData;
 import com.mcmiddleearth.minigames.velocity.command.gameCommands.QuizCommand;
 import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
-import com.mcmiddleearth.minigames.velocity.runners.listeners.GameListener;
+import com.mcmiddleearth.minigames.velocity.runners.GameListener;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.AbstractGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardObjective;
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;

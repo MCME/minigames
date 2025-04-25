@@ -1,16 +1,17 @@
-package com.mcmiddleearth.minigames.velocity.runners.listeners;
+package com.mcmiddleearth.minigames.velocity.runners.quiz.listeners;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.mcmiddleearth.minigames.common.Channels;
 import com.mcmiddleearth.minigames.velocity.runners.GameRunner;
-import com.mcmiddleearth.minigames.velocity.runners.QuizRunner;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.QuizRunner;
+import com.mcmiddleearth.minigames.velocity.runners.GameListener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.ServerConnection;
 import org.jetbrains.annotations.NotNull;
 
-public class AnswerListener extends GameListener{
+public class AnswerListener extends GameListener {
     public AnswerListener(@NotNull GameRunner runner) {
         super(runner);
     }

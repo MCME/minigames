@@ -1,4 +1,4 @@
-package com.mcmiddleearth.minigames.velocity.runners.util;
+package com.mcmiddleearth.minigames.velocity.runners.quiz;
 
 public enum QuizRandomness {
     OFF,

@@ -1,7 +1,7 @@
 package com.mcmiddleearth.minigames.velocity.util;
 
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
-import com.mcmiddleearth.minigames.velocity.runners.QuizRunner;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.QuizRunner;
 import com.mcmiddleearth.minigames.velocity.question.QuestionType;
 import com.mcmiddleearth.minigames.velocity.question.*;
 import org.json.simple.JSONArray;

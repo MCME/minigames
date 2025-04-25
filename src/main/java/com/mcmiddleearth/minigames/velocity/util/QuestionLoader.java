@@ -4,7 +4,7 @@ import com.mcmiddleearth.minigames.spigot.util.NumericUtil;
 import com.mcmiddleearth.minigames.velocity.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.velocity.question.AbstractQuestion;
 import com.mcmiddleearth.minigames.velocity.question.QuestionParser;
-import com.mcmiddleearth.minigames.velocity.runners.QuizRunner;
+import com.mcmiddleearth.minigames.velocity.runners.quiz.QuizRunner;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.parser.ParseException;
 
