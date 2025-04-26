@@ -1,6 +1,7 @@
 package com.mcmiddleearth.minigames.velocity.runners.quiz;
 
 import com.mcmiddleearth.minigames.velocity.scoreboard.generics.ScoreboardScore;
+import com.velocitypowered.api.TextHolder;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scoreboard.*;
 import net.kyori.adventure.text.Component;
@@ -31,6 +32,17 @@ public class QuizScoreboardEditor {
                 scoreboard.registerObjective(scoreboard.objectiveBuilder(scores).displaySlot(DisplaySlot.SIDEBAR));
                 scoreboard.registerObjective(scoreboard.objectiveBuilder(timer));
             }
+            updateTitle();
+        });
+    }
+
+    public void updateTitle(){
+        applyFunction(scoreboard ->{
+            TextHolder holder = TextHolder.of(Component.text(
+                    String.format("Question %d / %d", runner.allQuestions.size()-runner.questionQueue.size(), runner.allQuestions.size())));
+            scoreboard.getObjective(scores).setTitle(holder);
+            scoreboard.getObjective(timer).setTitle(holder);
+
         });
     }
 
@@ -78,6 +90,8 @@ public class QuizScoreboardEditor {
         applyFunction(scoreboard ->
                 scoreboard.getObjective(scores).removeScore(player.getUsername())
         );
+        ScoreboardManager.getInstance().getProxyScoreboard(player).unregisterObjective(scores);
+        ScoreboardManager.getInstance().getProxyScoreboard(player).unregisterObjective(timer);
     }
 
     private void applyFunction(Consumer<ProxyScoreboard> function){

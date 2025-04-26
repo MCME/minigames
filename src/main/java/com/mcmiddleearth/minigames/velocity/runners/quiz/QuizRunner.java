@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 public class QuizRunner extends GameRunner {
     public int ANSWER_TIME_SEC = 30;
     public final List<AbstractQuestion> allQuestions = new ArrayList<>();
-    private final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
+    public final Queue<AbstractQuestion> questionQueue = new LinkedList<>();
     private AbstractQuestion currentQuestion;
 
     public final List<Player> inQuizConversation = new ArrayList<>();
     public final HashMap<Player, Integer> scores = new HashMap<>();
     private ScheduledTask questionCountDown;
 
-    private QuizScoreboardEditor scoreboardEditor;
+    private final QuizScoreboardEditor scoreboardEditor;
 
     public QuizRandomness randomness = QuizRandomness.OFF;
     private boolean canMultipleWin = false;
@@ -60,6 +60,8 @@ public class QuizRunner extends GameRunner {
         questionQueue.addAll(allQuestions);
         if(randomness == QuizRandomness.ALL || randomness == QuizRandomness.QUESTION_ORDER)
             Collections.shuffle((LinkedList<AbstractQuestion>)questionQueue);
+
+        players.forEach(scoreboardEditor::initScoreboard);
     }
 
     public void sendQuestion(){
@@ -68,13 +70,19 @@ public class QuizRunner extends GameRunner {
 
     public void sendQuestion(int answer_time_sec){
         currentQuestion = questionQueue.poll();
-        if(currentQuestion == null)
+        if(currentQuestion == null) {
+            MessageUtil.sendErrorMessage(manager, "There are no more questions, add more if you want to continue.");
             return;
+        }
         inQuizConversation.addAll(players);
         sendConversationStarter();
         sendQuestionToPlayers();
         AtomicInteger countdown = new AtomicInteger(answer_time_sec);
+        scoreboardEditor.updateTimer(countdown.get());
+        scoreboardEditor.switchMode();
+        scoreboardEditor.updateTitle();
         questionCountDown = MiniGamesPlugin.createTask(() -> {
+            scoreboardEditor.updateTimer(countdown.get());
             countdown.getAndDecrement();
             if(countdown.get() < 1) {
                 if (currentQuestion instanceof NumberQuestion)
@@ -87,9 +95,10 @@ public class QuizRunner extends GameRunner {
                             + currentQuestion.getCorrectAnswer());
                 inQuizConversation.clear();
                 questionCountDown.cancel();
-                currentQuestion = questionQueue.poll();
-                if(currentQuestion == null)
+                if(questionQueue.peek() == null)
                     finishQuiz();
+                scoreboardEditor.updateScores();
+                scoreboardEditor.switchMode();
             }
         }).delay(0, TimeUnit.SECONDS).repeat(1,TimeUnit.SECONDS).schedule();
 
@@ -141,6 +150,7 @@ public class QuizRunner extends GameRunner {
         };
         Audience.audience(players).sendMessage(Component.text("[Hint] ").color(NamedTextColor.DARK_GREEN).append(hint));
     }
+
     public void Answer(Player player, String answer){
         switch(currentQuestion){
             case SingleChoiceQuestion _ : if(answer.length() != 1) {
@@ -181,13 +191,15 @@ public class QuizRunner extends GameRunner {
         }
         if(inQuizConversation.isEmpty())
             allAnswered();
+        scoreboardEditor.updateThinking();
     }
 
     private void allAnswered(){
         questionCountDown.cancel();
-        currentQuestion = questionQueue.poll();
-        if(currentQuestion == null)
+        if(questionQueue.peek() == null)
             finishQuiz();
+        scoreboardEditor.updateScores();
+        scoreboardEditor.switchMode();
     }
 
     private void finishQuiz(){
