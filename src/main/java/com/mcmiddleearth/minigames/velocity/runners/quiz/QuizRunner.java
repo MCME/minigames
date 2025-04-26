@@ -11,7 +11,6 @@ import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.AnswerListene
 import com.mcmiddleearth.minigames.velocity.runners.GameListener;
 import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.PlayerJoinListener;
 import com.mcmiddleearth.minigames.velocity.runners.quiz.listeners.PlayerLeaveListener;
-import com.mcmiddleearth.minigames.velocity.scoreboard.QuizGameScoreboard;
 import com.mcmiddleearth.minigames.velocity.util.MessageUtil;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.scheduler.ScheduledTask;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-//TODO: add scoreboard stuff
 public class QuizRunner extends GameRunner {
     public int ANSWER_TIME_SEC = 30;
     public final List<AbstractQuestion> allQuestions = new ArrayList<>();
@@ -40,6 +38,7 @@ public class QuizRunner extends GameRunner {
     private final QuizScoreboardEditor scoreboardEditor;
 
     public QuizRandomness randomness = QuizRandomness.OFF;
+    //TODO: add a command to toggle multiple winners
     private boolean canMultipleWin = false;
 
     public QuizRunner(String name, Player manager) {
@@ -245,6 +244,7 @@ public class QuizRunner extends GameRunner {
     @Override
     public void end() {
         listeners.forEach(GameListener::unregister);
+        players.forEach(scoreboardEditor :: removePlayer);
     }
 
     @Override
@@ -270,9 +270,5 @@ public class QuizRunner extends GameRunner {
     @Override
     public boolean canJoin(Player player) {
         return inQuizConversation.isEmpty();
-    }
-
-    public void toggleMultipleWinners(){
-        canMultipleWin = !canMultipleWin;
     }
 }
