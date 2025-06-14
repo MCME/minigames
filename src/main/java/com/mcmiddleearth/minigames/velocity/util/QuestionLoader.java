@@ -84,7 +84,6 @@ public class QuestionLoader {
             }
         } catch (FileNotFoundException ex) {
             MiniGamesPlugin.getInstance().logger.error(null, ex);
-            throw ex;
         }
 
     }
