@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mcmiddleearth</groupId>
+        <artifactId>minigames-parent</artifactId>
+        <version>3.0</version>
+    </parent>
+
+    <artifactId>minigames-velocity</artifactId>
+    <packaging>jar</packaging>
+
+    <repositories>
+        <repository>
+            <id>william278-releases</id>
+            <name>William278</name>
+            <url>https://repo.william278.net/releases</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Common module dependency -->
+        <dependency>
+            <groupId>com.mcmiddleearth</groupId>
+            <artifactId>minigames-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Velocity API -->
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+        </dependency>
+
+        <!-- Velocity Scoreboard -->
+        <dependency>
+            <groupId>net.william278</groupId>
+            <artifactId>velocityscoreboardapi</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <!-- commons-lang -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- GSON -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>MiniGames-Velocity-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Include common module -->
+                            <artifactSet>
+                                <includes>
+                                    <include>com.mcmiddleearth:minigames-common</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
