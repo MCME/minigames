@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public class QuizScoreboardEditor {
 
-    private QuizRunner runner;
+    private final QuizRunner runner;
 
     private final String timer = "timer";
     private final String remaining = "time remaining:";

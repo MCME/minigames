@@ -1,6 +1,7 @@
 package com.mcmiddleearth.minigames.command.executor;
 
 import com.google.gson.JsonSyntaxException;
+import com.mcmiddleearth.minigames.runners.GameRunner;
 import com.mcmiddleearth.minigames.util.MessageUtil;
 import com.mcmiddleearth.minigames.MiniGamesPlugin;
 import com.mcmiddleearth.minigames.command.ArgumentNames;
@@ -11,6 +12,7 @@ import com.mcmiddleearth.minigames.util.QuizLoader;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedArgument;
+import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.audience.Audience;
@@ -230,7 +232,24 @@ public class QuizExecutor {
                 MessageUtil.sendErrorMessage(manager, "Something went wrong, send in dev-public: 'SendQuestion" +
                         " casts to the wrong class in the minigames plugin.'");
         }
+        return Command.SINGLE_SUCCESS;
+    }
 
+    public static int JoinQuiz(CommandContext<CommandSource> c) {
+        Player joiner = (Player)c.getSource();
+        String gameName = c.getArgument(ArgumentNames.GAME_NAME, String.class);
+        GameRunner game = MiniGamesPlugin.proxyGames.get(gameName);
+        if(game == null)
+            return BrigadierCommand.FORWARD;
+        if(!(game instanceof QuizRunner)){
+            MessageUtil.sendErrorMessage(joiner, "Can't join the game, it does not exist. If it did not end, report this in dev-public.");
+            return Command.SINGLE_SUCCESS;
+        }
+        if(game.canJoin(joiner)) {
+            game.join(joiner);
+            return Command.SINGLE_SUCCESS;
+        }
+        MessageUtil.sendInfoMessage(joiner, "You can't join the game.");
         return Command.SINGLE_SUCCESS;
     }
 }

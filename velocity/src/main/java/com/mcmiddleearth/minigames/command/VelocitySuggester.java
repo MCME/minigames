@@ -1,5 +1,7 @@
 package com.mcmiddleearth.minigames.command;
 
+import com.mcmiddleearth.minigames.MiniGamesPlugin;
+import com.mcmiddleearth.minigames.runners.quiz.QuizRunner;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -78,6 +80,14 @@ public class VelocitySuggester {
         options.forEach(option ->{
             if(option.startsWith(builder.getRemaining()))
                 builder.suggest(option);
+        });
+        return builder.buildFuture();
+    }
+
+    public static CompletableFuture<Suggestions> ExistingQuizNameArgument(CommandContext<CommandSource> c, SuggestionsBuilder builder) {
+        MiniGamesPlugin.proxyGames.forEach((name, runner) -> {
+            if(runner instanceof QuizRunner && name.startsWith(builder.getRemaining()))
+                builder.suggest(name);
         });
         return builder.buildFuture();
     }

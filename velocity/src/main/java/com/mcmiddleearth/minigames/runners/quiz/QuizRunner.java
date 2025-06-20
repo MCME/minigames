@@ -231,7 +231,8 @@ public class QuizRunner extends GameRunner {
 
     @Override
     public void restart() {
-        questionCountDown.cancel();
+        if(questionCountDown != null)
+            questionCountDown.cancel();
         scores.clear();
         inQuizConversation.clear();
         start();

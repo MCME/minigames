@@ -18,6 +18,10 @@ public class QuizCommand {
                 .then(BrigadierCommand.literalArgumentBuilder("create")
                         .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.GAME_NAME, StringArgumentType.word())
                             .executes(QuizExecutor::CreateQuiz)))
+                .then(BrigadierCommand.literalArgumentBuilder("join")
+                        .then(BrigadierCommand.requiredArgumentBuilder(ArgumentNames.GAME_NAME, StringArgumentType.word())
+                                .suggests(VelocitySuggester::ExistingQuizNameArgument)
+                                .executes(QuizExecutor::JoinQuiz)))
                 //TODO: Add question branch
                 .then(BrigadierCommand.literalArgumentBuilder("send")
                         .executes(QuizExecutor::SendQuestion)
