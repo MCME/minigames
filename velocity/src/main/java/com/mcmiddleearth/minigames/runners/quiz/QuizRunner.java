@@ -60,8 +60,6 @@ public class QuizRunner extends GameRunner {
         questionQueue.addAll(allQuestions);
         if(randomness == QuizRandomness.ALL || randomness == QuizRandomness.QUESTION_ORDER)
             Collections.shuffle((LinkedList<AbstractQuestion>)questionQueue);
-
-        players.forEach(scoreboardEditor::initScoreboard);
     }
 
     public void sendQuestion(){
@@ -252,6 +250,7 @@ public class QuizRunner extends GameRunner {
     @Override
     public void join(Player player) {
         players.add(player);
+        scores.putIfAbsent(player, 0);
         scoreboardEditor.addPlayer(player);
         sendJoinMessage(player);
     }

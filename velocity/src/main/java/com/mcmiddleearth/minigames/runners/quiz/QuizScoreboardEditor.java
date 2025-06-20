@@ -22,19 +22,6 @@ public class QuizScoreboardEditor {
         this.runner = runner;
     }
 
-    public void initScoreboard(Player player){
-        applyFunction(player, scoreboard -> {
-            if(inQuestion) {
-                scoreboard.registerObjective(scoreboard.objectiveBuilder(scores));
-                scoreboard.registerObjective(scoreboard.objectiveBuilder(timer).displaySlot(DisplaySlot.SIDEBAR));
-            } else {
-                scoreboard.registerObjective(scoreboard.objectiveBuilder(scores).displaySlot(DisplaySlot.SIDEBAR));
-                scoreboard.registerObjective(scoreboard.objectiveBuilder(timer));
-            }
-            updateTitle();
-        });
-    }
-
     public void updateTitle(){
         applyFunction(scoreboard ->{
             TextHolder holder = TextHolder.of(Component.text(
@@ -81,7 +68,8 @@ public class QuizScoreboardEditor {
     public void addPlayer(Player player){
         initScoreboard(player);
         applyFunction(scoreboard ->
-            scoreboard.getObjective(scores).setScore(player.getUsername(), (builder -> builder.score(0)))
+                runner.scores.forEach((quizer, score) ->
+            scoreboard.getObjective(scores).setScore(quizer.getUsername(), (builder -> builder.score(score))))
         );
     }
 
@@ -91,6 +79,19 @@ public class QuizScoreboardEditor {
         );
         ScoreboardManager.getInstance().getProxyScoreboard(player).unregisterObjective(scores);
         ScoreboardManager.getInstance().getProxyScoreboard(player).unregisterObjective(timer);
+    }
+
+    private void initScoreboard(Player player){
+        applyFunction(player, scoreboard -> {
+            if(inQuestion) {
+                scoreboard.registerObjective(scoreboard.objectiveBuilder(scores));
+                scoreboard.registerObjective(scoreboard.objectiveBuilder(timer).displaySlot(DisplaySlot.SIDEBAR));
+            } else {
+                scoreboard.registerObjective(scoreboard.objectiveBuilder(scores).displaySlot(DisplaySlot.SIDEBAR));
+                scoreboard.registerObjective(scoreboard.objectiveBuilder(timer));
+            }
+            updateTitle();
+        });
     }
 
     private void applyFunction(Consumer<ProxyScoreboard> function){
