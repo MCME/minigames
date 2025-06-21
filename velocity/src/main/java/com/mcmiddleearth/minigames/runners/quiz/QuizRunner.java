@@ -256,9 +256,10 @@ public class QuizRunner extends GameRunner {
     }
 
     @Override
-    public void leave(Player player){
+    public void leave(Player player, boolean leftServer){
         players.remove(player);
-        scoreboardEditor.removePlayer(player);
+        if(!leftServer)
+            scoreboardEditor.removePlayer(player);
         if(player == manager) {
             initSelfDestruct();
             return;
@@ -270,6 +271,6 @@ public class QuizRunner extends GameRunner {
 
     @Override
     public boolean canJoin(Player player) {
-        return inQuizConversation.isEmpty();
+        return true;
     }
 }

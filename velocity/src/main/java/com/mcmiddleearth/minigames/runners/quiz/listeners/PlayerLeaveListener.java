@@ -17,6 +17,6 @@ public class PlayerLeaveListener extends GameListener {
     public void onPlayerLeave(DisconnectEvent event){
         Player player = event.getPlayer();
         if(runner.getPlayers().contains(player))
-            runner.leave(player);
+            runner.leave(player, true);
     }
 }

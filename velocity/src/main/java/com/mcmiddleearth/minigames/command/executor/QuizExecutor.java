@@ -18,6 +18,7 @@ import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -51,11 +52,6 @@ public class QuizExecutor {
         runner.sendQuestion(Optional.ofNullable(c.getArguments().get(ArgumentNames.TIME_LIMIT))
                 .map(arg -> (Integer) arg.getResult())
                 .orElse(runner.ANSWER_TIME_SEC));
-
-        return Command.SINGLE_SUCCESS;
-    }
-
-    public static int SendStats(CommandContext<CommandSource> c) {
 
         return Command.SINGLE_SUCCESS;
     }
@@ -250,6 +246,13 @@ public class QuizExecutor {
             return Command.SINGLE_SUCCESS;
         }
         MessageUtil.sendInfoMessage(joiner, "You can't join the game.");
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static int LeaveQuiz(CommandContext<CommandSource> c) {
+        Player leaver = (Player) c.getSource();
+        MiniGamesPlugin.proxyGames.values().stream().filter(game -> game.getPlayers().contains(leaver))
+                .forEach(game -> game.leave(leaver, false));
         return Command.SINGLE_SUCCESS;
     }
 }

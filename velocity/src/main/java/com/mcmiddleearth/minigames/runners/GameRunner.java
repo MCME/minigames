@@ -27,11 +27,11 @@ public abstract class GameRunner {
     abstract public void end();
 
     abstract public void join(Player player);
-    abstract public void leave(Player player);
+    abstract public void leave(Player player, boolean leftServer);
     abstract public boolean canJoin(Player player);
 
     protected void initSelfDestruct() {
-        MessageUtil.sendErrorMessage(Audience.audience(players), "The host was disconnected from the server. This quiz will end in 60 seconds.");
+        MessageUtil.sendErrorMessage(Audience.audience(players), "The host was disconnected from the server. This game will end in 60 seconds.");
         selfDestruct = MiniGamesPlugin.createTask(() -> {
             if (!manager.isActive())
                 end();
